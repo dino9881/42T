@@ -9,7 +9,7 @@ const ormconfig: TypeOrmModuleOptions = {
   port: 5432,
   username: 'user',
   password: '1234',
-  database: '42T',
+  database: 'postgres',
   logging: true,
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
 
