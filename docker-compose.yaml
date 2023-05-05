@@ -8,5 +8,39 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: 1234
       POSTGRES_DB: 42T
+    expose:
+      - "5432"
     volumes:
       - ./data:/var/lib/postgresql/data
+    networks:
+      - docker-network
+  frontend:
+    container_name: frontend
+    build:
+        context: ./frontend
+        dockerfile: Dockerfile
+    image: frontend
+    ports:
+        - "3000:3000"
+    volumes:
+        - ./frontend:/app
+    networks:
+      - docker-network
+  backend:
+    depends_on:
+      - db
+    container_name: backend
+    build:
+        context: ./backend
+        dockerfile: Dockerfile
+    image: backend
+    ports:
+        - "5000:5000"
+    volumes:
+        - ./backend:/app
+    networks:
+      - docker-network
+networks:
+  docker-network:
+    name: docker-network
+    driver: bridge
