@@ -14,7 +14,7 @@ const ormconfig: TypeOrmModuleOptions = {
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
 
   // TypeOrm 자동 동기화, migration 작업을 위해 중지
-  synchronize: false,
+  synchronize: true,
 
   // dist/migrations에 있는 파일들을 실행
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],

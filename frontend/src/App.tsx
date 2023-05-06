@@ -6,7 +6,7 @@ function App() {
 
   const [name, setName] = useState("");
   function onClick() : void {
-    const res = axios.post('http://localhost:5001/', {name : {name}});
+    const res = axios.post('http://localhost:5001/name', {name : {name}});
     console.log(res);
   }
   function inputText(e : React.ChangeEvent<HTMLInputElement>) {
