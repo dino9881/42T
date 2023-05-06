@@ -24,7 +24,6 @@ services:
     ports:
         - "3000:3000"
     volumes:
-        - ./frontend:/app
         - /app/node_modules
 
   backend:
@@ -38,7 +37,6 @@ services:
     ports:
         - "5001:5001"
     volumes:
-        - ./backend:/app
         - /app/node_modules
     networks:
       - docker-network
