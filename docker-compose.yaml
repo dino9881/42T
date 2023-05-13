@@ -15,17 +15,17 @@ services:
     # tty: true
     networks:
       - docker-network
-  frontend:
-    # depends_on: backend
-    container_name: frontend
-    build:
-        context: ./frontend
-        dockerfile: Dockerfile
-    image: react:42t
-    ports:
-        - "3000:3000"
-    volumes:
-        - /app/node_modules
+  # frontend:
+  #   # depends_on: backend
+  #   container_name: frontend
+  #   build:
+  #       context: ./frontend
+  #       dockerfile: Dockerfile
+  #   image: react:42t
+  #   ports:
+  #       - "3000:3000"
+  #   volumes:
+  #       - /app/node_modules
   backend:
     depends_on:
       - db
