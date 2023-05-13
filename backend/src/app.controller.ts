@@ -7,10 +7,4 @@ export class AppController {
     private readonly appService: AppService,
     ) {}
 
-  @Get()
-  getHello(): string {
-    console.log("get Hello");
-    return this.appService.getHello();
-  }
-
 }
