@@ -11,8 +11,51 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    Int     @default(autoincrement()) @id
-  email String  @unique
-  name  String?
+model Member {
+  intraId   String  @id
+  nickName  String @unique
+  avatar    String
+  rank      Int
+  friendsof    Friend[] @relation("friendOf")
+  memeberof    Friend[] @relation("memberOf")
+  channel      Channel[] @relation("channel")
+  banRequest   MemberBan[] @relation("banRequest")
+  banned       MemberBan[] @relation("banned")
+  gameP1       GameHistory[] @relation("P1")
+  gameP2       GameHistory[] @relation("P2")
+}
+
+model Friend  {
+  friendIdx  Int @id @default(autoincrement())
+  member      Member @relation("memberOf", fields: [memberId], references: [intraId])
+  memberId   String
+  friend      Member @relation("friendOf", fields: [friendId], references: [intraId])
+  friendId   String
+}
+
+model Channel {
+  chIdx       Int @id @default(autoincrement())
+  chName      String @unique
+  chPwd       String?
+  operator    Member @relation("channel", fields: [intraId], references: [intraId])
+  intraId     String
+  chUserCnt   Int
+}
+
+model MemberBan {
+  memberBanIdx   Int @id @default(autoincrement())
+  member         Member @relation("banRequest", fields: [memberId], references: [intraId])
+  memberId       String
+  banMember      Member @relation("banned", fields: [banId], references: [intraId])
+  banId          String
+}
+
+model GameHistory{
+  gameIdx       Int @id @default(autoincrement())
+  gameP1        Member @relation("P1", fields: [gameP1Id], references: [intraId])
+  gameP1Id      String
+  gameP2        Member @relation("P2", fields: [gameP2Id], references: [intraId])
+  gameP2Id      String
+  gameP1Score   Int
+  gameP2Score   Int
 }
