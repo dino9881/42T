@@ -8,15 +8,17 @@ function App() {
   const [getName, setGetName] = useState("");
   
   function onClick() : void {
-    const res = axios.post('http://localhost:5001/name', {"name": name});
+    const res = axios.post('http://localhost:5001/user', {"name": name, "email": 'l@Gmail.com'});
     console.log(res);
   }
+
   function inputText(e : React.ChangeEvent<HTMLInputElement>) {
     setName(e.target.value);
     console.log(name);
-   }
+  }
+  
   function handleGetClick() : void{
-    axios.get('http://localhost:5001/name', {params: {id : 219}})
+    axios.get('http://localhost:5001/name', {params: {id : 1}})
     .then((res : AxiosResponse<string>)=>{
       setGetName(res.data);
       console.log(res);
@@ -29,7 +31,7 @@ function App() {
      <button onClick={onClick} >click</button>
      <h1>text : {name}</h1>
      <>
-     <button onClick={handleGetClick} >get id = 209</button>
+     <button onClick={handleGetClick} >get id = 1</button>
      <h1>get id == 1 name: {getName}</h1>
      </>
     </div>
