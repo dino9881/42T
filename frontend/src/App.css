@@ -77,3 +77,44 @@ body {
   justify-content: center;
   height: 80vh;
 }
+/* 채팅 css */
+.chat{
+  flex-direction: column;
+  border: solid black;
+  height: 80vh;
+  width: 80%;
+  position: relative;
+}
+
+.chat-box{
+  flex-direction: row;
+  background-color: white;
+  margin: 20px 20px;
+  display: flex;
+}
+
+.chat-userimg{
+  background-color: black;
+  width:10%;
+  height: 100%;
+}
+
+.chat-userinfo{
+  display: flex;
+  align-items:baseline;
+  flex-direction: column;
+}
+
+.chat-inputbox{
+  display: block;
+  position : absolute;
+  width: 100%;
+  bottom : 10px;
+}
+.chat-input{
+  width: 60%;
+}
+
+.chat-input-button{
+  margin-left: 20px;
+}
