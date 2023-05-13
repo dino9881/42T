@@ -1,14 +1,27 @@
-import React, { Children, useState } from 'react';
 import './App.css';
 import axios, {AxiosResponse} from 'axios';
 import Layout from './Layout';
 import Login from './Login';
+import Main from './main';
+import {
+  BrowserRouter,
+  createBrowserRouter,
+  Route,
+  RouterProvider,
+  Routes,
+} from "react-router-dom";
 
 function App(){
     return (
-    <div className="App">
-      <Login/>
-    </div>
+      <div className='App'>
+        <BrowserRouter>
+        <Routes>
+          <Route path="/main" element={<Main />}></Route>
+          <Route path="/" element={<Login />}></Route>
+        </Routes>
+        </BrowserRouter>
+        <Layout />
+      </div>
   );
 }
 
