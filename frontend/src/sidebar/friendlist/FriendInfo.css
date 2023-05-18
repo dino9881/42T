@@ -1,0 +1,75 @@
+.friend-info-line {
+	margin-top: 10px;
+	position: relative;
+	display: flex;
+	align-items: center;
+	width: 290px;
+	height: 92px;
+	border: 1px solid black;
+}
+
+.state-circle{
+	position: absolute;
+	border: 1px solid;
+	border-radius: 100%;
+	width: 10px;
+	height: 10px;
+	left: 3px;
+	top: 5px;
+}
+
+.friend-info-avatar {
+	margin-left: 7px;
+	border: 1px solid;
+	border-radius: 100%;
+	width: 70px;
+	height: 70px;
+}
+.friend-info-info {
+	display: flex;
+	width: 200px;
+	height: 92px;
+	align-items: center;
+	margin-left: 13px;
+}
+
+.friend-info-text {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	height: 92%;
+}
+
+.friend-info-button {
+	margin-left: 13px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+	height: 92%;
+}
+.friend-button {
+	display: flex;
+}
+
+.small-square {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 76px;
+	height: 26px;
+	border: 1px solid black;
+	background-color:transparent;
+}
+
+.dm-button {
+	
+	border: 1px solid black;
+	background-color:transparent;
+}
+
+.vs-button {
+	margin-left: 7px;
+	border: 1px solid black;
+	background-color:transparent;
+}

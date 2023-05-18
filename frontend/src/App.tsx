@@ -10,6 +10,7 @@ import {
   RouterProvider,
   Routes,
 } from "react-router-dom";
+import Sidebar from './sidebar/Sidebar';
 
 function App(){
     return (
