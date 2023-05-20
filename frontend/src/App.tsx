@@ -22,6 +22,9 @@ function App(){
         </Routes>
         </BrowserRouter>
         <Layout />
+  
+        <Sidebar />
+
       </div>
   );
 }
