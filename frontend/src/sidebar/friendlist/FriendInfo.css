@@ -24,7 +24,12 @@
 	border-radius: 100%;
 	width: 70px;
 	height: 70px;
+	/* background-image: url('../../../public/avatar/haaland.jpeg'); */
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
 }
+
 .friend-info-info {
 	display: flex;
 	width: 200px;

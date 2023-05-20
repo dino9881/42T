@@ -15,38 +15,42 @@
 }
 
 .side-list {
-	margin-top: 10%;
+	margin-top: 38px;
 	position: relative;
 	display: flex;
+	/* flex-direction: column; */
+	/* align-items: center; */
+	justify-content: center;
+	width: 100%;
+	height: 440px;	/*이게 맞나?*/
+	background-color: #D9D9D9;
 	/* overflow: scroll; */
 }
 
 .side-list-buttons {
 	position: absolute;
-	top: -23px;
+	top: -27px;
+	left: 15px;
 }
 
 .friend-list-button {
 	width: 80px;
-	height: 33px;
-	border: 1px solid black;
+	height: 27px;
+	/* border: 1px solid black; */
+	border: none;
+	background-color: #D9D9D9;
 }
 
 .dm-list {
 	position: absolute;
 	width: 80px;
-	height: 33px;
-	border: 1px solid black;
+	height: 27px;
+	border: none;
+	background-color: #D9D9D9;
+	/* border: 1px solid black; */
+	/* left: 70px; */
 }
 
-.friend-list {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	width: 100%;
-	height: 440px;	/*이게 맞나?*/
-	background-color: #D9D9D9;
-	overflow: scroll;
-
+.list-button {
+	background-color: #FFBDBD !important; /* 원하는 배경색으로 변경하세요 */
 }

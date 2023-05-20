@@ -33,14 +33,16 @@
 	border-radius: 100%;
 	width: 70px;
 	height: 70px;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
 }
 .my-info-info {
 	display: flex;
 	width: 70%;
 	height: 100%;
-	/* justify-content: space-around; */
+	justify-content: space-around;
 	align-items: center;
-	margin-left: 13px;
 }
 
 .my-info-text {
@@ -51,18 +53,11 @@
 }
 
 .my-info-button {
-	margin-left: 13px;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
 	align-items: center;
 	height: 92%;
-}
-
-.with-triangle {
-	display: flex;
-	justify-content: center;
-	align-items: center;
 }
 
 .small-square {
