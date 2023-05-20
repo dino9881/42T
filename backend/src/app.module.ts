@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from './user/user.module';
-import ormconfig from './ormconfig'
+import { PrismaService } from './prisma.service';
+import { MemberModule } from './member/member.module';
+import { GameModule } from './game/game.module';
+import { ChannelModule } from './channel/channel.module';
+
 @Module({
-  imports:  [ TypeOrmModule.forRoot(ormconfig), UserModule],
+  imports: [MemberModule, ChannelModule, GameModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, PrismaService],
 })
 export class AppModule {}
