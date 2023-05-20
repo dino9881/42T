@@ -11,6 +11,7 @@ import {
   RouterProvider,
   Routes,
 } from "react-router-dom";
+import OAuth from './OAuth';
 
 function App(){
     return (
@@ -18,6 +19,7 @@ function App(){
         <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login />}></Route>
+          <Route path="/login" element={<OAuth />}></Route>
           <Route path="/main" element={<Main />}></Route>
           <Route path="/chat" element={<Chat />}></Route>
         </Routes>
