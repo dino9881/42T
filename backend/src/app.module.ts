@@ -5,7 +5,6 @@ import { PrismaService } from './prisma.service';
 import { MemberModule } from './member/member.module';
 import { GameModule } from './game/game.module';
 import { ChannelModule } from './channel/channel.module';
-import { MemberModule } from './member/member.module';
 
 @Module({
   imports: [MemberModule, ChannelModule, GameModule],
