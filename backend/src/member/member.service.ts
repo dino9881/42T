@@ -10,13 +10,13 @@ export class MemberService {
     return this.prisma.member.findMany();
   }
 
-  async getOne(intraId: string): Promise<string> {
+  async getOne(intraId: string): Promise<Member> {
     const member = await this.prisma.member.findUnique({
       where: { intraId },
     });
 
     if (member) {
-      return member.nickName;
+      return member;
     } else {
       throw new NotFoundException('Member not found');
     }
@@ -27,6 +27,7 @@ export class MemberService {
   }
 
   async update(id: string, data: Prisma.MemberUpdateInput): Promise<Member> {
+    // nickname 중복 check
     return this.prisma.member.update({ where: { intraId: id }, data });
   }
 

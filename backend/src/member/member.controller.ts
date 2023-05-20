@@ -1,13 +1,14 @@
-import { Controller, Post, Body, Get, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Patch } from '@nestjs/common';
 import { MemberService } from './member.service';
-import { MemberDto } from './dto/member.dto';
+import { CreateMemberDto } from './dto/member.dto';
+import { UpdateMemberDto } from './dto/update-member.dto';
 
 @Controller('member')
 export class MemberController {
   constructor(private readonly memberService: MemberService) {}
 
   @Post('create')
-  create(@Body() memberDto: MemberDto) {
+  create(@Body() memberDto: CreateMemberDto) {
     return this.memberService.create(memberDto);
   }
 
@@ -17,7 +18,25 @@ export class MemberController {
   }
 
   @Get('')
-  getOneNick(@Param('id') id: string) {
+  getMemberDetail(@Param('id') id: string) {
     return this.memberService.getOne(id);
+  }
+
+  @Get('rank')
+  getMemberRank(@Param('id') id: string) {
+    // return this.memberService.getOne(id);
+  }
+  @Get('nick')
+  getMemberNick(@Param('id') id: string) {
+    // return this.memberService.getOne(id);
+  }
+  @Get('avatar')
+  getMemberAvatar(@Param('id') id: string) {
+    // return this.memberService.getOne(id);
+  }
+
+  @Patch('update')
+  updateMember(@Body() member: UpdateMemberDto) {
+    // return this.memberService.update(member);
   }
 }

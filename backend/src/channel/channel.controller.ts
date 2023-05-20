@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
@@ -7,12 +15,12 @@ import { UpdateChannelDto } from './dto/update-channel.dto';
 export class ChannelController {
   constructor(private readonly channelService: ChannelService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createChannelDto: CreateChannelDto) {
     return this.channelService.create(createChannelDto);
   }
 
-  @Get()
+  @Get('all')
   findAll() {
     return this.channelService.findAll();
   }
@@ -30,5 +38,15 @@ export class ChannelController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.channelService.remove(+id);
+  }
+
+  @Post('enter:id')
+  enterChannel(@Body() intraId: string, @Param('id') id: string) {
+    // return this.channelService.enter(id, intraId);
+  }
+
+  @Post('leave:id')
+  leaveChannel(@Body() intraId: string, @Param('id') id: string) {
+    //return this.channelService.leave(id, intraId);
   }
 }
