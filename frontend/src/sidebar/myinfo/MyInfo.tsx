@@ -10,9 +10,8 @@ interface Myinfo {
 interface MyInfoProps {
 	myinfo: Myinfo;
 }
-
+  
 const MyInfo: React.FC<MyInfoProps> = ({ myinfo }) => {
-	console.log(myinfo.avatarUrl);
 	return (
 		<div className='my-info'>
 			<div className='my-info-line'>
@@ -27,7 +26,8 @@ const MyInfo: React.FC<MyInfoProps> = ({ myinfo }) => {
 					</div>
 					<div className='my-info-button'>
 						<button className='small-square'>수정</button>
-						<button className='small-square'>전적</button>
+						<div className='small-square'>전적
+						<img src="toggle_down.svg" alt="toggle" className="my-toggle-position"></img></div>
 					</div>
 				</div>
 			</div>

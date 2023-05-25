@@ -1,3 +1,7 @@
 .list-scroll {
 	overflow: scroll;
 }
+
+.list-scroll::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera*/
+}
