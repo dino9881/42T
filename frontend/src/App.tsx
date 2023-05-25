@@ -24,9 +24,18 @@ function App(){
         <Layout />
   
         <Sidebar />
-
+        <Footer />
       </div>
   );
+}
+
+function Footer(){
+  return (
+      <div className='footer'>
+          <h4>2023 ft_transcendence</h4>
+      </div>
+
+  )
 }
 
 
