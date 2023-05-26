@@ -12,6 +12,7 @@ import {
     Routes,
 } from "react-router-dom";
 import OAuth from "./OAuth";
+import Background from "./Background";
 
 function App() {
     return (
@@ -24,7 +25,7 @@ function App() {
                     <Route path="/chat" element={<Chat />}></Route>
                 </Routes>
             </BrowserRouter>
-            <Layout />
+            <Background />
         </div>
     );
 }
