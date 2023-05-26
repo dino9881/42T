@@ -1,6 +1,14 @@
-import { Controller, Post, Body, Get, Param, Patch } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  Patch,
+  Delete,
+} from '@nestjs/common';
 import { MemberService } from './member.service';
-import { CreateMemberDto } from './dto/member.dto';
+import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 
 @Controller('member')
@@ -12,13 +20,20 @@ export class MemberController {
     return this.memberService.create(memberDto);
   }
 
-  @Post('delete')
-  delete(@Body() id: string) {
+  @Delete('delete')
+  delete(@Body('id') id: string) {
     return this.memberService.delete(id);
   }
 
-  @Get('')
+  @Get('all')
+  getMemberAll() {
+    console.log('getmemberall called');
+    return this.memberService.getAll();
+  }
+
+  @Get(':id')
   getMemberDetail(@Param('id') id: string) {
+    console.log(id);
     return this.memberService.getOne(id);
   }
 
@@ -26,17 +41,19 @@ export class MemberController {
   getMemberRank(@Param('id') id: string) {
     // return this.memberService.getOne(id);
   }
+
   @Get('nick')
   getMemberNick(@Param('id') id: string) {
     // return this.memberService.getOne(id);
   }
+
   @Get('avatar')
   getMemberAvatar(@Param('id') id: string) {
     // return this.memberService.getOne(id);
   }
 
-  @Patch('update')
-  updateMember(@Body() member: UpdateMemberDto) {
-    // return this.memberService.update(member);
+  @Patch('update/:id')
+  updateMember(@Param('id') id: string, @Body() member: UpdateMemberDto) {
+    return this.memberService.update(id, member);
   }
 }
