@@ -7,6 +7,7 @@ function Layout(){
         <Footer />
     </div>;
 }
+
 function Background(){
     return <div>
         <Footer />
