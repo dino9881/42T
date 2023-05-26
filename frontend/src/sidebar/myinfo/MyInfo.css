@@ -1,0 +1,77 @@
+.my-info {
+	margin-top: 15px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 110px;
+	background-color: #D9D9D9;
+}
+
+.my-info-line {
+	position: relative;
+	display: flex;
+	align-items: center;
+	width: 290px;
+	height: 92px;
+	border: 1px solid black;
+}
+
+.state-circle{
+	position: absolute;
+	border: 1px solid;
+	border-radius: 100%;
+	width: 10px;
+	height: 10px;
+	left: 3px;
+	top: 5px;
+}
+
+.my-info-avatar {
+	margin-left: 2%;
+	border: 1px solid;
+	border-radius: 100%;
+	width: 70px;
+	height: 70px;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+.my-info-info {
+	display: flex;
+	width: 70%;
+	height: 100%;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.my-info-text {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	height: 92%;
+}
+
+.my-info-button {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+	height: 92%;
+}
+
+.small-square {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 76px;
+	height: 26px;
+	border: 1px solid black;
+	background-color:transparent;
+}
+
+.my-toggle-position {
+	margin-left: 5px;
+	width: 12px;
+	height: 12px;
+}
