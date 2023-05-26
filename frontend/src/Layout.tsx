@@ -12,12 +12,6 @@ function Background(){
         <Footer />
     </div>;
 }
-function Background(){
-    return <div>
-        <Header />
-        <Footer />
-    </div>;
-}
 
 
 function Header(){
