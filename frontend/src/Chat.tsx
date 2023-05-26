@@ -6,8 +6,6 @@ function Chat(){
         <ChatBox></ChatBox>
         <ChatBox></ChatBox>
         <ChatBox></ChatBox>
-
-        
         <ChatInput />
     </div>
 }

@@ -1,9 +1,11 @@
 import React from "react";
-
+import Sidebar from "./sidebar/Sidebar";
+import Contents from "./Contents";
 function Main(){
    
     return <div>
-         <h1>Main page</h1>
+         <Contents/>
+         <Sidebar />
     </div>
     ;
 }
