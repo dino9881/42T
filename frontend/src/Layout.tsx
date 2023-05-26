@@ -4,7 +4,11 @@ import React from "react";
 
 function Layout(){
     return <div>
-        <Header />
+        <Footer />
+    </div>;
+}
+function Background(){
+    return <div>
         <Footer />
     </div>;
 }
@@ -24,9 +28,9 @@ function Header(){
 
 function Footer(){
     return (
-        <footer className='footer'>
+        <div className='footer'>
             <h4>2023 ft_transcendence</h4>
-        </footer>
+        </div>
 
     )
 }
