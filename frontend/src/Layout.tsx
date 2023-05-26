@@ -24,7 +24,7 @@ function Header(){
 function Footer(){
     return (
         <div className='footer'>
-            <h4>2023 ft_transcendence</h4>
+            <h6>2023 ft_transcendence</h6>
         </div>
 
     )

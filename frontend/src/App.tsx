@@ -27,8 +27,6 @@ function App() {
                 </Routes>
             </BrowserRouter>
             <Background />
-  
-        <Sidebar />
         <Footer />
         </div>
     );
