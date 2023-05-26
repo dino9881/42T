@@ -22,33 +22,30 @@ export class MemberService {
     if (members) {
       return members;
     } else {
-      throw new NotFoundException('Member Table is empty');
+      throw new NotFoundException('member/all failed');
     }
   }
 
   async getOne(intraId: string) {
-    console.log(intraId);
+    let member;
     try {
-      const member = await this.prisma.member.findUnique({
+      member = await this.prisma.member.findUnique({
         where: { intraId },
       });
-      if (member === null) {
-        throw new NotFoundException('Member Not Found');
-      }
-      // console.log(member);
-      return member;
     } catch (err) {
       throw new NotFoundException(err.message);
     }
+    if (member === null) {
+      throw new NotFoundException('Member Not Found');
+    }
+    return member;
   }
 
   async getOneByNick(nick: string) {
-    console.log(nick);
     try {
       const member = await this.prisma.member.findUnique({
         where: { nickName: nick },
       });
-      // console.log(member);
       return member;
     } catch (err) {
       throw new NotFoundException(err.message);
@@ -56,15 +53,32 @@ export class MemberService {
   }
 
   async create(memberDto: CreateMemberDto) {
-    //멤버의 인자가 맞지 않을 경우 처리필요
+    //멤버의 인자가 맞지 않을 경우 처리필요?
     try {
-      //이미 같은 intraid / nickname의 member 존재하는지 체크해줘야함 'Intraid is Already Exist'
-      const result = await this.prisma.member.create({ data: memberDto });
-      return result;
+      const memberNick = await this.getOneByNick(memberDto.nickName);
+      if (memberNick)
+        throw new HttpException(
+          'NickName Already Exist',
+          HttpStatusCode.Conflict,
+        );
+      try {
+        const memberId = await this.getOne(memberDto.nickName);
+        if (memberId)
+          throw new HttpException(
+            'IntraId Already Exist',
+            HttpStatusCode.Conflict,
+          );
+      } catch (err) {
+        if (err.HttpStatus == HttpStatusCode.NotFound) {
+          await this.prisma.member.create({ data: memberDto });
+          return HttpStatus.CREATED;
+        }
+      }
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
       //멤버 테이블에 저장을 실패했을 경우 > 언제가 있을까?
     }
+    throw new HttpException('Creation Failed', HttpStatus.BAD_REQUEST);
   }
 
   async update(id: string, memberDto: UpdateMemberDto) {
@@ -73,10 +87,12 @@ export class MemberService {
     if (member && member.intraId != id) {
       throw new ForbiddenException('Nickname Already Exist');
     }
-    return this.prisma.member.update({
+    //update의 리턴을 받아서 처리해야할까?
+    await this.prisma.member.update({
       where: { intraId: id },
       data: memberDto,
     });
+    return HttpStatusCode.Ok;
   }
 
   async delete(id: string) {
