@@ -1,5 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+import setAuthorizationToken from './setAuthorizationToken'
 
 function Login() {
     const url =
@@ -7,11 +9,40 @@ function Login() {
     function Oauth() {
         window.location.href = url;
     }
+
+    function test() {
+        axios.post('http://localhost:5001/member/create', {intraId: "yyoo", nickName: "heeskim", avatar: '../public/img/avatar.jpg', rank: 100}).then(res => {
+        })
+    }
+    function test1() {
+        axios.post('http://localhost:5001/auth/login', {intraId: "yyoo"}).then(res => {
+            const token = res.data.access_token;
+            console.log(token);
+            localStorage.setItem('jwtToken', token);
+            setAuthorizationToken(token);
+        })
+    }
+
+    function test2() {
+        axios.post('http://localhost:5001/member/all', {intraId: "yyoo"}).then(res => {
+            const token = res.data.access_token;
+            console.log(token);
+            localStorage.setItem('jwtToken', token);
+        })
+    }
+
+
     return (
         <div className="login-box">
             <h1>42트</h1>
             <button className="login-button" onClick={Oauth}>
                 42 Login
+            </button>
+            <button onClick={test}>
+                oauth
+            </button>
+            <button onClick={test1}>
+                sub
             </button>
         </div>
     );
