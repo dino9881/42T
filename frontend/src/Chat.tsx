@@ -1,11 +1,41 @@
 import React from "react";
 import { Button } from "react-bootstrap";
+
+interface Message {
+    name : string,
+    text : string
+}
+
+const msgList = [
+    {
+        name : "jonkim",
+        text : "hi"
+    },
+
+    {
+        name : "yyoo",
+        text : "hihi"
+    },
+    {
+        name : "jonkim",
+        text : "bye"
+    },
+
+    {
+        name : "yyoo",
+        text : "byebye"
+    },
+    {
+        name : "yyoo",
+        text : "byebye"
+    },
+  ];
+  
+
 function Chat(){
     return <div className="chat">
         <h1>Chatting</h1>
-        <ChatBox></ChatBox>
-        <ChatBox></ChatBox>
-        <ChatBox></ChatBox>
+       {msgList.map(tallker => <ChatBox name={tallker.name} text={tallker.text}/>)}
         <ChatInput />
     </div>
 }
@@ -17,12 +47,12 @@ function ChatInput(){
     </div>
 }
 
-function ChatBox(){
+function ChatBox({name, text} : Message){
     return <div className="chat-box">
         <div className="chat-userimg">img</div>
         <div className="chat-userinfo">
-            <span className="chat-username">사용자 이름</span>
-            <span className="chat-userchat">사용자 채팅</span>
+            <span className="chat-username">{name}</span>
+            <span className="chat-userchat">{text}</span>
         </div>
     </div>
 }
