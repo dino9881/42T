@@ -37,6 +37,7 @@ export class MemberController {
   @ApiBody({ type: CreateMemberDto })
   @Post('create')
   create(@Body() memberDto: CreateMemberDto) {
+    console.log(memberDto);
     return this.memberService.create(memberDto);
   }
 
