@@ -1,5 +1,10 @@
+
 .App {
-  text-align: center;
+  /* text-align: center; */
+  position: relative;
+  width: 1280px;
+  height: 720px;
+  border: 1px solid black;
 }
 
 .App-logo {
@@ -35,4 +40,109 @@
   to {
     transform: rotate(360deg);
   }
+}
+/* font */
+@font-face {
+  font-family: 'MyFont';
+  src: url('../public/font/UhBeeBEOJJIw/UhBeeBEOJJI.eot'),
+      url('../public/font/UhBeeBEOJJIw/UhBeeBEOJJI.woff') format('woff');
+}
+
+* {
+  font-family: 'MyFont', sans-serif;
+}
+
+
+
+body {
+  background-image: url("../public/img/bg.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+    width: 100%;
+}
+
+.login-button{
+  width: 200px;
+  height: 50px;
+  font-size: 20px;
+}
+.login-box{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+}
+/* 채팅 css */
+.chat{
+  flex-direction: column;
+  border: solid black;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.chat-box{
+  flex-direction: row;
+  background-color: white;
+  margin: 20px 20px;
+  display: flex;
+}
+
+.chat-userimg{
+  background-color: black;
+  width:10%;
+  height: 100%;
+}
+
+.chat-userinfo{
+  display: flex;
+  align-items:baseline;
+  flex-direction: column;
+}
+
+.chat-inputbox{
+  display: block;
+  position : absolute;
+  width: 100%;
+  bottom : 10px;
+}
+.chat-input{
+  width: 60%;
+}
+
+.chat-input-button{
+  margin-left: 20px;
+}
+
+.contents {
+  border: 1px solid yellow;
+  position: absolute;
+  width: 73%;
+  height: 100%;
+}
+.contents-header {
+  width: 100%;
+  height: 15%;
+  background-color: black;
+  position: absolute;
+}
+.contents-main {
+  width: 100%;
+  height: 85%;
+  padding: 40px;
+  bottom: 0;
+  position: absolute;
 }
