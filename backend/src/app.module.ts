@@ -6,6 +6,7 @@ import { MemberModule } from './member/member.module';
 import { GameModule } from './game/game.module';
 import { ChannelModule } from './channel/channel.module';
 import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
       envFilePath: '../.env',
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

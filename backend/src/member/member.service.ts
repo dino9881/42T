@@ -32,6 +32,7 @@ export class MemberService {
       member = await this.prisma.member.findUnique({
         where: { intraId },
       });
+      console.log(member);
     } catch (err) {
       throw new NotFoundException(err.message);
     }
@@ -54,31 +55,32 @@ export class MemberService {
 
   async create(memberDto: CreateMemberDto) {
     //멤버의 인자가 맞지 않을 경우 처리필요?
-    try {
-      const memberNick = await this.getOneByNick(memberDto.nickName);
-      if (memberNick)
-        throw new HttpException(
-          'NickName Already Exist',
-          HttpStatusCode.Conflict,
-        );
-      try {
-        const memberId = await this.getOne(memberDto.nickName);
-        if (memberId)
-          throw new HttpException(
-            'IntraId Already Exist',
-            HttpStatusCode.Conflict,
-          );
-      } catch (err) {
-        if (err.HttpStatus == HttpStatusCode.NotFound) {
-          await this.prisma.member.create({ data: memberDto });
-          return HttpStatus.CREATED;
-        }
-      }
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-      //멤버 테이블에 저장을 실패했을 경우 > 언제가 있을까?
-    }
-    throw new HttpException('Creation Failed', HttpStatus.BAD_REQUEST);
+    await this.prisma.member.create({ data: memberDto });
+    return HttpStatus.CREATED;
+    // try {
+    //   const memberNick = await this.getOneByNick(memberDto.nickName);
+    //   if (memberNick)
+    //     throw new HttpException(
+    //       'NickName Already Exist',
+    //       HttpStatusCode.Conflict,
+    //     );
+    //   try {
+    //     const memberId = await this.getOne(memberDto.nickName);
+    //     if (memberId)
+    //       throw new HttpException(
+    //         'IntraId Already Exist',
+    //         HttpStatusCode.Conflict,
+    //       );
+    //   } catch (err) {
+    //     if (err.HttpStatus == HttpStatusCode.NotFound) {
+    //       return HttpStatus.CREATED;
+    //     }
+    //   }
+    // } catch (error) {
+    //   throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    //멤버 테이블에 저장을 실패했을 경우 > 언제가 있을까?
+    // }
+    // throw new HttpException('Creation Failed', HttpStatus.BAD_REQUEST);
   }
 
   async update(id: string, memberDto: UpdateMemberDto) {
