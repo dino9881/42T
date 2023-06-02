@@ -26,23 +26,22 @@ export class AuthGuard implements CanActivate {
     // }
     //public으로 접근가능한 api를 어떻게 연결할건지?/
     //refresh token은 어떻게 주지?
-    console.log('context');
-    console.log(context);
+    // console.log('context');
+    // console.log(context);
     const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request);
-    console.log(token);
-    if (!token) {
+    const access_token = this.extractTokenFromHeader(request);
+    console.log('canActivate - access token');
+    console.log(access_token);
+    if (!access_token) {
       return true;
-      //   throw new UnauthorizedException();
+        // throw new UnauthorizedException();
     }
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
+      const payload = await this.jwtService.verifyAsync(access_token, {
         secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
       });
+      console.log('canActivate - payload');
       console.log(payload);
-      // 💡 We're assigning the payload to the request object here
-      // so that we can access it in our route handlers
-      // request['user'] = payload;
     } catch {
       throw new UnauthorizedException();
     }

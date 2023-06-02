@@ -154,7 +154,7 @@ export class MemberService {
     });
   }
 
-  async getUserIfRefreshTokenMatches(refreshToken: string, intraId: string) {
+  async getMemberIfRefreshTokenMatches(refreshToken: string, intraId: string) {
     const member = await this.getOne(intraId);
 
     // user에 currentRefreshToken이 없다면 null을 반환 (즉, 토큰 값이 null일 경우)

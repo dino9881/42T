@@ -16,6 +16,7 @@ import OAuth from "./OAuth";
 import Background from "./Background";
 
 function App() {
+    axios.defaults.withCredentials = true;
     return (
         <div className="App">
             <BrowserRouter>

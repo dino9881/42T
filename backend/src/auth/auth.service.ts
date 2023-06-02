@@ -57,19 +57,20 @@ export class AuthService {
     );
   }
 
-  async refresh(refreshTokenDto: RefreshTokenDto) {
-    const { refresh_token } = refreshTokenDto;
-
+  async refresh(refreshToken: string) {
     // Verify refresh token
     // JWT Refresh Token 검증 로직
-    const decodedRefreshToken = this.jwtService.verify(refresh_token, {
-      secret: process.env.JWT_REFRESH_SECRET,
+    console.log('auth service - refresh here');
+    const decodedRefreshToken = this.jwtService.verify(refreshToken, {
+      secret: this.config.get<string>('JWT_REFRESH_SECRET'),
     });
+    console.log('auth service - refresh decoded refreshtoken');
+    console.log(decodedRefreshToken);
 
     // Check if user exists
     const intraId = decodedRefreshToken.intraId;
-    const member = await this.memberService.getUserIfRefreshTokenMatches(
-      refresh_token,
+    const member = await this.memberService.getMemberIfRefreshTokenMatches(
+      refreshToken,
       intraId,
     );
     if (!member) {
