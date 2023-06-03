@@ -63,16 +63,18 @@ export class AuthController {
   ) {
     try {
       const refreshToken = req.cookies['refresh_token'];
-      console.log('authcontroller - refresh - req.cookies');
+      console.log('auth controller - refresh - req.cookies');
       console.log(req.cookies);
-      const newAccessToken = (await this.authService.refresh(refreshToken))
-        .accessToken;
+      const newAccessToken = await this.authService.refresh(refreshToken);
+      console.log('auth controller - refresh - new Access Token');
+      console.log(newAccessToken);
       res.setHeader('Authorization', 'Bearer' + newAccessToken);
       res.status(200).json({
         message: 'refresh success',
         access_token: newAccessToken,
       });
     } catch (err) {
+      console.log(err);
       throw new UnauthorizedException('Invalid refresh-token');
     }
   }

@@ -68,7 +68,9 @@ export class AuthService {
     console.log(decodedRefreshToken);
 
     // Check if user exists
-    const intraId = decodedRefreshToken.intraId;
+    const intraId: string = decodedRefreshToken.intraId;
+    console.log('auth service before member checking');
+    console.log(intraId, refreshToken);
     const member = await this.memberService.getMemberIfRefreshTokenMatches(
       refreshToken,
       intraId,
@@ -79,7 +81,8 @@ export class AuthService {
 
     // Generate new access token
     const accessToken = await this.generateAccessToken(member);
-
-    return { accessToken };
+    console.log('auth service - refresh regenerated accesToken');
+    console.log(accessToken);
+    return accessToken;
   }
 }
