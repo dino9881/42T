@@ -4,6 +4,8 @@ import { PrismaService } from './prisma.service';
 import { Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
+import { IoAdapter } from '@nestjs/platform-socket.io';
+import * as socketio from 'socket.io';
 
 const logger = new Logger('App');
 async function bootstrap() {
@@ -15,6 +17,7 @@ async function bootstrap() {
       },
     });
     app.use(cookieParser());
+    app.useWebSocketAdapter(new IoAdapter(app));
     const config = new DocumentBuilder()
       .setTitle('42T')
       .setDescription('The 42seoul Transcendence API description')
@@ -29,8 +32,15 @@ async function bootstrap() {
     SwaggerModule.setup('api', app, document, {
       swaggerOptions: { defaultModelsExpandDepth: -1 },
     });
-
-    await app.listen(5001);
+    // io.on('connection', (socket) => {
+    //   console.log(socket);
+    //   console.log('connection success');
+    // });
+    const server = await app.listen(5001);
+    const io = new socketio.Server(server);
+    io.on('connection', (socket) => {
+      console.log('Socket connected:', socket.id);
+    });
 
     const prismaService = app.get(PrismaService);
     await prismaService.enableShutdownHooks(app);
