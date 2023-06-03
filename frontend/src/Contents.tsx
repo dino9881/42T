@@ -12,14 +12,14 @@ function Contents() {
           };
 
           return <div className="contents">
-        <button onClick={handleComponentChange}>관리자</button>
         <div className="contents-header"></div>
         <div className="contents-main">
+        <button onClick={handleComponentChange}>관리자</button>
         {currentComponent === 'Chat' && <Chat />}
         {currentComponent === 'ChannelAdmin' && <ChannelAdmin />}
         </div>
     </div>
-  );
+  
 }
 
 export default Contents;
