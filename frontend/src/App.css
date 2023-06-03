@@ -120,7 +120,8 @@ body {
   bottom : 10px;
 }
 .chat-input{
-  width: 60%;
+  width: 90%;
+  margin-left: 15px;
 }
 
 .chat-input-button{
@@ -145,4 +146,50 @@ body {
   padding: 40px;
   bottom: 0;
   position: absolute;
+}
+.chat-scroll {
+  overflow: scroll;
+  height: 80%;
+
+}
+
+.channel-admin{
+  flex-direction: column;
+  border: solid black;
+  height: 100%;
+  width: 100%;
+  display: block
+}
+
+.admin-list-box{
+  float: left;
+  height: 100%;
+  width: 40%;
+}
+
+.admin-setting-box{
+  float: right;
+  border: solid red;
+  height: 100%;
+  width: 40%;
+}
+
+.admin-user-box{
+  border: solid blue;
+  height: 45%;
+  margin-bottom: 5%;
+}
+
+.user-info-box{
+  border: solid black;
+  display: flex;
+  margin-bottom: 1px;
+}
+
+.user-info-intra{
+  margin-left: 10%;
+  width: 30%;
+}
+.admin-pass-box{
+  
 }
