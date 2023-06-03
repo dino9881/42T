@@ -4,6 +4,8 @@ import { PrismaService } from './prisma.service';
 import { Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
+import { IoAdapter } from '@nestjs/platform-socket.io';
+import * as socketio from 'socket.io';
 
 const logger = new Logger('App');
 async function bootstrap() {
@@ -15,6 +17,7 @@ async function bootstrap() {
       },
     });
     app.use(cookieParser());
+    app.useWebSocketAdapter(new IoAdapter(app));
     const config = new DocumentBuilder()
       .setTitle('42T')
       .setDescription('The 42seoul Transcendence API description')
