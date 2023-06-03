@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useState, ChangeEvent, FormEvent } from "react";
 import { ConnectionState } from "./ConnectionState";
-import { io } from "socket.io-client";
+import { socket } from "./socket";
 
 interface Message {
     id: number;
@@ -50,40 +50,10 @@ const msgList = [
 ];
 
 function Chat() {
-    // socket.io
-    const socket = io("ws://localhost:5001", {
-        withCredentials: true,
-        transports: ["websocket"],
-    });
-    const [isConnected, setIsConnected] = useState(socket.connected);
-    function onConnect() {
-        setIsConnected(true);
-        console.log(isConnected);
-    }
-    socket.on("connect", onConnect);
-
-    useEffect(() => {
-        // function onConnect() {
-        //     setIsConnected(true);
-        //     console.log(isConnected);
-        // }
-
-        function onDisconnect() {
-            setIsConnected(false);
-            console.log(isConnected);
-        }
-        // socket.on("connection", onConnect);
-        // socket.io.on("connection", onConnect);
-        socket.on("disconnect", onDisconnect);
-        return () => {
-            socket.off("connect", onConnect);
-            socket.off("disconnect", onDisconnect);
-        };
-    }, []);
-
+    console.log(socket);
     return (
         <div className="chat">
-            <ConnectionState isConnected={isConnected} />
+            {/* <ConnectionState isConnected={isConnected} /> */}
             <div className="chat-scroll">
                 {msgList.map((message) => (
                     <ChatBox

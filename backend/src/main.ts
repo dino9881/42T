@@ -32,20 +32,8 @@ async function bootstrap() {
     SwaggerModule.setup('api', app, document, {
       swaggerOptions: { defaultModelsExpandDepth: -1 },
     });
-    // io.on('connection', (socket) => {
-    //   console.log(socket);
-    //   console.log('connection success');
-    // });
-    const server = await app.listen(5001);
-    const io = new socketio.Server(server, {
-      cors: {
-        origin: true,
-        credentials: true,
-      },
-    });
-    io.on('connection', (socket) => {
-      console.log('Socket connected:', socket);
-    });
+
+    await app.listen(5001);
 
     const prismaService = app.get(PrismaService);
     await prismaService.enableShutdownHooks(app);
