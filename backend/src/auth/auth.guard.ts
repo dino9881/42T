@@ -34,7 +34,7 @@ export class AuthGuard implements CanActivate {
     console.log(access_token);
     if (!access_token) {
       return true;
-        // throw new UnauthorizedException();
+      // throw new UnauthorizedException();
     }
     try {
       const payload = await this.jwtService.verifyAsync(access_token, {
@@ -42,8 +42,14 @@ export class AuthGuard implements CanActivate {
       });
       console.log('canActivate - payload');
       console.log(payload);
-    } catch {
-      throw new UnauthorizedException();
+    } catch (err) {
+      console.log(err);
+      // local storage에 저장된 jwt token값을 삭제하고 들어오면 여기서 에러발생
+      // 평소에는 여기 걸려서 error발생되는게 맞는데,
+      // refresh에 대해서는 error 체킹을 안해야됨.
+      // 일단 여기를 return true; 로변경
+      // throw new UnauthorizedException();
+      return true;
     }
     return true;
   }

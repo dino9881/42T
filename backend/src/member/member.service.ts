@@ -7,7 +7,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { Member, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 import { CreateMemberDto } from './dto/create-member.dto';
@@ -34,6 +34,7 @@ export class MemberService {
       member = await this.prisma.member.findUnique({
         where: { intraId },
       });
+      console.log('member service getOne');
       console.log(member);
     } catch (err) {
       throw new NotFoundException(err.message);
@@ -155,7 +156,9 @@ export class MemberService {
   }
 
   async getMemberIfRefreshTokenMatches(refreshToken: string, intraId: string) {
-    const member = await this.getOne(intraId);
+    console.log('getMember ');
+    console.log(typeof refreshToken, typeof intraId);
+    const member: Member = await this.getOne(intraId);
 
     // user에 currentRefreshToken이 없다면 null을 반환 (즉, 토큰 값이 null일 경우)
     if (!member.currentRefreshToken) {
@@ -168,6 +171,12 @@ export class MemberService {
       member.currentRefreshToken,
     );
 
+    console.log(refreshToken);
+    console.log(member.currentRefreshToken);
+    console.log(
+      'member service getMemberIfRefreshTokenMatches isRefreshTokenMatching',
+    );
+    console.log(isRefreshTokenMatching);
     // 만약 isRefreshTokenMatching이 true라면 user 객체를 반환
     if (isRefreshTokenMatching) {
       return member;
