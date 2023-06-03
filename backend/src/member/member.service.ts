@@ -165,11 +165,17 @@ export class MemberService {
       return null;
     }
 
+    let isRefreshTokenMatching;
     // 유저 테이블 내에 정의된 암호화된 refresh_token값과 요청 시 body에 담아준 refresh_token값 비교
-    const isRefreshTokenMatching = await bcrypt.compare(
-      refreshToken,
-      member.currentRefreshToken,
-    );
+    if (refreshToken == member.currentRefreshToken) {
+      isRefreshTokenMatching = true;
+    } else {
+      isRefreshTokenMatching = false;
+    }
+    // const isRefreshTokenMatching = await bcrypt.compare(
+    //   refreshToken,
+    //   member.currentRefreshToken,
+    // );
 
     console.log(refreshToken);
     console.log(member.currentRefreshToken);
