@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState,ChangeEvent, FormEvent } from "react";
+import { socket } from "./socket";
+import { ConnectionState } from "./ConnectionState";
 
 interface Message {
     id : number,
@@ -50,7 +52,29 @@ const msgList = [
   
 
 function Chat(){
+     // socket.io
+     const [isConnected, setIsConnected] = useState(socket.connected);
+
+     useEffect(() => {
+       function onConnect() {
+         setIsConnected(true);
+         console.log(isConnected);
+       }
+   
+       function onDisconnect() {
+         setIsConnected(false);
+         console.log(isConnected);
+       }
+       socket.on('connect', onConnect);
+       socket.on('disconnect', onDisconnect);
+       return () => {
+         socket.off('connect', onConnect);
+         socket.off('disconnect', onDisconnect);
+       };
+     }, []);
+
     return <div className="chat">
+        <ConnectionState isConnected={isConnected}/>
         <div className="chat-scroll">
         {msgList.map(message => <ChatBox key={message.id} id={message.id} name={message.name} text={message.text}/>)}
         </div>
