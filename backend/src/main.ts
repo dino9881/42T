@@ -37,9 +37,14 @@ async function bootstrap() {
     //   console.log('connection success');
     // });
     const server = await app.listen(5001);
-    const io = new socketio.Server(server);
+    const io = new socketio.Server(server, {
+      cors: {
+        origin: true,
+        credentials: true,
+      },
+    });
     io.on('connection', (socket) => {
-      console.log('Socket connected:', socket.id);
+      console.log('Socket connected:', socket);
     });
 
     const prismaService = app.get(PrismaService);
