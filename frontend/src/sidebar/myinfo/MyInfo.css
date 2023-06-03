@@ -75,3 +75,74 @@
 	width: 12px;
 	height: 12px;
 }
+
+.my-score-box {
+	position: absolute;
+	bottom: -200px;
+	right: 25px;
+	width: 235px;
+	height: 200px;
+	border: 1px solid black;
+	background-color: #D9D9D9;
+	z-index: 1;
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	flex-direction: column;
+}
+
+.my-score-table {
+	display: flex;
+	width: 100%;
+	height: 163px;
+	border: 1px solid black;
+	flex-direction: column;
+
+}
+
+.my-info-change {
+	position: absolute;
+	width: 350px;
+	height: 435px;
+	border: 1px solid red;
+	/* top: 90px; */
+	/* left: -350px; */
+	top: 90px;
+	background-color: #D9D9D9;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	z-index: 1;
+}
+
+.my-info-change-avatar {
+	position: absolute;
+	top: 10px;
+	border-radius: 100%;
+	/* width: 130px;
+	height: 130px; */
+	border: 1px solid black;
+}
+
+.my-info-change-close {
+	background-color:transparent;
+	border: none;
+	position: absolute;
+	top: 10px;
+	left: 8px;
+}
+
+.my-info-change-avatar-buttons {
+	display: flex;
+	justify-content: space-around;
+	width: 70%;
+}
+
+.my-info-change-avatar-button {
+	width: 60px;
+	height: 34px;
+	background-color:transparent;
+	border: 1px solid black;
+}
+

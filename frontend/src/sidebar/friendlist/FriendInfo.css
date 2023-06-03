@@ -125,12 +125,12 @@
 }
 
 .score-table {
-	/* display: flex; */
+	display: flex;
 	width: 255px;
 	height: 163px;
-	/* border: 1px solid black; */
-	/* flex-direction: column; */
-
+	border: 1px solid black;
+	flex-direction: column;
+	
 }
 
 .delete-friends {
