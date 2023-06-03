@@ -1,50 +1,83 @@
 import React from "react";
-import { Button } from "react-bootstrap";
+import { useState,ChangeEvent, FormEvent } from "react";
 
 interface Message {
+    id : number,
     name : string,
     text : string
 }
 
 const msgList = [
     {
+        id : 1,
         name : "jonkim",
         text : "hi"
     },
 
     {
+        id : 2,
         name : "yyoo",
         text : "hihi"
     },
     {
+        id : 3,
         name : "jonkim",
         text : "bye"
     },
 
     {
+        id : 4,
         name : "yyoo",
         text : "byebye"
     },
     {
+        id : 5,
         name : "yyoo",
         text : "byebye"
     },
+    {
+        id : 6,
+        name : "yyoo",
+        text : "byebye"
+    },
+    {
+        id : 7,
+        name : "yyoo",
+        text : "byebye"
+    },
+    
   ];
   
 
 function Chat(){
     return <div className="chat">
-        <h1>Chatting</h1>
-       {msgList.map(tallker => <ChatBox name={tallker.name} text={tallker.text}/>)}
+        <div className="chat-scroll">
+        {msgList.map(message => <ChatBox key={message.id} id={message.id} name={message.name} text={message.text}/>)}
+        </div>
         <ChatInput />
     </div>
 }
 
 function ChatInput(){
+    const [text, setText] = useState('');
+    const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setText(event.target.value);
+      };
+      const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+      };
     return <div className="chat-inputbox">
-        <input type="text" name="chat-input" className="chat-input"></input>
-        <Button variant="primary" className="chat-input-button">입력</Button>
-    </div>
+                <form onSubmit={onSubmit}>
+                    <input
+                        type="text"
+                        onChange={onChange} 
+                        value={text}
+                        name="chat-input"
+                        className="chat-input"
+                    />
+                     <button className="chat-input-button">제출</button>
+                 </form>
+            </div>
 }
 
 function ChatBox({name, text} : Message){
