@@ -22,6 +22,7 @@ function Chat() {
 }
 
 function ChatComponent() {
+    console.log(socket);
     const location = useLocation();
     const [channelName, setChannelName] = useState("");
     useEffect(() => {
@@ -36,6 +37,8 @@ function ChatComponent() {
         setMsgList((prevMsgList) => [...prevMsgList, message]);
       };
     const [msgList, setMsgList] = useState<Message[]>([]);
+
+    socket.emit("enter-channel", channelName, "jonkim");
     return (
         
         <div className="chat">
