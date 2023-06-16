@@ -23,7 +23,7 @@ function App() {
                     <Route path="/" element={<Login />}></Route>
                     <Route path="/login" element={<OAuth />}></Route>
                     <Route path="/main" element={<Main />}></Route>
-                    <Route path="/chat" element={<Chat />}></Route>
+                    <Route path="/chat" element={<Chat channelName="default"/>}></Route>
                 </Routes>
             </BrowserRouter>
             <Background />
