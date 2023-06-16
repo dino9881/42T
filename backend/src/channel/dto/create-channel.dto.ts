@@ -3,19 +3,18 @@ import { IsNumber, IsString, IsOptional } from 'class-validator';
 
 export class CreateChannelDto {
   @IsString()
-  @ApiProperty({ description: '채널명' })
+  @ApiProperty({ description: '채널명', example: 'channel', required: true })
   chName: string;
 
-  @ApiProperty({ description: '패스워드' })
   @IsOptional()
   chPwd?: string;
 
   @IsString()
-  @ApiProperty({ description: '인트라 Id' })
-  intraId: string;
+  @ApiProperty({ description: '방장 인트라 Id', example: 'hjeong' })
+  operatorId: string;
 
   @IsNumber()
   @IsOptional()
-  @ApiProperty({ description: '채널 인원' })
   chUserCnt?: number;
+
 }
