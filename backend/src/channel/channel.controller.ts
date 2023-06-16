@@ -66,13 +66,6 @@ export class ChannelController {
     summary: '모든 채널 조회',
     description: 'Find All Channel API',
   })
-  @ApiResponse({ status: 200, description: '성공' })
-  @ApiResponse({ status: 404, description: '없는 채널 번호' })
-  @ApiResponse({ status: 500, description: '서버 에러' })
-  @ApiOperation({
-    summary: '모든 채널 조회',
-    description: 'Find All Channel API',
-  })
   findAll() {
     return this.channelService.findAll();
   }
