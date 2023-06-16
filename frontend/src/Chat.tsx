@@ -2,6 +2,9 @@ import React, { useEffect } from "react";
 import { useState, ChangeEvent, FormEvent } from "react";
 import { ConnectionState } from "./ConnectionState";
 import { socket } from "./socket";
+import { useLocation } from "react-router-dom";
+import Contents from "./Contents";
+import Sidebar from "./sidebar/Sidebar";
 
 interface Message {
     id: number;
@@ -9,16 +12,31 @@ interface Message {
     text: string;
 }
 
-interface ChatProps {
-    channelName: string;
-  }
+function Chat() {
+    return <div>
+         <Contents mainComponent={<ChatComponent/>}/>
+         <Sidebar />
+    </div>
+    ;
+}
 
-function Chat({ channelName }: ChatProps) {
+function ChatComponent() {
+    const location = useLocation();
+    const [channelName, setChannelName] = useState("");
+    useEffect(() => {
+        const state = location.state as { channelName: string };
+        if (state && state.channelName) {
+          setChannelName(state.channelName);
+        } else {
+          setChannelName("error");
+        }
+      }, [location.state]);
     const addMessage = (message: Message) => {
         setMsgList((prevMsgList) => [...prevMsgList, message]);
       };
     const [msgList, setMsgList] = useState<Message[]>([]);
     return (
+        
         <div className="chat">
             <div>{channelName}</div>
             <div className="chat-scroll">
