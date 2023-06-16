@@ -206,3 +206,141 @@ body {
 .admin-pass-box{
   
 }
+
+
+/*channel list */
+
+
+.channel_list{
+  flex-direction: column;
+  border: solid black;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  display: flex;
+  gap:20px;
+  padding: 20px;
+}
+
+.chan-rowbox{
+  align-items: center; /* 추가: 요소들을 수직 중앙으로 정렬 */
+  justify-content: center; /* 추가: 요소들을 수평 중앙으로 정렬 */
+  display: flex;
+  width: 100%;
+  height: 22%;
+  gap: 20px;
+}
+
+.chan-leftbox{
+  border: 2px solid black;
+  width: 48%;
+  height:100%;
+  
+}
+
+.chan-rightbox{
+  border: 2px solid black;
+  width: 48%;
+  height:100%;  
+}
+
+.chan-room{
+  display: flex;
+  position: relative;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+}
+
+.chan-lockcheck{
+  border:solid 1px;
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chan-lockcheck img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.chan-hostinfo {
+  display: flex;
+  justify-content: center;
+  /* align-items: center; */
+}
+
+.chan-hostimg {
+  margin : 10px;
+  border:solid 1px;
+  width: 70px;
+  height: 70px;
+  display: inline-block;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chan-hostimg img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.chan-hostname {
+  width: 60px;
+  height: 20px;
+  font-size: small;
+  text-align: center; /* 가운데 정렬 */
+  position: absolute;
+  bottom: 10px; /* 원하는 위치로 조정 */
+  background-color: white; /* 필요에 따라 배경색 설정 */
+}
+
+.chan-info{
+  flex-direction: column;
+  display: flex;
+  justify-content: center;
+  
+}
+
+.chan-name{
+  margin-top: 10px;
+  border: solid 2px gray;
+  padding: 5px;
+  width: 250px;
+  height: 30px;
+  text-align: center; /* text를 가로 가운데 정렬 */
+  align-items: center; /* text를 세로 가운데 정렬 */
+  font-size: large;
+  display: flex;
+  padding-top: 10px;
+}
+
+.pw-inputbox{
+  margin-top: 10px;
+  margin-bottom: 10px;
+  flex-direction: row;
+  display: flex;
+}
+
+.pw-input{
+  margin-right: 10px;
+  width: 70px;
+  height: 30px;
+}
+
+.chan-count{
+  border: solid black 1px;
+  display: flex;
+  width: 40px;
+  margin-left: 210px;
+  margin-top: 60px;
+  text-align: center; 
+  justify-content: center; /* axis들을 가로 가운데 정렬 */
+  position: absolute;
+}

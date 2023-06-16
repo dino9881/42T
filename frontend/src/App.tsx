@@ -4,6 +4,7 @@ import Layout from "./Layout";
 import Login from "./Login";
 import Main from "./main";
 import Chat from "./Chat";
+import Channel from "./Channel";
 import {
     BrowserRouter,
     createBrowserRouter,
@@ -16,6 +17,7 @@ import OAuth from "./OAuth";
 import Background from "./Background";
 
 function App() {
+    axios.defaults.withCredentials = true;
     return (
         <div className="App">
             <BrowserRouter>
@@ -24,6 +26,7 @@ function App() {
                     <Route path="/login" element={<OAuth />}></Route>
                     <Route path="/main" element={<Main />}></Route>
                     <Route path="/chat" element={<Chat />}></Route>
+                    <Route path="/channel" element={<Channel />}></Route>
                 </Routes>
             </BrowserRouter>
             <Background />
