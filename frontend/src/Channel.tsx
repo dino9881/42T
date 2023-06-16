@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "react-bootstrap";
+import { useNavigate } from 'react-router-dom';
 
 function Channel(){
     return <div className="channel_list">
@@ -12,10 +13,19 @@ function Channel(){
 }
 
 function PwInput() {
-    return <div className="pw-inputbox">
-        <input type="text" name="pw-input" className="pw-input"></input>
-        <Button variant="light" className="pw-input-button" size="sm">enter</Button>
+    const navigate = useNavigate();
+
+    const handleButtonClick = () => {
+        navigate('/chat', { state: { channelName: '히킴 바보 똥멍충이' } });
+    }
+    return (
+    <div className="pw-inputbox">
+        <input type="text" name="pw-input" className="pw-input" />
+        <Button onClick={handleButtonClick} variant="light" className="pw-input-button" size="sm">
+             Enter
+        </Button>
     </div>
+    );
 }
 
 
