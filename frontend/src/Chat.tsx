@@ -1,93 +1,80 @@
-import React from "react";
-import { useState,ChangeEvent, FormEvent } from "react";
+import React, { useEffect } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
+import { ConnectionState } from "./ConnectionState";
+import { socket } from "./socket";
 
 interface Message {
-    id : number,
-    name : string,
-    text : string
+    id: number;
+    name: string;
+    text: string;
 }
 
-const msgList = [
-    {
-        id : 1,
-        name : "jonkim",
-        text : "hi"
-    },
+interface ChatProps {
+    channelName: string;
+  }
 
-    {
-        id : 2,
-        name : "yyoo",
-        text : "hihi"
-    },
-    {
-        id : 3,
-        name : "jonkim",
-        text : "bye"
-    },
-
-    {
-        id : 4,
-        name : "yyoo",
-        text : "byebye"
-    },
-    {
-        id : 5,
-        name : "yyoo",
-        text : "byebye"
-    },
-    {
-        id : 6,
-        name : "yyoo",
-        text : "byebye"
-    },
-    {
-        id : 7,
-        name : "yyoo",
-        text : "byebye"
-    },
-    
-  ];
-  
-
-function Chat(){
-    return <div className="chat">
-        <div className="chat-scroll">
-        {msgList.map(message => <ChatBox key={message.id} id={message.id} name={message.name} text={message.text}/>)}
+function Chat({ channelName }: ChatProps) {
+    const addMessage = (message: Message) => {
+        setMsgList((prevMsgList) => [...prevMsgList, message]);
+      };
+    const [msgList, setMsgList] = useState<Message[]>([]);
+    return (
+        <div className="chat">
+            <div>{channelName}</div>
+            <div className="chat-scroll">
+                {msgList.map((message) => (
+                    <ChatBox
+                        key={message.id}
+                        id={message.id}
+                        name={message.name}
+                        text={message.text}
+                    />
+                ))}
+            </div>
+            <ChatInput addMessage={addMessage}/>
         </div>
-        <ChatInput />
-    </div>
+    );
 }
 
-function ChatInput(){
-    const [text, setText] = useState('');
+function ChatInput({ addMessage }: { addMessage: (message: Message) => void }) {
+    const [text, setText] = useState("");
+    const [msgId, setMsgId] = useState(0);
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         setText(event.target.value);
-      };
-      const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    };
+    const onSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-      };
-    return <div className="chat-inputbox">
-                <form onSubmit={onSubmit}>
-                    <input
-                        type="text"
-                        onChange={onChange} 
-                        value={text}
-                        name="chat-input"
-                        className="chat-input"
-                    />
-                     <button className="chat-input-button">제출</button>
-                 </form>
-            </div>
+        const newMessage = { id: msgId, name: "new", text: text };
+        addMessage(newMessage);
+        setMsgId(msgId + 1);
+        setText("");
+    };
+    return (
+        <div className="chat-inputbox">
+            <form onSubmit={onSubmit}>
+                <input
+                    type="text"
+                    onChange={onChange}
+                    value={text}
+                    name="chat-input"
+                    className="chat-input"
+                />
+                <button className="chat-input-button">제출</button>
+            </form>
+        </div>
+    );
 }
 
-function ChatBox({name, text} : Message){
-    return <div className="chat-box">
-        <div className="chat-userimg">img</div>
-        <div className="chat-userinfo">
-            <span className="chat-username">{name}</span>
-            <span className="chat-userchat">{text}</span>
+function ChatBox({ name, text }: Message) {
+    return (
+        <div className="chat-box">
+            <div className="chat-userimg">img</div>
+            <div className="chat-userinfo">
+                <span className="chat-username">{name}</span>
+                <span className="chat-userchat">{text}</span>
+            </div>
         </div>
-    </div>
+    );
 }
 
 export default Chat;
