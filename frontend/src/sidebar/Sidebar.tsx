@@ -1,10 +1,10 @@
-import React from 'react';
-import { useState } from 'react';
-import './Sidebar.css';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import AddFriend from './search/AddFriend';
 import MyInfo from './myinfo/MyInfo';
 import FriendList from './friendlist/FriendList';
 import DmList from './dmlist/DmList';
+import './Sidebar.css';
 
 interface Friend {
 	name: string;
@@ -20,6 +20,7 @@ interface Myinfo {
 
 const Sidebar = () => {
 	const [viewList, setViewList] = useState(true)
+	const [memberData, setMemberData] = useState<any>(null)
 
 	const myinfo: Myinfo = {
 		name: "yyoo",
@@ -36,6 +37,32 @@ const Sidebar = () => {
 		{ name: "foden", age: 30, avatarUrl: "avatar/phil-foden.jpeg" },
 		{ name: "kim", age: 30, avatarUrl: "avatar/kim.jpeg" }
 	];
+
+	// axios.post('http://localhost:5001/member/create', 
+	// {
+	// 	"intraId": "heeskim",
+	// 	"nickName": "hees",
+	// 	"avatar": "../public/img/avatar.jpg",
+	// 	"rank": 100
+	// }
+	// )
+	// .then(function (response) {
+	// 	console.log(response);
+	// })
+	// .catch(function (error) {
+	// 	console.log(error);
+	// });
+
+	// useEffect(() => {
+	// 	axios.get('http://localhost:5001/member/heeskim')
+	// 		.then((response) => {
+	// 			setMemberData(response.data);
+	// 			console.log(response.data); // 데이터 출력
+	// 		})
+	// 		.catch((error) => {
+	// 			console.log(error);
+	// 		});
+	// }, []);
 
 	return (
 		<div className='side'>
