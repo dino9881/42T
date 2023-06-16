@@ -14,7 +14,7 @@ function Channel(){
 function PwInput() {
     return <div className="pw-inputbox">
         <input type="text" name="pw-input" className="pw-input"></input>
-        <Button variant="light" className="pw-input-button" size="sm">P W</Button>
+        <Button variant="light" className="pw-input-button" size="sm">enter</Button>
     </div>
 }
 

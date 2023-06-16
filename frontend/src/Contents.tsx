@@ -4,20 +4,16 @@ import ChannelAdmin from "./ChannelAdmin";
 import Channel from "./Channel";
 import Menu from "./menu/Menu";
 
-type ComponentType = 'Chat' | 'ChannelAdmin';
+interface ContentsProps {
+  // headerComponent: React.ReactNode;
+  mainComponent: React.ReactNode;
+}
 
-function Contents() {
-        const [currentComponent, setCurrentComponent] = useState<ComponentType>('Chat');
-        const handleComponentChange = () => {
-            setCurrentComponent(currentComponent === 'Chat' ? 'ChannelAdmin' : 'Chat');
-          };
-
+function Contents ({mainComponent} : ContentsProps) {
           return <div className="contents">
         <div className="contents-header"></div>
         <div className="contents-main">
-        <button onClick={handleComponentChange}>관리자</button>
-        {currentComponent === 'Chat' && <Chat channelName="default"/>}
-        {currentComponent === 'ChannelAdmin' && <ChannelAdmin />}
+          {mainComponent}
         </div>
     </div>
   
