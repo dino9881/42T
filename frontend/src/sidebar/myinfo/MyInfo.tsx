@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import './MyInfo.css';
+import MyInfoChange from "./MyInfoChange";
+import InfoScore from "../friendlist/InfoScore";
 
 interface Myinfo {
 	name: string;
@@ -9,56 +11,6 @@ interface Myinfo {
 
 interface MyInfoProps {
 	myinfo: Myinfo;
-}
-
-const MyScore = () => {
-	return (
-		<div className="my-score-box">
-			<div className="rank">Rank</div>
-			<div className="my-score-table">
-				<div id="score"> 이름  몇 : 몇</div>
-				<div id="score"> 이름  몇 : 몇</div>
-				<div id="score"> 이름  몇 : 몇</div>
-				<div id="score"> 이름  몇 : 몇</div>
-				<div id="score"> 이름  몇 : 몇</div>
-			</div>
-		</div>
-	)
-}
-
-const MyInfoChange = ({ onClose }: { onClose: () => void }) => {
-	const [avatarUrl, setAvatarUrl] = useState("avatar/yyoo.jpeg");
-
-	const handleAvatarButtonClick = (newAvatarUrl: string) => {
-		setAvatarUrl(newAvatarUrl);
-	};
-
-	return (
-		<div className="my-info-change">
-			<img className="my-info-change-close" src="close_button.svg" alt="Close" onClick={onClose} width={28} height={28}/>
-			<img
-				className="my-info-change-avatar"
-				src={avatarUrl}
-				alt="User Avatar"
-				/>
-			<div className="my-info-change-avatar-buttons">
-				<button className="my-info-change-avatar-button" onClick={() => handleAvatarButtonClick("avatar/haaland.jpeg")}>
-					기본1
-				</button>
-				<button className="my-info-change-avatar-button" onClick={() => handleAvatarButtonClick("avatar/son.jpeg")}>
-					기본2
-				</button>
-				<button className="my-info-change-avatar-button" onClick={() => handleAvatarButtonClick("avatar/yyoo.jpeg")}>
-					기본3
-				</button>
-			</div>
-			<div className="my-info-change-nick-box">
-				<div>nick</div>
-					<input type="text" />
-					<button type="submit">로그인</button>
-			</div>
-		</div>
-	)
 }
 
 const MyInfo: React.FC<MyInfoProps> = ({ myinfo }) => {
@@ -87,7 +39,9 @@ const MyInfo: React.FC<MyInfoProps> = ({ myinfo }) => {
 					style={{ backgroundImage: `url(${myinfo.avatarUrl})` }}
 				></div>
 				<div className='my-info-info'>
-					{isExpanded && <MyScore />}
+					{/* {isExpanded && <MyScore />} */}
+					{isExpanded && <InfoScore name={myinfo.name} age={myinfo.age} avatarUrl={myinfo.avatarUrl} state={1} />}
+					
 					<div className='my-info-text'>
 						<div className='small-square'>{myinfo.name}</div>
 						<div className='small-square'>{myinfo.age}</div>
