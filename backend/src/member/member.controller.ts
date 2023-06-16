@@ -34,6 +34,10 @@ export class MemberController {
     status: HttpStatusCode.Created,
     description: '생성 완료',
   })
+  @ApiResponse({
+    status: HttpStatusCode.Conflict,
+    description: '멤버 닉네임 / 인트라 아이디 중복',
+  })
   @ApiBody({ type: CreateMemberDto })
   @Post('create')
   create(@Body() memberDto: CreateMemberDto) {
