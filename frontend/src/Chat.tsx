@@ -5,6 +5,7 @@ import { socket } from "./socket";
 import { useLocation } from "react-router-dom";
 import Contents from "./Contents";
 import Sidebar from "./sidebar/Sidebar";
+import Menu from "./menu/Menu";
 
 interface Message {
     id: number;
@@ -14,7 +15,7 @@ interface Message {
 
 function Chat() {
     return <div>
-         <Contents mainComponent={<ChatComponent/>}/>
+         <Contents headerComponent={<Menu showBackButton={true}/>} mainComponent={<ChatComponent/>}/>
          <Sidebar />
     </div>
     ;

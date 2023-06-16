@@ -3,10 +3,10 @@ import './Menu.css';
 
 type MenuProps = {
   showBackButton: boolean;
-  handleBackButton: () => void;
+  // handleBackButton: () => void;
 };
 
-const Menu = ({ showBackButton, handleBackButton }: MenuProps) => {
+const Menu = ({ showBackButton}: MenuProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [toggleImgSrc, setToggleImgSrc] = useState("toggle_down.svg");
   const [showWaiting, setShowWaiting] = useState(false);
@@ -40,7 +40,7 @@ const Menu = ({ showBackButton, handleBackButton }: MenuProps) => {
       )}
 
       {showBackButton && (
-        <button className="menu-back-button" onClick={handleBackButton}>
+        <button className="menu-back-button" >
           <img src="back-button.svg" alt="back" />
         </button>
       )}
