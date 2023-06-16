@@ -1,14 +1,9 @@
 import {
-  BadRequestException,
-  ConsoleLogger,
   ConflictException,
-  ForbiddenException,
-  HttpException,
   HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { Member, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 import { CreateMemberDto } from './dto/create-member.dto';
@@ -22,74 +17,60 @@ export class MemberService {
 
   async getAll() {
     const members = this.prisma.member.findMany();
-    if (members) {
-      return members;
-    } else {
-      throw new NotFoundException('member/all failed');
-    }
+    return members;
   }
 
   async getOne(intraId: string) {
     const member = await this.prisma.member.findUnique({
       where: { intraId },
     });
-      console.log('member service getOne');
-      console.log(member);
     if (member === null) {
       throw new NotFoundException('Member Not Found by IntraId');
     }
     return member;
   }
 
-  async getOneByNick(nick: string) {
+  async checkNickDuplicate(nick: string) {
     const member = await this.prisma.member.findUnique({
       where: { nickName: nick },
     });
+    if (member)
+      throw new ConflictException('NickName Already Exist', `nickName : ${nick}`);
     return member;
+  }
+
+  async checkIntraIdDuplicate(IntraId: string) {
+    const member = await this.prisma.member.findUnique({
+      where: { intraId: IntraId },
+    });
+    if (member)
+      throw new ConflictException('IntraId Already Exist', `IntraId : ${IntraId}`);
   }
 
   async create(memberDto: CreateMemberDto) {
     //멤버의 인자가 맞지 않을 경우 처리필요?
-    try {
-      const memberNick = await this.getOneByNick(memberDto.nickName);
-      if (memberNick)
-        throw new HttpException(
-          'NickName Already Exist',
-          HttpStatusCode.Conflict,
-        );
-      try {
-        const memberId = await this.getOne(memberDto.nickName);
-        if (memberId)
-          throw new HttpException(
-            'IntraId Already Exist',
-            HttpStatusCode.Conflict,
-          );
-      } catch (err) {
-        if (err.HttpStatus == HttpStatusCode.NotFound) {
-          await this.prisma.member.create({
-            data: {
-              ...memberDto,
-              currentRefreshTokenExp: undefined,
-              currentRefreshToken: undefined,
-            },
-          });          
-          return HttpStatus.CREATED;
-        }
-      }
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-      //멤버 테이블에 저장을 실패했을 경우 > 언제가 있을까?
-    }
-    throw new HttpException('Creation Failed', HttpStatus.BAD_REQUEST);
+    await this.checkIntraIdDuplicate(memberDto.intraId);
+    await this.checkNickDuplicate(memberDto.nickName);
+    await this.prisma.member.create({
+      data: {
+        ...memberDto,
+        currentRefreshTokenExp: undefined,
+        currentRefreshToken: undefined,
+      },
+    });
+    return HttpStatus.CREATED;
   }
 
-  async update(id: string, memberDto: UpdateMemberDto) {
-    // nickname 중복 check
-    const member = await this.getOneByNick(memberDto.nickName);
-    if (member && member.intraId != id) {
-      throw new ForbiddenException('Nickname Already Exist');
-    }
-    //update의 리턴을 받아서 처리해야할까?
+  async updateNick(id: string, memberDto: UpdateMemberDto) {
+    await this.checkNickDuplicate(memberDto.nickName);
+    await this.prisma.member.update({
+      where: { intraId: id },
+      data: memberDto,
+    });
+    return HttpStatusCode.Ok;
+  }
+
+  async updateAvatar(id: string, memberDto: UpdateMemberDto) {
     await this.prisma.member.update({
       where: { intraId: id },
       data: memberDto,
@@ -98,24 +79,16 @@ export class MemberService {
   }
 
   async delete(id: string) {
-    try {
-      const member = await this.getOne(id);
-      // console.log(member);
-      if (member) {
-        await this.prisma.member.delete({
-          where: { intraId: id },
-        });
-        return HttpStatus.OK;
-      } else {
-        throw new NotFoundException('Member Not Found');
-      }
-    } catch (error) {
-      throw new HttpException(
-        'Failed to delete member.',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    const member = await this.getOne(id);
+    if (member == null) {
+      throw new NotFoundException('Member Not Found');
     }
+    await this.prisma.member.delete({
+      where: { intraId: id },
+    });
+    return HttpStatus.OK;
   }
+
   async getCurrentHashedRefreshToken(refreshToken: string) {
     // 토큰 값을 그대로 저장하기 보단, 암호화를 거쳐 데이터베이스에 저장한다.
     // bcrypt는 단방향 해시 함수이므로 암호화된 값으로 원래 문자열을 유추할 수 없다.
@@ -136,7 +109,7 @@ export class MemberService {
 
   async setCurrentRefreshToken(refreshToken: string, intraId: string) {
     const currentRefreshToken = refreshToken;
-    //await this.getCurrentHashedRefreshToken(  refreshToken,);
+    // await this.getCurrentHashedRefreshToken(  refreshToken,);
     const currentRefreshTokenExp = await this.getCurrentRefreshTokenExp();
     await this.prisma.member.update({
       where: { intraId: intraId },
@@ -148,15 +121,11 @@ export class MemberService {
   }
 
   async getMemberIfRefreshTokenMatches(refreshToken: string, intraId: string) {
-    console.log('getMember ');
-    console.log(typeof refreshToken, typeof intraId);
     const member: Member = await this.getOne(intraId);
-
     // user에 currentRefreshToken이 없다면 null을 반환 (즉, 토큰 값이 null일 경우)
     if (!member.currentRefreshToken) {
       return null;
     }
-
     let isRefreshTokenMatching;
     // 유저 테이블 내에 정의된 암호화된 refresh_token값과 요청 시 body에 담아준 refresh_token값 비교
     if (refreshToken == member.currentRefreshToken) {
@@ -168,13 +137,6 @@ export class MemberService {
     //   refreshToken,
     //   member.currentRefreshToken,
     // );
-
-    console.log(refreshToken);
-    console.log(member.currentRefreshToken);
-    console.log(
-      'member service getMemberIfRefreshTokenMatches isRefreshTokenMatching',
-    );
-    console.log(isRefreshTokenMatching);
     // 만약 isRefreshTokenMatching이 true라면 user 객체를 반환
     if (isRefreshTokenMatching) {
       return member;
