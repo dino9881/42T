@@ -117,11 +117,15 @@
 }
 
 .my-info-change-avatar {
+	/* overflow: hidden; */
 	position: absolute;
-	top: 10px;
+	top: 30px;
 	border-radius: 100%;
-	/* width: 130px;
-	height: 130px; */
+	width: 130px;
+	height: 130px;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
 	border: 1px solid black;
 }
 
@@ -146,3 +150,7 @@
 	border: 1px solid black;
 }
 
+.my-info-change-nick-box {
+	position: absolute;
+	bottom: 120px;
+}
