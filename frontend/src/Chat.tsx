@@ -8,7 +8,6 @@ import Sidebar from "./sidebar/Sidebar";
 import Menu from "./menu/Menu";
 
 interface Message {
-    id: number;
     name: string;
     text: string;
 }
@@ -39,6 +38,11 @@ function ChatComponent() {
     const [msgList, setMsgList] = useState<Message[]>([]);
 
     socket.emit("enter-channel", channelName, "jonkim");
+    socket.on("welcome", (nickName: string) => {
+        console.log(nickName);
+        const newMessage = { name: nickName, text: `${nickName} : 이 입장했습니다.` };
+        addMessage(newMessage);
+    });
     return (
         
         <div className="chat">
@@ -46,8 +50,6 @@ function ChatComponent() {
             <div className="chat-scroll">
                 {msgList.map((message) => (
                     <ChatBox
-                        key={message.id}
-                        id={message.id}
                         name={message.name}
                         text={message.text}
                     />
@@ -60,17 +62,17 @@ function ChatComponent() {
 
 function ChatInput({ addMessage }: { addMessage: (message: Message) => void }) {
     const [text, setText] = useState("");
-    const [msgId, setMsgId] = useState(0);
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         setText(event.target.value);
     };
+
     const onSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const newMessage = { id: msgId, name: "new", text: text };
+        const newMessage = {  name: "나", text: text };
         addMessage(newMessage);
-        setMsgId(msgId + 1);
         setText("");
     };
+
     return (
         <div className="chat-inputbox">
             <form onSubmit={onSubmit}>
