@@ -1,23 +1,22 @@
 import "./App.css";
 import axios, { AxiosResponse } from "axios";
-import Layout from "./Layout";
 import Login from "./Login";
 import Main from "./main";
 import Chat from "./Chat";
 import Channel from "./Channel";
 import {
     BrowserRouter,
-    createBrowserRouter,
     Route,
-    RouterProvider,
     Routes,
 } from "react-router-dom";
-import Sidebar from "./sidebar/Sidebar";
 import OAuth from "./OAuth";
 import Background from "./Background";
 
 function App() {
     axios.defaults.withCredentials = true;
+
+   
+
     return (
         <div className="App">
             <BrowserRouter>
@@ -25,7 +24,7 @@ function App() {
                     <Route path="/" element={<Login />}></Route>
                     <Route path="/login" element={<OAuth />}></Route>
                     <Route path="/main" element={<Main />}></Route>
-                    <Route path="/chat" element={<Chat />}></Route>
+                    <Route path="/chat" element={<Chat channelName="default"/>}></Route>
                     <Route path="/channel" element={<Channel />}></Route>
                 </Routes>
             </BrowserRouter>

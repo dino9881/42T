@@ -1,18 +1,11 @@
-/*
-  Warnings:
-
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropTable
-DROP TABLE "User";
-
 -- CreateTable
 CREATE TABLE "Member" (
     "intraId" TEXT NOT NULL,
     "nickName" TEXT NOT NULL,
     "avatar" TEXT NOT NULL,
     "rank" INTEGER NOT NULL,
+    "currentRefreshTokenExp" TIMESTAMP(3),
+    "currentRefreshToken" TEXT,
 
     CONSTRAINT "Member_pkey" PRIMARY KEY ("intraId")
 );

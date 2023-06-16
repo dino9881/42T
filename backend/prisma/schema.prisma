@@ -16,6 +16,8 @@ model Member {
   nickName  String @unique
   avatar    String
   rank      Int
+  currentRefreshTokenExp DateTime?
+  currentRefreshToken String?
   friendsof    Friend[] @relation("friendOf")
   memeberof    Friend[] @relation("memberOf")
   channel      Channel[] @relation("channel")
@@ -59,3 +61,4 @@ model GameHistory{
   gameP1Score   Int
   gameP2Score   Int
 }
+

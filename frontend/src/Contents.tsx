@@ -16,7 +16,7 @@ function Contents() {
         <div className="contents-header"></div>
         <div className="contents-main">
         <button onClick={handleComponentChange}>관리자</button>
-        {currentComponent === 'Chat' && <Chat />}
+        {currentComponent === 'Chat' && <Chat channelName="default"/>}
         {currentComponent === 'ChannelAdmin' && <ChannelAdmin />}
         </div>
     </div>

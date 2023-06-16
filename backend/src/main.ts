@@ -3,16 +3,21 @@ import { AppModule } from './app.module';
 import { PrismaService } from './prisma.service';
 import { Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
+import { IoAdapter } from '@nestjs/platform-socket.io';
+import * as socketio from 'socket.io';
 
 const logger = new Logger('App');
 async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule, {
       cors: {
-        origin: 'http://localhost:3000',
+        origin: true,
         credentials: true,
       },
     });
+    app.use(cookieParser());
+    app.useWebSocketAdapter(new IoAdapter(app));
     const config = new DocumentBuilder()
       .setTitle('42T')
       .setDescription('The 42seoul Transcendence API description')
