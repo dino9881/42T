@@ -77,7 +77,7 @@ export class ChannelService {
     var findData;
     try {
       findData = await this.prisma.channel.findUnique({
-        where: { chIdx: id },
+        where: { chIdx: idx },
       });
     } catch (error) {
       if (error.code === 'P2016' || error.code === 'P2025') {
@@ -85,7 +85,6 @@ export class ChannelService {
       }
       throw new InternalServerErrorException('Internal Server Error');
     }
-    if (findData == null) throw new NotFoundException('channel not found');
     if (findData == null) throw new NotFoundException('channel not found');
     return findData;
   }
@@ -104,7 +103,6 @@ export class ChannelService {
       throw new InternalServerErrorException('Internal Server Error');
     }
     if (findData == null) throw new NotFoundException('channel not found');
-    if (findData == null) throw new NotFoundException('channel not found');
     return findData;
   }
 
@@ -121,7 +119,6 @@ export class ChannelService {
       }
       throw new InternalServerErrorException('Internal Server Error');
     }
-    if (findData == null) throw new NotFoundException('channel not found');
     if (findData == null) throw new NotFoundException('channel not found');
     return findData;
   }
