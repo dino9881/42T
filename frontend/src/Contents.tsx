@@ -1,26 +1,36 @@
 import React, { useState } from "react";
 import Chat from "./Chat";
-import ChannelAdmin from "./ChannelAdmin";
-import Channel from "./Channel";
+import Sidebar from "./sidebar/Sidebar";
 import Menu from "./menu/Menu";
 
-type ComponentType = 'Chat' | 'ChannelAdmin';
+type ComponentType = 'Chat' | 'Sidebar';
 
 function Contents() {
-        const [currentComponent, setCurrentComponent] = useState<ComponentType>('Chat');
-        const handleComponentChange = () => {
-            setCurrentComponent(currentComponent === 'Chat' ? 'ChannelAdmin' : 'Chat');
-          };
+  const [currentComponent, setCurrentComponent] = useState<ComponentType>('Chat');
+  const [showBackButton, setShowBackButton] = useState(false);
 
-          return <div className="contents">
-        <div className="contents-header"></div>
-        <div className="contents-main">
-        <button onClick={handleComponentChange}>관리자</button>
+  const handleComponentChange = () => {
+    setCurrentComponent(currentComponent === 'Chat' ? 'Sidebar' : 'Chat');
+    setShowBackButton(!showBackButton);
+  };
+
+  const handleBackButton = () => {
+    setCurrentComponent('Chat');
+    setShowBackButton(false);
+  };
+
+  return (
+    <div className="contents">
+      <div className="contents-header">
+        <Menu showBackButton={showBackButton} handleBackButton={handleBackButton} />
+      </div>
+      <div className="contents-main">
+        <button onClick={handleComponentChange}>dd</button>
         {currentComponent === 'Chat' && <Chat />}
-        {currentComponent === 'ChannelAdmin' && <ChannelAdmin />}
-        </div>
+        {currentComponent === 'Sidebar' && <Sidebar />}
+      </div>
     </div>
-  
+  );
 }
 
 export default Contents;
