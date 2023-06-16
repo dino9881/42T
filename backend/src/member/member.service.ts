@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConsoleLogger,
+  ConflictException,
   ForbiddenException,
   HttpException,
   HttpStatus,
@@ -27,34 +28,33 @@ export class MemberService {
   }
 
   async getOne(intraId: string) {
-    let member;
-    try {
-      member = await this.prisma.member.findUnique({
-        where: { intraId },
-      });
-    } catch (err) {
-      throw new NotFoundException(err.message);
-    }
+    const member = await this.prisma.member.findUnique({
+      where: { intraId },
+    });
     if (member === null) {
-      throw new NotFoundException('Member Not Found');
+      throw new NotFoundException('Member Not Found by IntraId');
     }
     return member;
   }
 
   async getOneByNick(nick: string) {
-    try {
-      const member = await this.prisma.member.findUnique({
-        where: { nickName: nick },
-      });
-      return member;
-    } catch (err) {
-      throw new NotFoundException(err.message);
-    }
+    const member = await this.prisma.member.findUnique({
+      where: { nickName: nick },
+    });
+    return member;
   }
 
   async create(memberDto: CreateMemberDto) {
-    await this.prisma.member.create({ data: memberDto });
-    return HttpStatus.CREATED;
+    const nickMemeber = await this.getOneByNick(memberDto.nickName);
+    if (nickMemeber) {
+      throw new ConflictException('Nickname Already Exist');
+    }
+    try {
+      await this.prisma.member.create({ data: memberDto });
+      return HttpStatus.CREATED;
+    } catch (err){
+        throw new ConflictException('Member Already Exist');
+    }
   }
 
   async update(id: string, memberDto: UpdateMemberDto) {
@@ -81,6 +81,7 @@ export class MemberService {
         });
         return HttpStatus.OK;
       } else {
+        throw new NotFoundException('Member Not Found');
       }
     } catch (error) {
       throw new HttpException(
