@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Delete,
-  HttpStatus,
 } from '@nestjs/common';
 import { MemberService } from './member.service';
 import { CreateMemberDto } from './dto/create-member.dto';
@@ -46,10 +45,8 @@ export class MemberController {
   }
 
   @ApiOperation({ summary: '멤버삭제' })
-  @ApiResponse({
-    status: 200,
-    description: '삭제 성공',
-  })
+  @ApiResponse({ status: 200, description: '삭제 성공'})
+  @ApiResponse({ status: 404, description: '삭제할 멤버를 찾지 못함'})
   @Delete('delete')
   @ApiBody({
     schema: {
@@ -73,7 +70,6 @@ export class MemberController {
   })
   @Get('all')
   getMemberAll() {
-    // console.log('getmemberall called');
     return this.memberService.getAll();
   }
 
@@ -84,32 +80,39 @@ export class MemberController {
     description: '성공',
     type: CreateMemberDto,
   })
+  @ApiResponse({
+    status: 404,
+    description: '삭제할 멤버를 찾지 못함',
+  })
   @ApiParam({
     name: 'id',
     required: true,
     description: '인트라아이디',
   })
   getMemberDetail(@Param('id') id: string) {
-    // console.log(id);
     return this.memberService.getOne(id);
   }
 
-  // @Get('rank')
-  // getMemberRank(@Param('id') id: string) {
-  //   // return this.memberService.getOne(id);
-  // }
+  @Patch('update/nick/:id')
+  @ApiResponse({
+    status: 200,
+    description: '성공',
+  })
+  @ApiResponse({
+    status: 409,
+    description: '닉네임 중복값 존재',
+  })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: '인트라아이디',
+  })
+  @ApiBody({ type: UpdateMemberDto })
+  updateMemberNick(@Param('id') id: string, @Body() member: UpdateMemberDto) {
+    return this.memberService.updateNick(id, member);
+  }
 
-  // @Get('nick')
-  // getMemberNick(@Param('id') id: string) {
-  //   // return this.memberService.getOne(id);
-  // }
-
-  // @Get('avatar')
-  // getMemberAvatar(@Param('id') id: string) {
-  //   // return this.memberService.getOne(id);
-  // }
-
-  @Patch('update/:id')
+  @Patch('update/avatar/:id')
   @ApiResponse({
     status: 200,
     description: '성공',
@@ -120,7 +123,7 @@ export class MemberController {
     description: '인트라아이디',
   })
   @ApiBody({ type: UpdateMemberDto })
-  updateMember(@Param('id') id: string, @Body() member: UpdateMemberDto) {
-    return this.memberService.update(id, member);
+  updateMemberAvatar(@Param('id') id: string, @Body() member: UpdateMemberDto) {
+    return this.memberService.updateAvatar(id, member);
   }
 }
