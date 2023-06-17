@@ -16,7 +16,7 @@ export class SocketIOGateway implements OnGatewayInit, OnGatewayConnection,OnGat
   
   handleConnection(@ConnectedSocket() socket:Socket){
       console.log(`${socket.id} 소켓 연결`);
-      this.server["nickname"] = "anon";
+      socket["nickname"] = "anon";
   }
   
   handleDisconnect(@ConnectedSocket() socket:Socket){
@@ -25,16 +25,16 @@ export class SocketIOGateway implements OnGatewayInit, OnGatewayConnection,OnGat
 
   @SubscribeMessage('message')
   handleMessage(client: any, payload: any): string {
-    console.log('Received message:', payload);
+    const {channelname, nickname, text} =payload;
+    client.to(channelname).emit("send-message", {nickname, text});
     return 'Message received!';
   }
 
   @SubscribeMessage('enter-channel')
-  handleChannelEnter(roomName:string, nickname:string) {
-    this.server.join(roomName);
-    this.server["nickname"] = nickname;
-    this.server.to[roomName].emit("welcome", nickname);
-    console.log(nickname);
+  handleChannelEnter(client:any, payload:any) {
+    const {channelName, nickname} = payload;
+    client.join(channelName);
+    client["nickname"] = nickname;
+    client.to(channelName).emit("welcome", nickname);
   }
-
 }
