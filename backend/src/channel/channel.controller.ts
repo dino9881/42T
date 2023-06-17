@@ -130,6 +130,6 @@ export class ChannelController {
   @ApiOperation({ summary: 'idx 채널 유저들 가져오기', description: 'channel Users By Idx' })
   @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx'})
   getChannelUsers(@Param('idx') idx: string) {
-    this.channelService.getChannelUsers(+idx);
+    return this.channelService.getChannelUsers(+idx);
   }
 }
