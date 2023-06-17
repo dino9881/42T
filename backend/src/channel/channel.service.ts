@@ -23,6 +23,16 @@ export class ChannelService {
     var createData;
     try {
       const { chName, operatorId } = createChannelDto;
+
+      // // Member 연결 전에 Member가 존재하는지 확인
+      // const existingMember = await this.prisma.member.findUnique({
+      //   where: { intraId: operatorId },
+      // });
+
+      // if (!existingMember) {
+      //   throw new Error('Member not found'); // 또는 적절한 예외를 던짐
+      // } 
+
       createData = await this.prisma.channel.create({
         data: { chName, chUserCnt: 1, 
           operator: { connect: { intraId: operatorId }, } },
@@ -80,12 +90,12 @@ export class ChannelService {
         where: { chIdx: idx },
       });
     } catch (error) {
+      if (findData == null) throw new NotFoundException('channel not found');
       if (error.code === 'P2016' || error.code === 'P2025') {
         throw new NotFoundException('channel not found');
       }
       throw new InternalServerErrorException('Internal Server Error');
     }
-    if (findData == null) throw new NotFoundException('channel not found');
     return findData;
   }
 
