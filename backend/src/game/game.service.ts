@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateGameDto } from './dto/create-game.dto';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { MemberService } from 'src/member/member.service';
 
 @Injectable()
