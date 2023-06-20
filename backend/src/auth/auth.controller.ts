@@ -12,10 +12,16 @@ import {
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
-import { AuthGuard } from './auth.guard';
+// import { AuthGuard } from './auth.guard';
 import { MemberService } from 'src/member/member.service';
-import { RefreshTokenDto } from './refresh-token.dto';
+// import { RefreshTokenDto } from './refresh-token.dto';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('auth')
+@ApiResponse({
+  status: 500,
+  description: '서버 에러',
+})
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -23,14 +29,38 @@ export class AuthController {
     private memberService: MemberService,
   ) {}
 
-  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '42intra인증 코드 전송' })
+  @Post('code')
+  @ApiResponse({
+    status: 201,
+    description: '인증 성공',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'intra 인증실패',
+  })
+  @ApiBody({
+    schema: {
+      properties: {
+        code: { example: 'intra-code', type: 'string' },
+      },
+    },
+    required: true,
+    description: 'intra code',
+  })
+  recieveCode(@Body('code') code: string) {
+    console.log(code);
+    return this.authService.getIntraAccessToken(code);
+  }
+
+  @ApiOperation({ summary: '로그인시 access & refresh token 발급' })
+  // @HttpCode(HttpStatus.OK)
   @Post('login')
   async signIn(
-    @Body() signInDto: Record<string, any>,
+    @Body() loginDto: Record<string, any>,
     @Res({ passthrough: true }) res: Response,
   ) {
-    console.log(signInDto);
-    const member = await this.authService.validateMember(signInDto.intraId);
+    const member = await this.memberService.getOne(loginDto.intraId);
     const access_token = await this.authService.generateAccessToken(member);
     const refresh_token = await this.authService.generateRefreshToken(member);
     await this.memberService.setCurrentRefreshToken(
@@ -56,6 +86,7 @@ export class AuthController {
   //   return body.intraId;
   // }
 
+  @ApiOperation({ summary: 'refresh token으로 access token재발급' })
   @Post('refresh')
   async refresh(
     @Req() req: Request,
@@ -63,18 +94,13 @@ export class AuthController {
   ) {
     try {
       const refreshToken = req.cookies['refresh_token'];
-      console.log('auth controller - refresh - req.cookies');
-      console.log(req.cookies);
       const newAccessToken = await this.authService.refresh(refreshToken);
-      console.log('auth controller - refresh - new Access Token');
-      console.log(newAccessToken);
       res.setHeader('Authorization', 'Bearer' + newAccessToken);
       res.status(200).json({
         message: 'refresh success',
         access_token: newAccessToken,
       });
     } catch (err) {
-      console.log(err);
       throw new UnauthorizedException('Invalid refresh-token');
     }
   }

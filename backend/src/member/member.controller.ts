@@ -89,6 +89,7 @@ export class MemberController {
     description: '인트라아이디',
   })
   getMemberDetail(@Param('id') id: string) {
+    // console.log(id);
     return this.memberService.getOne(id);
   }
 
