@@ -21,8 +21,8 @@ model Member {
   channel      Channel[] @relation("channel")
   banRequest   MemberBan[] @relation("banRequest")
   banned       MemberBan[] @relation("banned")
-  gameP1       GameHistory[] @relation("P1")
-  gameP2       GameHistory[] @relation("P2")
+  winner       GameHistory[] @relation("Player1")
+  loser       GameHistory[] @relation("Player2")
 }
 
 model Friend  {
@@ -52,10 +52,10 @@ model MemberBan {
 
 model GameHistory{
   gameIdx       Int @id @default(autoincrement())
-  gameP1        Member @relation("P1", fields: [gameP1Id], references: [intraId])
-  gameP1Id      String
-  gameP2        Member @relation("P2", fields: [gameP2Id], references: [intraId])
-  gameP2Id      String
-  gameP1Score   Int
-  gameP2Score   Int
+  winner        Member @relation("Player1", fields: [winnerId], references: [intraId])
+  winnerId      String
+  loser        Member @relation("Player2", fields: [loserId], references: [intraId])
+  loserId      String
+  winnerScore   Int
+  loserScore   Int
 }
