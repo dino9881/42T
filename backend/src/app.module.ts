@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { PrismaService } from './prisma.service';
 import { MemberModule } from './member/member.module';
 import { GameModule } from './game/game.module';
@@ -20,7 +18,6 @@ import { SocketIOGateway } from './socketio.gateway';
     }),
     AuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, PrismaService, SocketIOGateway],
+  providers: [PrismaService, SocketIOGateway],
 })
 export class AppModule {}
