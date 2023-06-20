@@ -10,11 +10,13 @@ import { CreateMemberDto } from './dto/create-member.dto';
 import { HttpStatusCode } from 'axios';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { ConfigService } from '@nestjs/config';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class MemberService {
   constructor(private prisma: PrismaService, private config: ConfigService) {}
 
+  // 전체 유저 확인 용 메소드
   async getAll() {
     const members = this.prisma.member.findMany();
     return members;
@@ -25,7 +27,7 @@ export class MemberService {
       where: { intraId },
     });
     if (member === null) {
-      throw new NotFoundException('Member Not Found by IntraId');
+      throw new NotFoundException('Member Not Found by IntraId', intraId);
     }
     return member;
   }
@@ -35,7 +37,10 @@ export class MemberService {
       where: { nickName: nick },
     });
     if (member)
-      throw new ConflictException('NickName Already Exist', `nickName : ${nick}`);
+      throw new ConflictException(
+        'NickName Already Exist',
+        `nickName : ${nick}`,
+      );
     return member;
   }
 
@@ -44,13 +49,18 @@ export class MemberService {
       where: { intraId: IntraId },
     });
     if (member)
-      throw new ConflictException('IntraId Already Exist', `IntraId : ${IntraId}`);
+      throw new ConflictException(
+        'IntraId Already Exist',
+        `IntraId : ${IntraId}`,
+      );
   }
 
   async create(memberDto: CreateMemberDto) {
-    //멤버의 인자가 맞지 않을 경우 처리필요?
+    //intra id 중복체크
     await this.checkIntraIdDuplicate(memberDto.intraId);
+    //nickname 중복체크
     await this.checkNickDuplicate(memberDto.nickName);
+    // member 생성
     await this.prisma.member.create({
       data: {
         ...memberDto,
@@ -78,6 +88,14 @@ export class MemberService {
     return HttpStatusCode.Ok;
   }
 
+  async updateRank(id: string, modifyRank: number) {
+    await this.prisma.member.update({
+      where: { intraId: id },
+      data: { rank: { increment: modifyRank } },
+    });
+    return HttpStatusCode.Ok;
+  }
+
   async delete(id: string) {
     const member = await this.getOne(id);
     if (member == null) {
@@ -92,9 +110,9 @@ export class MemberService {
   async getCurrentHashedRefreshToken(refreshToken: string) {
     // 토큰 값을 그대로 저장하기 보단, 암호화를 거쳐 데이터베이스에 저장한다.
     // bcrypt는 단방향 해시 함수이므로 암호화된 값으로 원래 문자열을 유추할 수 없다.
-    // const saltOrRounds = 10;
-    // const currentRefreshToken = await bcrypt.hash(refreshToken, saltOrRounds);
-    // return currentRefreshToken;
+    const saltOrRounds = 10;
+    const currentRefreshToken = await bcrypt.hash(refreshToken, saltOrRounds);
+    return currentRefreshToken;
   }
 
   async getCurrentRefreshTokenExp(): Promise<Date> {
@@ -108,8 +126,9 @@ export class MemberService {
   }
 
   async setCurrentRefreshToken(refreshToken: string, intraId: string) {
-    const currentRefreshToken = refreshToken;
-    // await this.getCurrentHashedRefreshToken(  refreshToken,);
+    const currentRefreshToken = await this.getCurrentHashedRefreshToken(
+      refreshToken,
+    );
     const currentRefreshTokenExp = await this.getCurrentRefreshTokenExp();
     await this.prisma.member.update({
       where: { intraId: intraId },
@@ -126,17 +145,11 @@ export class MemberService {
     if (!member.currentRefreshToken) {
       return null;
     }
-    let isRefreshTokenMatching;
     // 유저 테이블 내에 정의된 암호화된 refresh_token값과 요청 시 body에 담아준 refresh_token값 비교
-    if (refreshToken == member.currentRefreshToken) {
-      isRefreshTokenMatching = true;
-    } else {
-      isRefreshTokenMatching = false;
-    }
-    // const isRefreshTokenMatching = await bcrypt.compare(
-    //   refreshToken,
-    //   member.currentRefreshToken,
-    // );
+    const isRefreshTokenMatching = await bcrypt.compare(
+      refreshToken,
+      member.currentRefreshToken,
+    );
     // 만약 isRefreshTokenMatching이 true라면 user 객체를 반환
     if (isRefreshTokenMatching) {
       return member;
