@@ -1,10 +1,12 @@
 import React from "react";
 import Sidebar from "./sidebar/Sidebar";
 import Contents from "./Contents";
+import Channel from "./channel/Channel";
+import Menu from "./menu/Menu";
 function Main(){
    
     return <div>
-         <Contents/>
+         <Contents headerComponent={<Menu showBackButton={true}/>} mainComponent={<Channel/>}/>
          <Sidebar />
     </div>
     ;

@@ -1,18 +1,11 @@
-/*
-  Warnings:
-
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropTable
-DROP TABLE "User";
-
 -- CreateTable
 CREATE TABLE "Member" (
     "intraId" TEXT NOT NULL,
     "nickName" TEXT NOT NULL,
     "avatar" TEXT NOT NULL,
     "rank" INTEGER NOT NULL,
+    "currentRefreshTokenExp" TIMESTAMP(3),
+    "currentRefreshToken" TEXT,
 
     CONSTRAINT "Member_pkey" PRIMARY KEY ("intraId")
 );
@@ -31,8 +24,8 @@ CREATE TABLE "Channel" (
     "chIdx" SERIAL NOT NULL,
     "chName" TEXT NOT NULL,
     "chPwd" TEXT,
-    "intraId" TEXT NOT NULL,
-    "chUserCnt" INTEGER NOT NULL,
+    "chUserCnt" INTEGER,
+    "operatorId" TEXT NOT NULL,
 
     CONSTRAINT "Channel_pkey" PRIMARY KEY ("chIdx")
 );
@@ -70,7 +63,7 @@ ALTER TABLE "Friend" ADD CONSTRAINT "Friend_memberId_fkey" FOREIGN KEY ("memberI
 ALTER TABLE "Friend" ADD CONSTRAINT "Friend_friendId_fkey" FOREIGN KEY ("friendId") REFERENCES "Member"("intraId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Channel" ADD CONSTRAINT "Channel_intraId_fkey" FOREIGN KEY ("intraId") REFERENCES "Member"("intraId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Channel" ADD CONSTRAINT "Channel_operatorId_fkey" FOREIGN KEY ("operatorId") REFERENCES "Member"("intraId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "MemberBan" ADD CONSTRAINT "MemberBan_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("intraId") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { IsDateString, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateMemberDto {
   @ApiProperty({
@@ -33,4 +33,12 @@ export class CreateMemberDto {
   })
   @IsNumber()
   rank: number;
+
+  @IsOptional()
+  @IsString()
+  currentRefreshToken?: string;
+
+  @IsOptional()
+  @IsDateString()
+  currentRefreshTokenExp?: Date;
 }

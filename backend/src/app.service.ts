@@ -29,7 +29,8 @@ export class AppService {
     // if (data.data.error) {
     //   throw new HttpException('intra 인증 실패', 401);
     // }
-    console.log(data);
+    // console.log(data);
+    console.log("appservice - getintraAccesstoken");
     console.log(data.login);
   }
 }
