@@ -17,7 +17,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { HttpStatusCode } from 'axios';
 
 @ApiTags('member')
 @ApiResponse({
@@ -28,13 +27,13 @@ import { HttpStatusCode } from 'axios';
 export class MemberController {
   constructor(private readonly memberService: MemberService) {}
 
-  @ApiOperation({ summary: '멤버생성' })
+  @ApiOperation({ summary: '새로운 멤버 생성' })
   @ApiResponse({
-    status: HttpStatusCode.Created,
+    status: 201,
     description: '생성 완료',
   })
   @ApiResponse({
-    status: HttpStatusCode.Conflict,
+    status: 409,
     description: '멤버 닉네임 / 인트라 아이디 중복',
   })
   @ApiBody({ type: CreateMemberDto })
@@ -44,9 +43,9 @@ export class MemberController {
     return this.memberService.create(memberDto);
   }
 
-  @ApiOperation({ summary: '멤버삭제' })
-  @ApiResponse({ status: 200, description: '삭제 성공'})
-  @ApiResponse({ status: 404, description: '삭제할 멤버를 찾지 못함'})
+  @ApiOperation({ summary: 'intraId로 멤버삭제' })
+  @ApiResponse({ status: 200, description: '삭제 성공' })
+  @ApiResponse({ status: 404, description: '삭제할 멤버를 찾지 못함' })
   @Delete('delete')
   @ApiBody({
     schema: {
@@ -73,7 +72,7 @@ export class MemberController {
     return this.memberService.getAll();
   }
 
-  @ApiOperation({ summary: '멤버정보 찾기' })
+  @ApiOperation({ summary: 'intraId로 멤버정보 찾기' })
   @Get(':id')
   @ApiResponse({
     status: 200,
@@ -82,7 +81,7 @@ export class MemberController {
   })
   @ApiResponse({
     status: 404,
-    description: '삭제할 멤버를 찾지 못함',
+    description: '멤버를 찾지 못함',
   })
   @ApiParam({
     name: 'id',
@@ -90,9 +89,11 @@ export class MemberController {
     description: '인트라아이디',
   })
   getMemberDetail(@Param('id') id: string) {
+    // console.log(id);
     return this.memberService.getOne(id);
   }
 
+  @ApiOperation({ summary: '멤버 닉네임 변경' })
   @Patch('update/nick/:id')
   @ApiResponse({
     status: 200,
@@ -112,6 +113,7 @@ export class MemberController {
     return this.memberService.updateNick(id, member);
   }
 
+  @ApiOperation({ summary: '멤버 아바타 변경' })
   @Patch('update/avatar/:id')
   @ApiResponse({
     status: 200,
@@ -126,4 +128,10 @@ export class MemberController {
   updateMemberAvatar(@Param('id') id: string, @Body() member: UpdateMemberDto) {
     return this.memberService.updateAvatar(id, member);
   }
+
+  // 추가해야할 기능
+  // 친구 찾기
+  // 친구 추가
+  // 친구 삭제
+  // 차단
 }
