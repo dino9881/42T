@@ -34,7 +34,7 @@ const Menu = ({ showBackButton}: MenuProps) => {
         <img src={toggleImgSrc} alt="toggle" className="menu-channel-drop-down-button" />
       </button>
       {showBackButton ? (
-        <button className="menu-channel-new-box">Setting</button>
+        <button className="menu-channel-new-box" style={{fontSize : "20px"}}>Setting</button>
       ) : (
         <button className="menu-channel-new-box">new</button>
       )}
