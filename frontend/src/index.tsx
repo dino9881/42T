@@ -12,11 +12,10 @@ const root = ReactDOM.createRoot(
 
 setAuthorizationToken(localStorage.jwtToken);
 
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+root.render(<App />);
+
+
+root.render(<App />);
 
 
 root.render(<App />);

@@ -39,9 +39,9 @@ model Channel {
   chIdx       Int @id @default(autoincrement())
   chName      String @unique
   chPwd       String?
-  operator    Member @relation("channel", fields: [intraId], references: [intraId])
-  intraId     String
-  chUserCnt   Int
+  chUserCnt   Int?
+  operator    Member @relation("channel", fields: [operatorId], references: [intraId])
+  operatorId  String
 }
 
 model MemberBan {
