@@ -3,13 +3,17 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { MemberModule } from '../member/member.module';
 import { JwtModule } from '@nestjs/jwt';
-// import { APP_GUARD } from '@nestjs/core';
-// import { AuthGuard } from './auth.guard';
+import { PassportModule } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
+import { JwtStrategy } from './jwt.strategy';
+import { PrismaService } from 'src/prisma.service';
 
 @Module({
   imports: [
     MemberModule,
+    PassportModule.register({
+      defaultStrategy: 'jwt',
+    }),
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_ACCESS_SECRET'),
@@ -23,12 +27,6 @@ import { ConfigService } from '@nestjs/config';
     forwardRef(() => MemberModule),
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    // {
-    //   provide: APP_GUARD,
-    //   // useClass: AuthGuard,
-    // },
-  ],
+  providers: [AuthService, ConfigService, PrismaService, JwtStrategy],
 })
 export class AuthModule {}

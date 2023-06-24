@@ -130,6 +130,7 @@ export class MemberController {
   }
 
   // 추가해야할 기능
+  // 친구 찾기
   // 친구 추가
   // 친구 삭제
   // 차단
