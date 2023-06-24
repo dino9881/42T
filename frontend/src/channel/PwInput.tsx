@@ -3,6 +3,7 @@ import { Button } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 
 interface PwInputProps {
+<<<<<<< HEAD
     channelName: string;
 }
 
@@ -11,6 +12,16 @@ function PwInput({ channelName }: PwInputProps) {
 
   const handleButtonClick = () => {
     navigate('/chat', { state: { channelName } });
+=======
+    chIdx: number;
+}
+
+function PwInput({ chIdx }: PwInputProps) {
+  const navigate = useNavigate();
+
+  const handleButtonClick = () => {
+    navigate('/chat', { state: { chIdx } });
+>>>>>>> frontend
   };
 
   return (
