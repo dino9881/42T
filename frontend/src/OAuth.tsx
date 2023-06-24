@@ -2,7 +2,6 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import qs from "qs";
 import axios from "axios";
-import * as fucthion from "./Login";
 
 const OAuth: React.FC = () => {
     const location = useLocation();
