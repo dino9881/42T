@@ -4,8 +4,8 @@ import FriendInfo from "./FriendInfo";
 
 interface Friend {
 	name: string;
-	age: number;
-	avatarUrl: string;
+	rank: number;
+	avatar: string;
 }
   
 interface FriendListProps {
@@ -17,7 +17,7 @@ const FriendList: React.FC<FriendListProps> = ({ friends }) => {
 	return (
 	  <div className="list-scroll">
 		{friends.map((friend, index) => (
-        <FriendInfo key={index} name={friend.name} age={friend.age} avatarUrl={friend.avatarUrl}/>
+        <FriendInfo key={index} name={friend.name} rank={friend.rank} avatar={friend.avatar}/>
      	 ))}
 	  </div>
 	);
