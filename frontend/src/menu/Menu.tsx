@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import './Menu.css';
 
 type MenuProps = {
@@ -34,16 +35,16 @@ const Menu = ({ showBackButton}: MenuProps) => {
         <img src={toggleImgSrc} alt="toggle" className="menu-channel-drop-down-button" />
       </button>
       {showBackButton ? (
-        <button className="menu-channel-new-box">Setting</button>
+        <button className="menu-channel-new-box" style={{fontSize : "20px"}}>Setting</button>
       ) : (
         <button className="menu-channel-new-box">new</button>
       )}
 
-      {showBackButton && (
+      {/* {showBackButton && (
         <button className="menu-back-button" >
           <img src="back-button.svg" alt="back" />
         </button>
-      )}
+      )} */}
 
       <button className="menu-grin-button menu-start-button" onClick={handleStartClick}>
         {showWaiting ? "Waiting" : "START"}
@@ -53,7 +54,7 @@ const Menu = ({ showBackButton}: MenuProps) => {
           Cancel
         </button>
       )}
-      <button className="menu-grin-button menu-lank-button">Lank</button>
+      <Link to="/ranking"> <button className="menu-grin-button menu-lank-button">Rank</button> </Link>
       <button className="menu-grin-button menu-custom-button">custom</button>
     </div>
   );
