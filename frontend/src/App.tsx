@@ -5,6 +5,7 @@ import Main from "./main";
 import Chat from "./Chat";
 import Channel from "./channel/Channel";
 import Ranking from "./ranking/Ranking";
+import Game from "./game/Game";
 import {
     BrowserRouter,
     Route,
@@ -29,6 +30,7 @@ function App() {
                     <Route path="/chat" element={<Chat />}></Route>
                     <Route path="/channel" element={<Channel />}></Route>
                     <Route path="/ranking" element={<Ranking />}></Route>
+                    <Route path="/game" element={<Game/>}></Route>
                 </Routes>
             <Background />
             </BrowserRouter>

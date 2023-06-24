@@ -145,7 +145,7 @@ body {
 .contents-main {
   width: 100%;
   height: 85%;
-  padding: 40px;
+  padding: 0px;
   bottom: 0;
   position: absolute;
 }
@@ -353,4 +353,9 @@ body {
 {
   width: 48%;
   height:100%;  
+}
+
+.game-canvas{
+  width: 100%;
+  height: 100%;
 }
