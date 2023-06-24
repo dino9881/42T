@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import './Menu.css';
 
 type MenuProps = {
@@ -53,7 +54,7 @@ const Menu = ({ showBackButton}: MenuProps) => {
           Cancel
         </button>
       )}
-      <button className="menu-grin-button menu-lank-button">Lank</button>
+      <Link to="/ranking"> <button className="menu-grin-button menu-lank-button">Rank</button> </Link>
       <button className="menu-grin-button menu-custom-button">custom</button>
     </div>
   );
