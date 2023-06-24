@@ -37,4 +37,12 @@ export class SocketIOGateway implements OnGatewayInit, OnGatewayConnection,OnGat
     client["nickname"] = nickname;
     client.to(channelName).emit("welcome", nickname);
   }
+
+  @SubscribeMessage('game-start')
+  handleGameStart(client: any, payload: any): string {
+    console.log('Received message:', payload);
+    client.emit("game-render",{x1: 10, y1: 360, x2: 1270, y2 : 360, bx : 640, by:360});
+    return 'Message received!';
+  }
+
 }
