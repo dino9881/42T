@@ -13,52 +13,39 @@ datasource db {
 
 model Member {
   intraId   String  @id
-  nickName  String @unique
+  nickName  String  @unique
   avatar    String
   rank      Int
+  winCnt    Int @default(0)
+  loseCnt   Int @default(0)
   currentRefreshTokenExp DateTime?
   currentRefreshToken String?
-  friendsof    Friend[] @relation("friendOf")
-  memeberof    Friend[] @relation("memberOf")
-  channel      Channel[] @relation("channel")
-  banRequest   MemberBan[] @relation("banRequest")
-  banned       MemberBan[] @relation("banned")
-  gameP1       GameHistory[] @relation("P1")
-  gameP2       GameHistory[] @relation("P2")
-}
 
-model Friend  {
-  friendIdx  Int @id @default(autoincrement())
-  member      Member @relation("memberOf", fields: [memberId], references: [intraId])
-  memberId   String
-  friend      Member @relation("friendOf", fields: [friendId], references: [intraId])
-  friendId   String
+	friend		 Member[]	@relation("friend") // 내가 등록한 친구들
+  friendOf   Member[] @relation("friend") // 내가 친구로 등록됨
+  banned     Member[] @relation("ban") // 내가 밴한 사람들
+  bannedOf   Member[] @relation("ban") // 내가 밴당한 사람들
+
+  channel    Channel[] @relation("channel")
+  winner     GameHistory[] @relation("Player1")
+  loser      GameHistory[] @relation("Player2")
 }
 
 model Channel {
   chIdx       Int @id @default(autoincrement())
   chName      String @unique
   chPwd       String?
-  chUserCnt   Int?
+  chUserCnt   Int? 
   operator    Member @relation("channel", fields: [operatorId], references: [intraId])
   operatorId  String
 }
 
-model MemberBan {
-  memberBanIdx   Int @id @default(autoincrement())
-  member         Member @relation("banRequest", fields: [memberId], references: [intraId])
-  memberId       String
-  banMember      Member @relation("banned", fields: [banId], references: [intraId])
-  banId          String
-}
-
 model GameHistory{
   gameIdx       Int @id @default(autoincrement())
-  gameP1        Member @relation("P1", fields: [gameP1Id], references: [intraId])
-  gameP1Id      String
-  gameP2        Member @relation("P2", fields: [gameP2Id], references: [intraId])
-  gameP2Id      String
-  gameP1Score   Int
-  gameP2Score   Int
+  winner        Member @relation("Player1", fields: [winnerId], references: [intraId])
+  winnerId      String
+  loser        Member @relation("Player2", fields: [loserId], references: [intraId])
+  loserId      String
+  winnerScore   Int
+  loserScore   Int
 }
-

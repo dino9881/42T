@@ -5,11 +5,11 @@ import InfoScore from "./InfoScore";
 
 interface FriendInfoProps {
 	name: string;
-	age: number;
-	avatarUrl: string;
+	rank: number;
+	avatar: string;
 }
 
-const FriendInfo: React.FC<FriendInfoProps> = ({ name, age, avatarUrl }) => {
+const FriendInfo: React.FC<FriendInfoProps> = ({ name, rank, avatar }) => {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [toggleImgSrc, setToggleImgSrc] = useState("toggle_down.svg");
 
@@ -21,9 +21,9 @@ const FriendInfo: React.FC<FriendInfoProps> = ({ name, age, avatarUrl }) => {
 	return (
 		<div>
 			<div className={isExpanded ? 'friend-info-line-big' : 'friend-info-line-small'}>
-				<FriendInfoSimple name={name} age={age} avatarUrl={avatarUrl}/>
+				<FriendInfoSimple name={name} rank={rank} avatar={avatar}/>
 				<img src={toggleImgSrc} alt="toggle" className="friend-toggle-down" onClick={handleToggle}></img>
-				{isExpanded && <InfoScore name={name} age={age} avatarUrl={avatarUrl} state={2} />}
+				{isExpanded && <InfoScore name={name} rank={rank} avatar={avatar} state={2} />}
 			</div>
 		</div>
 	);

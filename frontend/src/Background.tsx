@@ -1,6 +1,5 @@
 import React from "react";
-
-
+import { Link } from "react-router-dom";
 
 function Background(){
     return <div>
@@ -21,7 +20,9 @@ function Header(){
 function Footer(){
     return (
         <div className='footer'>
-            <h4>2023 ft_transcendence</h4>
+            <h4>
+              <Link to="/main" style={{ textDecoration: "none", color: "inherit" }}>2023 ft_transcendence</Link>
+            </h4>
         </div>
 
     )

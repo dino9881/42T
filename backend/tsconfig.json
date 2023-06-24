@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "types": ["axios"],
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,

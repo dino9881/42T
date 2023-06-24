@@ -13,6 +13,7 @@
 	background-color: #7494D0;
 	outline: none;
 	border: none;
+	padding-left: 20px;
 }
 
 #serch-friend-button {
@@ -27,4 +28,24 @@
 	border: none;
 	font-size: 25px;
 	color: white;
+}
+
+.search-result-close-button {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+}
+
+.search-result {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: absolute;
+	width: 350px;
+	height: 140px;
+	top: 320px;
+	left: -600px;
+	border: 1px solid black;
+	background-color: #f7f5e8;
+	z-index: 2;
 }
