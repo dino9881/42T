@@ -25,9 +25,12 @@ import {
 export class ChannelController {
   constructor(private readonly channelService: ChannelService) {}
 
+  // jwt auth 추가 ex @UseGuards(JwtAuthGuard)
   @Post('/create')
   @ApiOperation({ summary: '채널 생성', description: 'Create Channel API' })
   @ApiResponse({ status: 200, description: '성공' })
+  @ApiResponse({ status: 400, description: '잘못된 요청'})
+  @ApiResponse({ status: 404, description: '멤버 아님'})
   @ApiResponse({ status: 409, description: '중복 이름' })
   @ApiResponse({ status: 500, description: '서버 에러' })
   @ApiCreatedResponse({ type: CreateChannelDto })
@@ -43,6 +46,7 @@ export class ChannelController {
   @ApiResponse({ status: 404, description: '없는 채널 번호' })
   @ApiResponse({ status: 409, description: '중복 이름' })
   @ApiResponse({ status: 500, description: '서버 에러' })
+  @ApiCreatedResponse({ type: UpdateChannelDto })
   @ApiBody({ type: CreateChannelDto })
   update(@Param('idx') idx: string, @Body() updateChannelDto: UpdateChannelDto) {
     return this.channelService.update(+idx, updateChannelDto);
@@ -62,6 +66,7 @@ export class ChannelController {
   @ApiResponse({ status: 200, description: '성공' })
   @ApiResponse({ status: 404, description: '없는 채널 번호' })
   @ApiResponse({ status: 500, description: '서버 에러' })
+  @ApiCreatedResponse({ type: UpdateChannelDto })
   @ApiOperation({
     summary: '모든 채널 조회',
     description: 'Find All Channel API',
@@ -131,5 +136,13 @@ export class ChannelController {
   @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx'})
   getChannelUsers(@Param('idx') idx: string) {
     return this.channelService.getChannelUsers(+idx);
+  }
+
+  @Post('/check/:idx')
+  @ApiOperation({ summary: 'idx 채널 password 확인', description: 'password check By Idx' })
+  @ApiBody({ type: CreateChannelDto })
+  @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx'})
+  checkPassword(@Param('idx') idx: string, @Body() updateChannelDto : UpdateChannelDto) {
+    return this.channelService.checkPassword(+idx, updateChannelDto);
   }
 }
