@@ -10,6 +10,7 @@ function PwInput({ chIdx }: PwInputProps) {
     const navigate = useNavigate();
 
     const handleButtonClick = () => {
+        console.log(chIdx);
         navigate("/chat", { state: { chIdx } });
     };
 
