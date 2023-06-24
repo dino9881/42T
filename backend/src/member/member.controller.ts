@@ -43,9 +43,15 @@ export class MemberController {
     return this.memberService.create(memberDto);
   }
 
+<<<<<<< HEAD
   @ApiOperation({ summary: 'intraId로 멤버삭제' })
   @ApiResponse({ status: 200, description: '삭제 성공' })
   @ApiResponse({ status: 404, description: '삭제할 멤버를 찾지 못함' })
+=======
+  @ApiOperation({ summary: '멤버삭제' })
+  @ApiResponse({ status: 200, description: '삭제 성공'})
+  @ApiResponse({ status: 404, description: '삭제할 멤버를 찾지 못함'})
+>>>>>>> frontend
   @Delete('delete')
   @ApiBody({
     schema: {
@@ -81,7 +87,11 @@ export class MemberController {
   })
   @ApiResponse({
     status: 404,
+<<<<<<< HEAD
     description: '멤버를 찾지 못함',
+=======
+    description: '삭제할 멤버를 찾지 못함',
+>>>>>>> frontend
   })
   @ApiParam({
     name: 'id',
@@ -89,11 +99,13 @@ export class MemberController {
     description: '인트라아이디',
   })
   getMemberDetail(@Param('id') id: string) {
-    // console.log(id);
     return this.memberService.getOne(id);
   }
 
+<<<<<<< HEAD
   @ApiOperation({ summary: '멤버 닉네임 변경' })
+=======
+>>>>>>> frontend
   @Patch('update/nick/:id')
   @ApiResponse({
     status: 200,
@@ -113,7 +125,10 @@ export class MemberController {
     return this.memberService.updateNick(id, member);
   }
 
+<<<<<<< HEAD
   @ApiOperation({ summary: '멤버 아바타 변경' })
+=======
+>>>>>>> frontend
   @Patch('update/avatar/:id')
   @ApiResponse({
     status: 200,

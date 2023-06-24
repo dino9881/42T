@@ -1,14 +1,12 @@
 import React, { useEffect } from "react";
 import { useState, ChangeEvent, FormEvent } from "react";
-import { ConnectionState } from "./ConnectionState";
 import { socket } from "./socket";
 import { useLocation } from "react-router-dom";
 import Contents from "./Contents";
 import Sidebar from "./sidebar/Sidebar";
 import Menu from "./menu/Menu";
 
-interface Message {
-    id: number;
+interface MessageText {
     name: string;
     text: string;
 }
@@ -21,51 +19,79 @@ function Chat() {
     ;
 }
 
+
 function ChatComponent() {
     const location = useLocation();
     const [channelName, setChannelName] = useState("");
+    const [nickName, setNickName] = useState("jonkim");
+    const [msgList, setMsgList] = useState<MessageText[]>(() => initialData());
+
+    function initialData(): MessageText[]  {
+        return [];
+      }
+
     useEffect(() => {
         const state = location.state as { channelName: string };
         if (state && state.channelName) {
-          setChannelName(state.channelName);
+            setChannelName(state.channelName);
         } else {
-          setChannelName("error");
+            setChannelName("error");
         }
-      }, [location.state]);
-    const addMessage = (message: Message) => {
+        socket.connect();
+
+        socket.on("welcome", (nickName) => {
+            const newMessage = {name: nickName, text: `${nickName} : 이 입장했습니다.` };
+            addMessage(newMessage);
+        });
+
+
+        socket.on("send-message", (payload:any) => {
+            console.log("send-message");
+            const {nickname, text}=payload;
+            const newMessage = {name: nickname, text: text};
+            addMessage(newMessage);
+        });
+    }, []);
+    
+    useEffect(() => {
+        if(channelName)
+        {  
+              socket.emit("enter-channel", {channelName: channelName,nickname: nickName});
+        }
+    }, [channelName])
+    
+    const addMessage = (messageText: MessageText) => {
+        const message = {name: messageText.name, text: messageText.text };
         setMsgList((prevMsgList) => [...prevMsgList, message]);
       };
-    const [msgList, setMsgList] = useState<Message[]>([]);
-    return (
-        
+
+    return (  
         <div className="chat">
             <div>{channelName}</div>
             <div className="chat-scroll">
-                {msgList.map((message) => (
+                {msgList.map((message, index) => (
                     <ChatBox
-                        key={message.id}
-                        id={message.id}
+                        key={index}
                         name={message.name}
                         text={message.text}
                     />
                 ))}
             </div>
-            <ChatInput addMessage={addMessage}/>
+            <ChatInput addMessage={addMessage} nickname={nickName} channelname={channelName} />
         </div>
     );
 }
 
-function ChatInput({ addMessage }: { addMessage: (message: Message) => void }) {
+function ChatInput({ addMessage, nickname, channelname }: { addMessage: (message: MessageText) => void, nickname: string, channelname:string }) {
     const [text, setText] = useState("");
-    const [msgId, setMsgId] = useState(0);
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         setText(event.target.value);
     };
     const onSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const newMessage = { id: msgId, name: "new", text: text };
+        const newMessage = {name: "나", text: text };
         addMessage(newMessage);
-        setMsgId(msgId + 1);
+        socket.emit("message",{channelname, nickname, text});
         setText("");
     };
     return (
@@ -84,7 +110,7 @@ function ChatInput({ addMessage }: { addMessage: (message: Message) => void }) {
     );
 }
 
-function ChatBox({ name, text }: Message) {
+function ChatBox({ name, text }: MessageText) {
     return (
         <div className="chat-box">
             <div className="chat-userimg">img</div>
