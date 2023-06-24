@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from "axios";
 import Login from "./Login";
 import Main from "./main";
 import Chat from "./Chat";
-import Channel from "./Channel";
+import Channel from "./channel/Channel";
 import {
     BrowserRouter,
     Route,

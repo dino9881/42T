@@ -253,7 +253,7 @@ body {
 }
 
 .chan-lockcheck{
-  border:solid 1px;
+  border:solid 2px gray;
   width: 30px;
   height: 30px;
   display: inline-block;
@@ -276,7 +276,7 @@ body {
 
 .chan-hostimg {
   margin : 10px;
-  border:solid 1px;
+  border:solid 2px gray;
   width: 70px;
   height: 70px;
   display: inline-block;
@@ -292,13 +292,16 @@ body {
 }
 
 .chan-hostname {
+  background-image: url("../public/img/bg.jpg");
+  border: solid 2px gray;
   width: 60px;
   height: 20px;
   font-size: small;
   text-align: center; /* 가운데 정렬 */
   position: absolute;
   bottom: 10px; /* 원하는 위치로 조정 */
-  background-color: white; /* 필요에 따라 배경색 설정 */
+  /* background-color: white; */
+  background-color:transparent 필요에 따라 배경색 설정
 }
 
 .chan-info{
@@ -329,13 +332,14 @@ body {
 }
 
 .pw-input{
+  border: solid gray 2px;
   margin-right: 10px;
   width: 70px;
   height: 30px;
 }
 
 .chan-count{
-  border: solid black 1px;
+  border: solid gray 2px;
   display: flex;
   width: 40px;
   margin-left: 210px;
@@ -343,4 +347,10 @@ body {
   text-align: center; 
   justify-content: center; /* axis들을 가로 가운데 정렬 */
   position: absolute;
+}
+
+.chan-emptyrightbox
+{
+  width: 48%;
+  height:100%;  
 }
