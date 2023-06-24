@@ -36,18 +36,18 @@ export class AuthService {
   }
 
   async generateAccessToken(member: Member): Promise<string> {
-    const payload = {
-      intraId: member.intraId,
-    };
-    return await this.jwtService.signAsync(payload);
+    return await this.jwtService.signAsync(
+      { intraId: member.intraId },
+      {
+        secret: this.config.get<string>('JWT_ACCESS_SECRET'),
+        expiresIn: this.config.get<string>('JWT_ACCESS_EXPIRATION_TIME'),
+      },
+    );
   }
 
   async generateRefreshToken(member: Member): Promise<string> {
-    const payload = {
-      intraId: member.intraId,
-    };
     return await this.jwtService.signAsync(
-      { intraId: payload.intraId },
+      { intraId: member.intraId },
       {
         secret: this.config.get<string>('JWT_REFRESH_SECRET'),
         expiresIn: this.config.get<string>('JWT_REFRESH_EXPIRATION_TIME'),

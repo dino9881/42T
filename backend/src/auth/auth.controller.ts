@@ -2,20 +2,19 @@ import {
   Body,
   Controller,
   Post,
-  HttpCode,
-  HttpStatus,
   UseGuards,
-  Get,
   Req,
   Res,
   UnauthorizedException,
+  Get,
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
-// import { AuthGuard } from './auth.guard';
 import { MemberService } from 'src/member/member.service';
-// import { RefreshTokenDto } from './refresh-token.dto';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { GetMember } from 'src/decorator/getMember.decorator';
+import { AuthGuard } from '@nestjs/passport';
+import { Member } from '@prisma/client';
 
 @ApiTags('auth')
 @ApiResponse({
@@ -80,12 +79,6 @@ export class AuthController {
     });
   }
 
-  // @UseGuards(AuthGuard)
-  // @Get('profile')
-  // getProfile(@Body() body) {
-  //   return body.intraId;
-  // }
-
   @ApiOperation({ summary: 'refresh token으로 access token재발급' })
   @Post('refresh')
   async refresh(
@@ -103,5 +96,12 @@ export class AuthController {
     } catch (err) {
       throw new UnauthorizedException('Invalid refresh-token');
     }
+  }
+
+  @Get('me')
+  @UseGuards(AuthGuard('jwt'))
+  getMyInfo(@GetMember() member: Member) {
+    console.log(member);
+    return member;
   }
 }
