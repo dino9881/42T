@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import Contents from "./Contents";
 import Sidebar from "./sidebar/Sidebar";
 import Menu from "./menu/Menu";
+import axios from "axios";
 
 interface MessageText {
     name: string;
@@ -31,9 +32,21 @@ function ChatComponent() {
       }
 
     useEffect(() => {
-        const state = location.state as { channelName: string };
-        if (state && state.channelName) {
-            setChannelName(state.channelName);
+        const state = location.state as { chIdx : number };
+        if (state && state.chIdx) {
+            axios
+            .get(`http://localhost:5001/channel/name/${state.chIdx}`)
+            .then((response) => {
+                // 요청이 성공하면 데이터를 상태로 설정
+                // setChannelName(response.data);
+                setChannelName(response.data.chName);
+                console.log(channelName);
+            })
+            .catch((error) => {
+                // 요청이 실패하면 에러 처리
+                console.error("API 요청 실패:", error);
+            });
+            // setChannelName(state.channelName);
         } else {
             setChannelName("error");
         }

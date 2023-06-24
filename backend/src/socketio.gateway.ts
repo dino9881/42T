@@ -35,6 +35,7 @@ export class SocketIOGateway implements OnGatewayInit, OnGatewayConnection,OnGat
     const {channelName, nickname} = payload;
     client.join(channelName);
     client["nickname"] = nickname;
+    console.log(`${nickname} enter channel : ${channelName}`);
     client.to(channelName).emit("welcome", nickname);
   }
 }
