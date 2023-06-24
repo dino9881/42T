@@ -1,7 +1,7 @@
 import {
+  ConflictException,
   BadRequestException,
   ConsoleLogger,
-  ConflictException,
   ForbiddenException,
   HttpException,
   HttpStatus,
@@ -22,74 +22,103 @@ export class MemberService {
 
   async getAll() {
     const members = this.prisma.member.findMany();
-    if (members) {
-      return members;
-    } else {
-      throw new NotFoundException('member/all failed');
-    }
+    return members;
   }
 
   async getOne(intraId: string) {
+<<<<<<< HEAD
+    let member;
+    try {
+      member = await this.prisma.member.findUnique({
+        where: { intraId },
+      });
+      console.log('member service getOne');
+      console.log(member);
+    } catch (err) {
+      throw new NotFoundException(err.message);
+    }
+=======
     const member = await this.prisma.member.findUnique({
       where: { intraId },
     });
-      console.log('member service getOne');
-      console.log(member);
+>>>>>>> channel
     if (member === null) {
       throw new NotFoundException('Member Not Found by IntraId');
     }
     return member;
   }
 
-  async getOneByNick(nick: string) {
+  async checkNickDuplicate(nick: string) {
     const member = await this.prisma.member.findUnique({
       where: { nickName: nick },
     });
+    if (member)
+      throw new ConflictException('NickName Already Exist', `nickName : ${nick}`);
     return member;
+  }
+
+  async checkIntraIdDuplicate(IntraId: string) {
+    const member = await this.prisma.member.findUnique({
+      where: { intraId: IntraId },
+    });
+    if (member)
+      throw new ConflictException('IntraId Already Exist', `IntraId : ${IntraId}`);
   }
 
   async create(memberDto: CreateMemberDto) {
     //멤버의 인자가 맞지 않을 경우 처리필요?
-    try {
-      const memberNick = await this.getOneByNick(memberDto.nickName);
-      if (memberNick)
-        throw new HttpException(
-          'NickName Already Exist',
-          HttpStatusCode.Conflict,
-        );
-      try {
-        const memberId = await this.getOne(memberDto.nickName);
-        if (memberId)
-          throw new HttpException(
-            'IntraId Already Exist',
-            HttpStatusCode.Conflict,
-          );
-      } catch (err) {
-        if (err.HttpStatus == HttpStatusCode.NotFound) {
-          await this.prisma.member.create({
-            data: {
-              ...memberDto,
-              currentRefreshTokenExp: undefined,
-              currentRefreshToken: undefined,
-            },
-          });          
-          return HttpStatus.CREATED;
-        }
-      }
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-      //멤버 테이블에 저장을 실패했을 경우 > 언제가 있을까?
-    }
-    throw new HttpException('Creation Failed', HttpStatus.BAD_REQUEST);
+<<<<<<< HEAD
+=======
+    await this.checkIntraIdDuplicate(memberDto.intraId);
+    await this.checkNickDuplicate(memberDto.nickName);
+>>>>>>> channel
+    await this.prisma.member.create({
+      data: {
+        ...memberDto,
+        currentRefreshTokenExp: undefined,
+        currentRefreshToken: undefined,
+      },
+    });
+    return HttpStatus.CREATED;
+<<<<<<< HEAD
+    // try {
+    //   const memberNick = await this.getOneByNick(memberDto.nickName);
+    //   if (memberNick)
+    //     throw new HttpException(
+    //       'NickName Already Exist',
+    //       HttpStatusCode.Conflict,
+    //     );
+    //   try {
+    //     const memberId = await this.getOne(memberDto.nickName);
+    //     if (memberId)
+    //       throw new HttpException(
+    //         'IntraId Already Exist',
+    //         HttpStatusCode.Conflict,
+    //       );
+    //   } catch (err) {
+    //     if (err.HttpStatus == HttpStatusCode.NotFound) {
+    //       return HttpStatus.CREATED;
+    //     }
+    //   }
+    // } catch (error) {
+    //   throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    //멤버 테이블에 저장을 실패했을 경우 > 언제가 있을까?
+    // }
+    // throw new HttpException('Creation Failed', HttpStatus.BAD_REQUEST);
+=======
+>>>>>>> channel
   }
 
-  async update(id: string, memberDto: UpdateMemberDto) {
-    // nickname 중복 check
-    const member = await this.getOneByNick(memberDto.nickName);
-    if (member && member.intraId != id) {
-      throw new ForbiddenException('Nickname Already Exist');
-    }
-    //update의 리턴을 받아서 처리해야할까?
+  async updateNick(id: string, memberDto: UpdateMemberDto) {
+    await this.checkNickDuplicate(memberDto.nickName);
+    await this.prisma.member.update({
+      where: { intraId: id },
+      data: memberDto,
+    });
+    return HttpStatusCode.Ok;
+  }
+
+  async updateAvatar(id: string, memberDto: UpdateMemberDto) {
     await this.prisma.member.update({
       where: { intraId: id },
       data: memberDto,
