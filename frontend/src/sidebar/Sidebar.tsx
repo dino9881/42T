@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import AddFriend from './search/AddFriend';
 import MyInfo from './myinfo/MyInfo';
 import FriendList from './friendlist/FriendList';
@@ -8,66 +7,27 @@ import './Sidebar.css';
 
 interface Friend {
 	name: string;
-	age: number;
-	avatarUrl: string;
-}
-
-interface Myinfo {
-	name: string;
-	age: number;
-	avatarUrl: string;
+	rank: number;
+	avatar: string;
 }
 
 const Sidebar = () => {
 	const [viewList, setViewList] = useState(true)
-	const [memberData, setMemberData] = useState<any>(null)
-
-	const myinfo: Myinfo = {
-		name: "yyoo",
-		age: 26,
-		avatarUrl: "avatar/yyoo.jpeg"
-	};
 
 	const friends: Friend[] = [
-		{ name: "GOAT", age: 28, avatarUrl: "avatar/GOAT.jpeg" },
-		{ name: "haaland", age: 25, avatarUrl: "avatar/haaland.jpeg" },
-		{ name: "Kevin De Bruyne", age: 25, avatarUrl: "avatar/kdb.jpeg" },
-		{ name: "son", age: 28, avatarUrl: "avatar/son.jpeg" },
-		{ name: "lee", age: 30, avatarUrl: "avatar/lee.jpeg" },
-		{ name: "foden", age: 30, avatarUrl: "avatar/phil-foden.jpeg" },
-		{ name: "kim", age: 30, avatarUrl: "avatar/kim.jpeg" }
+		{ name: "GOAT", rank: 28, avatar: "avatar/GOAT.jpeg" },
+		{ name: "haaland", rank: 25, avatar: "avatar/haaland.jpeg" },
+		{ name: "Kevin De Bruyne", rank: 25, avatar: "avatar/kdb.jpeg" },
+		{ name: "son", rank: 28, avatar: "avatar/son.jpeg" },
+		{ name: "lee", rank: 30, avatar: "avatar/lee.jpeg" },
+		{ name: "foden", rank: 30, avatar: "avatar/phil-foden.jpeg" },
+		{ name: "kim", rank: 30, avatar: "avatar/kim.jpeg" }
 	];
-
-	// axios.post('http://localhost:5001/member/create', 
-	// {
-	// 	"intraId": "heeskim",
-	// 	"nickName": "hees",
-	// 	"avatar": "../public/img/avatar.jpg",
-	// 	"rank": 100
-	// }
-	// )
-	// .then(function (response) {
-	// 	console.log(response);
-	// })
-	// .catch(function (error) {
-	// 	console.log(error);
-	// });
-
-	// useEffect(() => {
-	// 	axios.get('http://localhost:5001/member/heeskim')
-	// 		.then((response) => {
-	// 			setMemberData(response.data);
-	// 			console.log(response.data); // 데이터 출력
-	// 		})
-	// 		.catch((error) => {
-	// 			console.log(error);
-	// 		});
-	// }, []);
 
 	return (
 		<div className='side'>
 			<AddFriend />
-			<MyInfo myinfo={myinfo}/>
+			<MyInfo />
 			<div className='side-list'>
 				{ viewList ? <FriendList friends={friends}/> : <DmList/> }
 				<div className='side-list-buttons'>

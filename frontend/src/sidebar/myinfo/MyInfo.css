@@ -154,3 +154,15 @@
 	position: absolute;
 	bottom: 120px;
 }
+
+.my-info-change-set-button {
+	position: absolute;
+	bottom: 20px;
+	background-color:transparent;
+	border: 1px solid black;
+}
+
+.my-info-change-nick-submit {
+	background-color:transparent;
+	border: 1px solid black;
+}

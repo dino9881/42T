@@ -39,11 +39,11 @@ const Menu = ({ showBackButton}: MenuProps) => {
         <button className="menu-channel-new-box">new</button>
       )}
 
-      {showBackButton && (
+      {/* {showBackButton && (
         <button className="menu-back-button" >
           <img src="back-button.svg" alt="back" />
         </button>
-      )}
+      )} */}
 
       <button className="menu-grin-button menu-start-button" onClick={handleStartClick}>
         {showWaiting ? "Waiting" : "START"}
