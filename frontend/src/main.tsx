@@ -6,7 +6,7 @@ import Menu from "./menu/Menu";
 function Main(){
    
     return <div>
-         <Contents headerComponent={<Menu showBackButton={true}/>} mainComponent={<Channel/>}/>
+         <Contents headerComponent={<Menu showBackButton={false}/>} mainComponent={<Channel/>}/>
          <Sidebar />
     </div>
     ;
