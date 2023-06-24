@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { IsDateString, IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class CreateMemberDto {
+export class MemberInfoDto {
   @ApiProperty({
     example: 'heeskim',
     description: '인트라아이디',
@@ -33,4 +33,26 @@ export class CreateMemberDto {
   })
   @IsNumber()
   rank: number;
+
+  @ApiProperty({
+    example: 1,
+    description: '이긴 시합 수',
+  })
+  @IsNumber()
+  winCnt: number;
+
+  @ApiProperty({
+    example: 1,
+    description: '진 시합 수',
+  })
+  @IsNumber()
+  loseCnt: number;
+
+  @IsOptional()
+  @IsString()
+  currentRefreshToken?: string;
+
+  @IsOptional()
+  @IsDateString()
+  currentRefreshTokenExp?: Date;
 }
