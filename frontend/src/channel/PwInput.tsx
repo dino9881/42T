@@ -20,13 +20,15 @@ function PwInput({ chIdx, chPwd } : PwInputProps) {
     };
 
     const pwCorrect = () : Promise<boolean> => {
+        // console.log("chIdx : " + chIdx);
+        // console.log("chPwd : " + inputValue);
         return axios
-            .post("http://localhost:5001/channel/check" ,{
-                inputValue: inputValue,
-                chIdx: chIdx,
+            .post(`http://localhost:5001/channel/check/${chIdx}` ,{ 
+                chPwd: inputValue 
             })
             .then((response) => {
                 const data = response.data;
+                // console.log(data);
                 return data;
             })
             .catch((error) => {
