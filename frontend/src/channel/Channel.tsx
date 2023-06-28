@@ -39,6 +39,10 @@ function Channel() {
                 }
                 return null;
             })}
+            <div className="left-right_button">
+                <button className="chan-left_button"></button>
+                <button className="chan-right_button"></button>
+            </div>
         </div>
     );
 }
