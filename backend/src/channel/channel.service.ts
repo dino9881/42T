@@ -14,28 +14,32 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChannelService {
-  private channelMember: Record<number, string[]>;
-  private banList: Record<number, string[] >;
+  private channelUsers: Record<number, string[]>;
+  private banUsers: Record<number, string[] >;
 
   constructor(private prisma: PrismaService) {
-    this.channelMember = {};
+    this.channelUsers = {};
+    this.banUsers = {};
   }
 
   async hashPassword(channel: CreateChannelDto) {
     const salt = await bcrypt.genSalt(10);
     channel.chPwd = await bcrypt.hash(channel.chPwd, salt);
+    return channel;
   }
 
   async create(createChannelDto: CreateChannelDto) {
     var createData;
     try {
-      const { chName, chPwd, operatorId } = createChannelDto;
       
-      if (chPwd !== undefined)
+      if (createChannelDto.chPwd !== undefined)
       {
-        await this.hashPassword(createChannelDto);
+        createChannelDto = await this.hashPassword(createChannelDto);
         console.log(createChannelDto.chPwd);
       }
+      const { chName, chPwd, operatorId } = createChannelDto;
+      console.log(createChannelDto.chPwd);
+
       createData = await this.prisma.channel.create({
         data: { chName, chUserCnt: 1, chPwd,
           operator: { connect: { intraId: operatorId }, } },
@@ -154,10 +158,7 @@ export class ChannelService {
     return findData;
   }
 
-  // async checkPwd(pwd: string) {}
-
   async enter(idx: number, memberIdDto: MemberIdDto) {
-    // pwd 검사
     var updatedChannel;
     var { memberId } = memberIdDto;
     try {
@@ -171,14 +172,13 @@ export class ChannelService {
           chUserCnt: { increment: 1},
         }
       });
-      if (!(idx in this.channelMember)) {
-        this.channelMember[idx] = [];
+      if (!(idx in this.channelUsers)) {
+        this.channelUsers[idx] = [];
       }
-      this.channelMember[idx].push(memberId);
+      this.channelUsers[idx].push(memberId);
     } catch (error) {
       throw new InternalServerErrorException('Internal Server Error');
     }
-    return updatedChannel;
   }
 
   async leave(idx: number, memberIdDto: MemberIdDto) {
@@ -195,12 +195,11 @@ export class ChannelService {
           chUserCnt: { decrement: 1},
         }
       });
-      this.channelMember[idx] = this.channelMember[idx].filter(item => item !== memberId);
+      this.channelUsers[idx] = this.channelUsers[idx].filter(item => item !== memberId);
 
     } catch (error) {
       throw new InternalServerErrorException('Internal Server Error');
     }
-    return updatedChannel;
   }
 
   async getChannelUsers(idx: number) {
@@ -211,9 +210,9 @@ export class ChannelService {
     } catch (error) {
       throw new InternalServerErrorException('Internal Server Error');
     }
-    console.log("get user");
-    console.log(this.channelMember[idx]);
-    return this.channelMember[idx];
+    console.log("get users");
+    console.log(this.channelUsers[idx]);
+    return this.channelUsers[idx];
   }
 
   async checkPassword(idx: number, updateChannelDto: UpdateChannelDto) {
@@ -230,8 +229,50 @@ export class ChannelService {
   }
 
   // ban
-  // ban 추가
-  // ban 삭제
-  // banlist 조회
+
+  async saveBanUser(idx: number, memberIdDto: MemberIdDto) {
+    var { memberId } = memberIdDto;
+    try {
+      const channel = await this.findOneById(idx);
+      if (!channel)
+        throw new NotFoundException('channel not found');
+    
+      if (!(idx in this.banUsers)) {
+        this.banUsers[idx] = [];
+      }
+      this.banUsers[idx].push(memberId);
+      console.log(this.banUsers);
+    } catch (error) {
+      throw new InternalServerErrorException('Internal Server Error');
+    }
+  }
+
+  async deleteBanUser(idx: number, memberIdDto: MemberIdDto) {
+    var { memberId } = memberIdDto;
+    try {
+      const channel = await this.findOneById(idx);
+      if (!channel)
+        throw new NotFoundException('channel not found');
+    
+      this.banUsers[idx] = this.banUsers[idx].filter(item => item !== memberId);
+
+    } catch (error) {
+      throw new InternalServerErrorException('Internal Server Error');
+    }
+  }
+
+  async getChannelBanUsers(idx: number) {
+    var findData;
+    try {
+      findData = this.findOneById(idx);
+      if (findData == null) throw new NotFoundException('channel not found');
+    } catch (error) {
+      throw new InternalServerErrorException('Internal Server Error');
+    }
+    console.log("get ban users");
+    console.log(this.banUsers[idx]);
+    return this.banUsers[idx];
+  }
+
 
 }

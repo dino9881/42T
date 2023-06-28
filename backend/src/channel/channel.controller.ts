@@ -132,17 +132,41 @@ export class ChannelController {
   }
 
   @Get('/users/:idx')
-  @ApiOperation({ summary: 'idx 채널 유저들 가져오기', description: 'channel Users By Idx' })
+  @ApiOperation({ summary: 'idx 채널 유저들 가져오기', description: 'Channel Users By Idx' })
   @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx'})
   getChannelUsers(@Param('idx') idx: string) {
     return this.channelService.getChannelUsers(+idx);
   }
 
   @Post('/check/:idx')
-  @ApiOperation({ summary: 'idx 채널 password 확인', description: 'password check By Idx' })
+  @ApiOperation({ summary: 'idx 채널 password 확인', description: 'Password check By Idx' })
   @ApiBody({ type: CreateChannelDto })
   @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx'})
   checkPassword(@Param('idx') idx: string, @Body() updateChannelDto : UpdateChannelDto) {
     return this.channelService.checkPassword(+idx, updateChannelDto);
+  }
+
+  // ban
+
+  @Post('/ban/save/:idx')
+  @ApiOperation({ summary: 'idx 채널에 밴 유저 등록하기', description: 'Save ban user'})
+  @ApiBody({ type: MemberIdDto })
+  @ApiParam({ name: 'idx', example: '3', description: 'Channel Idx' })
+  saveBanUser(@Body() memberIdDto: MemberIdDto, @Param('idx') idx:string) {
+    this.channelService.saveBanUser(+idx, memberIdDto);
+  }
+
+  @Post('/ban/delete/:idx')
+  @ApiOperation({ summary: 'idx 채널에서 밴 유저 삭제하기', description: 'Delete ban user' })
+  @ApiBody({ type: MemberIdDto })
+  deleteBanUser(@Body() memberIdDto: MemberIdDto, @Param('idx') idx: string) {
+    this.channelService.deleteBanUser(+idx, memberIdDto);
+  }
+
+  @Get('/ban/:idx')
+  @ApiOperation({ summary: 'idx 채널 밴당한 유저들 가져오기', description: 'Get ban user list' })
+  @ApiParam({ name: 'idx', example: '3', description: 'Channel Idx' })
+  getChannelBanUsers(@Param('idx') idx: string) {
+    return this.channelService.getChannelBanUsers(+idx);
   }
 }
