@@ -39,10 +39,12 @@ function Channel() {
                 }
                 return null;
             })}
+            {channelData.length === 0 && channelData.length > 8 && channelData.length % 8 === 0 && (
             <div className="left-right_button">
                 <button className="chan-left_button"></button>
                 <button className="chan-right_button"></button>
             </div>
+            )}
         </div>
     );
 }
