@@ -46,7 +46,7 @@ export class SocketIOGateway implements OnGatewayInit, OnGatewayConnection,OnGat
 
   @SubscribeMessage('game-start')
   handleGameStart(client: any, payload: any): string {
-    console.log('Received message:', payload);
+    console.log('game-start', payload);
     setInterval(() => {
       client.emit("game-render",{x1: this.x1, y1: this.y1, x2: this.x2, y2 : this.y2, bx : this.bx, by:this.by});
     }, 100); 

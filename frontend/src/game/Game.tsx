@@ -81,7 +81,10 @@ function GameComponent(){
   const move = (event: React.KeyboardEvent<HTMLCanvasElement>) => {
     if (event.key === "w" ) {
       if (currentPlayer == "player1")
+      {
+        console.log("w");
         socket.emit("player1-w",)
+      }
       else
         socket.emit("player2-w",)
       if (context) {
@@ -90,7 +93,10 @@ function GameComponent(){
     }
     if (event.key === "s" ) {
       if (currentPlayer == "player1")
-        socket.emit("player1-s",)
+      {
+          console.log("w");
+            socket.emit("player1-s",)
+      }
       else
         socket.emit("player2-s",)
       if (context) {
