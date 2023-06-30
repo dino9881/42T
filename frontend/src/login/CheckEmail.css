@@ -1,0 +1,75 @@
+.login-background {
+	display: flex;
+	width: 470px;
+	height: 540px;
+	background-color: #D9D9D9;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+}
+
+.check-email-box {
+	width: 412px;
+	height: 481px;
+	border: 1px solid black;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+
+.text-box {
+	margin-bottom: 50px;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.check-email-text {
+	margin-top: 10px;
+	font-size: 25px;
+	font-weight: 600;
+	font-family: sans-serif;
+}
+
+.button-box {
+	margin-bottom: 58px;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.check-email-input-box {
+	display: flex;
+}
+
+#check-email-input {
+	width: 250px;
+	height: 55px;
+	background-color: transparent;
+	border: 1px solid black;
+	padding: 0;
+	outline:none;
+    box-shadow:none;
+	text-align:center
+}
+
+#check-email-button {
+	margin-top: 34px;
+	width: 150px;
+	height: 55px;
+	font-size: 20px;
+	border: 1px solid black;
+	background-color:transparent;
+}
+/* 
+#cancel-button {
+	margin-top: 34px;
+	width: 150px;
+	height: 55px;
+	font-size: 25px;
+	border: 1px solid black;
+	background-color:transparent;
+} */

@@ -57,10 +57,10 @@ function Login() {
                 42 Login
             </button>
             
-            <button onClick={test}>oauth</button>
+            {/* <button onClick={test}>oauth</button>
             <button onClick={test1}>sub</button>
             <button onClick={test2}>sub2</button>
-            <button onClick={test3}>sub3</button>
+            <button onClick={test3}>sub3</button> */}
         </div>
     );
 }

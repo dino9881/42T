@@ -8,7 +8,7 @@ interface SearchFriendProps {
 }
 
 interface FriendInfoProps {
-	name: string;
+	nickName: string;
 	rank: number;
 	avatar: string;
 }
@@ -17,7 +17,7 @@ interface FriendInfoProps {
 
 const SearchFriend: React.FC<SearchFriendProps> = ({ friendStatus, onClose }) => {
 
-	const name = "GOAT"
+	const nickName = "GOAT"
 	const rank = 28
 	const avatar = "avatar/GOAT.jpeg"
 
@@ -32,14 +32,22 @@ const SearchFriend: React.FC<SearchFriendProps> = ({ friendStatus, onClose }) =>
 		  onClick={onClose}
 		/>
 		{friendStatus === 1 ?
-			(<FriendInfoSimple  name={name} rank={rank} avatar={avatar}/>)
-			: (<IsNotFriend name={name} rank={rank} avatar={avatar}/>)
+			(<FriendInfoSimple  nickName={nickName} rank={rank} avatar={avatar}/>)
+			: (<IsNotFriend nickName={nickName} rank={rank} avatar={avatar}/>)
 		}
 	  </div>
 	);
 };
   
-const IsNotFriend: React.FC<FriendInfoProps> = ({ name, rank, avatar }) => {
+const IsNotFriend: React.FC<FriendInfoProps> = ({ nickName, rank, avatar }) => {
+	const handleAdd = () => {
+		console.log('친구 추가');
+	}
+
+	const handleBlock = () => {
+		console.log('차단');
+	}
+
 	return (
 		<div className='friend-info-simple'>
 			<div
@@ -48,12 +56,13 @@ const IsNotFriend: React.FC<FriendInfoProps> = ({ name, rank, avatar }) => {
 			></div>
 			<div className='friend-info-info'>
 				<div className='friend-info-text'>
-					<div className='small-square'>{name}</div>
+					<div className='small-square'>{nickName}</div>
 					<div className='small-square'>{rank}</div>
 				</div>
 				<div className='friend-info-button'>
 					<div className="friend-button">
-						<button className='small-square'>친구 추가</button>
+						<button className='dm-button' onClick={handleAdd}>친구추가</button>
+						<button className='vs-button' onClick={handleBlock}>차단</button>
 					</div>
 						<div className='small-square'>전적</div>
 				</div>
