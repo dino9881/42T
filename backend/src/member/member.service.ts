@@ -109,6 +109,22 @@ export class MemberService {
     return HttpStatusCode.Ok;
   }
 
+  async updateWinCnt(id: string) {
+    await this.prisma.member.update({
+      where: { intraId: id },
+      data: { winCnt: { increment: 1 } },
+    });
+    return HttpStatusCode.Ok;
+  }
+
+  async updateLoseCnt(id: string) {
+    await this.prisma.member.update({
+      where: { intraId: id },
+      data: { loseCnt: { increment: 1 } },
+    });
+    return HttpStatusCode.Ok;
+  }
+
   async delete(id: string) {
     const member = await this.getOne(id);
     if (member == null) {

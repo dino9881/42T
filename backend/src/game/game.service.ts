@@ -25,11 +25,13 @@ export class GameService {
     await this.prisma.gameHistory.create({
       data: game,
     });
-    //member rank 업데이트하기
+    //member rank 및 전적 업데이트하기
     //winner : +5
     await this.memberService.updateRank(game.winnerId, 5);
+    await this.memberService.updateWinCnt(game.winnerId);
     //loser : +3
     await this.memberService.updateRank(game.loserId, 3);
+    await this.memberService.updateLoseCnt(game.loserId);
     return;
   }
 
@@ -47,10 +49,6 @@ export class GameService {
       take: 5,
     });
     //총 개수, 데이터를 리턴
-    return {
-      length: games.length,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      data: games.map(({ gameIdx, ...gameDetail }) => gameDetail),
-    };
+    return games;
   }
 }
