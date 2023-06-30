@@ -24,7 +24,6 @@ const SetNick = () => {
 	const myData:any = {
 		"intraId": location.state.intraId,
 		"avatar": "img/avatar.jpeg",
-		"rank": 100
 	}
 
 	const onClick = () => {

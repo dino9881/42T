@@ -23,15 +23,16 @@ interface InfoScoreProps {
 const InfoScore: React.FC<InfoScoreProps> = ({ intraId, nickName, rank, state }) => {
   const [history, setHistory] = useState<History[]>([]);
 
-  // useEffect(() => {
-    axios.post(`http://localhost:5001/game/history/${intraId}`)
+  useEffect(() => {
+    axios.get(`http://localhost:5001/game/history/${intraId}`)
       .then((res) => {
-        setHistory(res.data);
+        console.log(res);
+        setHistory(res.data.data);
       })
       .catch((error) => {
         console.log(error);
       });
-  // });
+  }, []);
 
   const handleDelete = () => {
     console.log('친구 삭제됨');
@@ -68,7 +69,8 @@ const InfoScore: React.FC<InfoScoreProps> = ({ intraId, nickName, rank, state })
 const GameHistory: React.FC<History> = ({ winnerId, loserId, winnerScore, loserScore }) => {
   return (
     <div id="score">
-      <span style={{color: "blue"}}>{winnerId} {winnerScore} :</span>
+      <span style={{color: "blue"}}>{winnerId} {winnerScore}</span>
+      :
       <span style={{color: "red"}}> {loserScore} {loserId}</span>
     </div>
   );
