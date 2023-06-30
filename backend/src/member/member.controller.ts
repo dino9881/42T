@@ -29,6 +29,7 @@ import { MemberInfoDto } from './dto/member-info.dto';
 import { Public } from 'src/decorator/public.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { HttpStatusCode } from 'axios';
+import { MailService } from '../mail.service';
 
 @ApiTags('member')
 @ApiResponse({
@@ -40,7 +41,17 @@ import { HttpStatusCode } from 'axios';
 @UseGuards(JwtAuthGuard)
 @Controller('member')
 export class MemberController {
-  constructor(private readonly memberService: MemberService) {}
+  constructor(
+    private readonly memberService: MemberService,
+    private readonly mailerService: MailService,
+  ) {}
+
+  @Get('mail')
+  @Public()
+  sendMail() {
+    const intraId = 'hjeong';
+    return this.mailerService.sendMail(intraId);
+  }
 
   @ApiOperation({ summary: '새로운 멤버 생성' })
   @ApiCreatedResponse({
