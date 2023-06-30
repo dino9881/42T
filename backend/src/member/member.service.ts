@@ -149,7 +149,7 @@ export class MemberService {
         },
       },
     });
-    if (isFriend) {
+    if (isFriend.friend.length) {
       return true;
     } else {
       return false;
@@ -271,7 +271,7 @@ export class MemberService {
         },
       },
     });
-    if (isBan) {
+    if (isBan.banned.length) {
       return true;
     } else {
       return false;
