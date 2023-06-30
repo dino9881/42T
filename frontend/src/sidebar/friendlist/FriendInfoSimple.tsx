@@ -4,12 +4,12 @@ import './FriendInfo.css';
 import '../myinfo/MyInfo.css';
 
 interface FriendInfoProps {
-	name: string;
+	nickName: string;
 	rank: number;
 	avatar: string;
 }
 
-const FriendInfoSimple: React.FC<FriendInfoProps> = ({ name, rank, avatar }) => {
+const FriendInfoSimple: React.FC<FriendInfoProps> = ({ nickName, rank, avatar }) => {
 	return (
 		<div className='friend-info-simple'>
 			<div className='state-circle'></div>
@@ -19,7 +19,7 @@ const FriendInfoSimple: React.FC<FriendInfoProps> = ({ name, rank, avatar }) => 
 			></div>
 			<div className='friend-info-info'>
 				<div className='friend-info-text'>
-					<div className='small-square'>{name}</div>
+					<div className='small-square'>{nickName}</div>
 					<div className='small-square'>{rank}</div>
 				</div>
 				<div className='friend-info-button'>
@@ -27,7 +27,7 @@ const FriendInfoSimple: React.FC<FriendInfoProps> = ({ name, rank, avatar }) => 
 						<Link to="/chat"> <button className='dm-button'>메세지</button> </Link>
 						<button className='vs-button'>1vs1</button>
 					</div>
-						<div className='small-square'>전적</div>
+					<div className='small-square'>전적</div>
 				</div>
 			</div>
 		</div>
