@@ -37,12 +37,47 @@ export class SocketIOGateway implements OnGatewayInit, OnGatewayConnection,OnGat
     client["nickname"] = nickname;
     client.to(channelName).emit("welcome", nickname);
   }
+  private x1: number = 10;
+  private y1 = 360;
+  private x2 = 1270;
+  private y2 = 360;
+  private bx = 640;
+  private by = 360;
 
   @SubscribeMessage('game-start')
   handleGameStart(client: any, payload: any): string {
     console.log('Received message:', payload);
-    client.emit("game-render",{x1: 10, y1: 360, x2: 1270, y2 : 360, bx : 640, by:360});
+    setInterval(() => {
+      client.emit("game-render",{x1: this.x1, y1: this.y1, x2: this.x2, y2 : this.y2, bx : this.bx, by:this.by});
+    }, 100); 
+    return 'Message received!';
+  }
+  
+  @SubscribeMessage('player1-w')
+  handlePlayer1W(client: any, payload: any): string {
+    if (this.y1 >= 120)
+    this.y1 -= 20;
     return 'Message received!';
   }
 
+  @SubscribeMessage('player1-s')
+  handlePlayer1S(client: any, payload: any): string {
+    if(this.y1 <= 600)
+    this.y1 += 20;
+    return 'Message received!';
+  }
+
+  @SubscribeMessage('player2-w')
+  handlePlayer2W(client: any, payload: any): string {
+    if (this.y2 >= 120)
+    this.y2 -= 20;
+    return 'Message received!';
+  }
+
+  @SubscribeMessage('player2-s')
+  handlePlayer2S(client: any, payload: any): string {
+    if(this.y2 <= 600)
+    this.y2 += 20;
+    return 'Message received!';
+  }
 }

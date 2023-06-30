@@ -3,11 +3,14 @@ import { socket } from "../socket";
 import Contents from "../Contents";
 import Sidebar from "../sidebar/Sidebar";
 import Menu from "../menu/Menu";
+import { clear } from "console";
 
 interface CanvasProps {
   width: number;
   height: number;
 }
+
+type Player = 'player1' | 'player2';
 
 interface GameProps {
     x1: number;
@@ -22,6 +25,7 @@ function gameRender({x1, y1, x2, y2, bx, by} : GameProps,canvas:HTMLCanvasElemen
 {
     let context: CanvasRenderingContext2D | null = null;
     context = canvas.getContext("2d");
+    context?.clearRect(0,0, 1280, 720);
       if (context)
       {
         context.moveTo(x1, y1 - 100);
@@ -52,6 +56,11 @@ function GameComponent(){
     const height = 720;
     const canvasRef = useRef<HTMLCanvasElement>(null);
     let context: CanvasRenderingContext2D | null = null;
+    const [currentPlayer, setCurrentPlayer] = useState<Player>('player1');
+
+    const handlePlayerChange = () => {
+      setCurrentPlayer(currentPlayer === 'player1' ? 'player2' : 'player1');
+    };
 
   useEffect(() => {
     socket.connect();
@@ -60,7 +69,7 @@ function GameComponent(){
       canvas.width = width;
       canvas.height = height;
 
-      console.log(socket.emit("game-start",));
+      socket.emit("game-start",);
       socket.on("game-render", (payload : any) => {
         const {x1, y1, x2, y2, bx, by}= payload;
         gameRender(payload, canvas);
@@ -71,25 +80,34 @@ function GameComponent(){
 
   const move = (event: React.KeyboardEvent<HTMLCanvasElement>) => {
     if (event.key === "w" ) {
-        console.log(`w`)
+      if (currentPlayer == "player1")
+        socket.emit("player1-w",)
+      else
+        socket.emit("player2-w",)
       if (context) {
         context.closePath();
       }
     }
     if (event.key === "s" ) {
-        console.log(`s`)
-        if (context) {
+      if (currentPlayer == "player1")
+        socket.emit("player1-s",)
+      else
+        socket.emit("player2-s",)
+      if (context) {
           context.closePath();
         }
       }
   };
 
   return (
+    <div>
+    <button onClick={handlePlayerChange}>{currentPlayer}</button>
     <canvas className="game-canvas"
-      ref={canvasRef}
-      onKeyDown={move}
-      tabIndex={0}
+    ref={canvasRef}
+    onKeyDown={move}
+    tabIndex={0}
     ></canvas>
+    </div>
   );
 };
 
