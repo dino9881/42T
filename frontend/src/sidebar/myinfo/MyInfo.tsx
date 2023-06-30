@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import MyInfoChange from "./MyInfoChange";
 import InfoScore from "../friendlist/InfoScore";
+import setAuthorizationToken from "../../setAuthorizationToken";
 import './MyInfo.css';
 
 const MyInfo = () => {
@@ -10,30 +11,17 @@ const MyInfo = () => {
 	const toggleImgSrc = isExpanded ? "toggle_up.svg" : "toggle_down.svg";
 	const [myData, setMyData] = useState<any>(null)
 
-	// axios.post('http://localhost:5001/member/create', 
-	// {
-	// 	"intraId": "heeskim",
-	// 	"nickName": "hees",
-	// 	"avatar": "img/avatar.jpg",
-	// 	"rank": 100
-	// }
-	// )
-	// .then(function (response) {
-	// 	console.log(response);
-	// })
-	// .catch(function (error) {
-	// 	console.log(error);
-	// });
-	
 	useEffect(() => {
-		axios.get('http://localhost:5001/member/heeskim')
-		.then((response) => {
-			setMyData(response.data);
-			// console.log(response.data); // 데이터 출력
+		
+		// axios.post("http://localhost:5001/auth/refresh").then((res) => {
+		// 	console.log(res.data);
+		axios.get('http://localhost:5001/auth/me').then((response) => {
+			// console.log(response);
+				if (myData !== response.data){
+					setMyData(response.data); 
+				}
 			})
-			.catch((error) => {
-				console.log(error);
-			});
+		// });
 	}, []);
 
 
@@ -61,7 +49,7 @@ const MyInfo = () => {
 				)}
 				<div className='my-info-info'>
 				{isExpanded && myData && (
-					<InfoScore name={myData.nickName} rank={myData.rank} avatar={myData.avatar} state={1} />
+					<InfoScore intraId={myData.intraId} nickName={myData.nickName} rank={myData.rank} state={1} />
 				)}
 				<div className='my-info-text'>
 					<div className='small-square'>{myData && myData.nickName}</div>
@@ -69,8 +57,11 @@ const MyInfo = () => {
 				</div>
 				<div className='my-info-button'>
 					<button className='small-square' onClick={handleModifyClick}>수정</button>
-					<div className='small-square'>전적
-					<img src={toggleImgSrc} alt="toggle" className="my-toggle-position" onClick={handleToggle}></img>
+					<div className='small-square'>
+						<span style={{color: "blue"}}>{myData && myData.winCnt}</span>
+						/
+						 <span style={{color: "red"}}>{myData && myData.loseCnt}</span>
+					<img src={toggleImgSrc} alt="toggle" className="my-toggle-position" onClick={handleToggle} style={{ cursor: 'pointer' }}></img>
 					</div>
 				</div>
 				</div>

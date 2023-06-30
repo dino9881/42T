@@ -13,6 +13,8 @@ import {
 import OAuth from "./OAuth";
 import Background from "./Background";
 import { Link } from "react-router-dom";
+import SetNick from "./login/SetNick";
+import CheckEmail from "./login/CheckEmail";
 
 function App() {
     axios.defaults.withCredentials = true;
@@ -25,6 +27,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Login />}></Route>
                     <Route path="/login" element={<OAuth />}></Route>
+                    <Route path="/login/nick" element={<SetNick />}></Route>
                     <Route path="/main" element={<Main />}></Route>
                     <Route path="/chat" element={<Chat />}></Route>
                     <Route path="/channel" element={<Channel />}></Route>
