@@ -158,7 +158,7 @@ export class MemberService {
 
   async searchMember(member: MemberInfoDto, nickName: string) {
     const friend = await this.getOneByNick(nickName);
-    const isFriend = this.isFriend(member, friend);
+    const isFriend = await this.isFriend(member, friend);
     if (isFriend) {
       return { ...friend, isFriend: true };
     } else {
