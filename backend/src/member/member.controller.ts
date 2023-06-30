@@ -7,6 +7,7 @@ import {
   Patch,
   Delete,
   UseGuards,
+  HttpCode,
 } from '@nestjs/common';
 import { MemberService } from './member.service';
 import { CreateMemberDto } from './dto/create-member.dto';
@@ -28,6 +29,7 @@ import { GetMember } from 'src/decorator/getMember.decorator';
 import { MemberInfoDto } from './dto/member-info.dto';
 import { Public } from 'src/decorator/public.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { HttpStatusCode } from 'axios';
 
 @ApiTags('member')
 @ApiResponse({
@@ -54,6 +56,16 @@ export class MemberController {
   create(@Body() memberDto: CreateMemberDto) {
     console.log(memberDto);
     return this.memberService.create(memberDto);
+  }
+
+  @ApiOperation({ summary: 'intraId로 멤버인지 아닌지 확인' })
+  @ApiOkResponse({ description: '멤버가 존재함' })
+  @ApiNotFoundResponse({ description: '멤버를 찾지 못함' })
+  @Public()
+  @Get('check/:id')
+  checkMember(@Param('intraId') intraId: string) {
+    const member = this.memberService.getOne(intraId);
+    if (member) return HttpStatusCode.Ok;
   }
 
   @ApiOperation({ summary: 'intraId로 멤버삭제' })
