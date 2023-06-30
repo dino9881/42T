@@ -93,6 +93,7 @@ function ChatInput({ addMessage }: { addMessage: (message: Message) => void }) {
                     value={text}
                     name="chat-input"
                     className="chat-input"
+                    autoComplete="off"
                 />
                 <button className="chat-input-button">제출</button>
             </form>

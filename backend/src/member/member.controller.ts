@@ -62,15 +62,16 @@ export class MemberController {
   @ApiOkResponse({ description: '멤버가 존재함' })
   @ApiNotFoundResponse({ description: '멤버를 찾지 못함' })
   @Public()
-  @Get('check/:id')
-  checkMember(@Param('intraId') intraId: string) {
-    const member = this.memberService.getOne(intraId);
+  @Get('check/:intraId')
+  async checkMember(@Param('intraId') intraId: string) {
+    const member = await this.memberService.getOne(intraId);
     if (member) return HttpStatusCode.Ok;
   }
 
   @ApiOperation({ summary: 'intraId로 멤버삭제' })
   @ApiOkResponse({ description: '삭제 성공' })
   @ApiNotFoundResponse({ description: '삭제할 멤버를 찾지 못함' })
+  @Public()
   @Delete('delete')
   @ApiBody({
     schema: {
@@ -87,6 +88,7 @@ export class MemberController {
 
   @ApiOperation({ summary: '전 멤버정보 찾기' })
   @ApiOkResponse({ description: '성공', type: CreateMemberDto, isArray: true })
+  @Public()
   @Get('all')
   getMemberAll() {
     return this.memberService.getAll();
