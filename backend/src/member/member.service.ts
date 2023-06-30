@@ -3,6 +3,7 @@ import {
   HttpStatus,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Member, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -11,6 +12,7 @@ import { HttpStatusCode } from 'axios';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import { MemberInfoDto } from './dto/member-info.dto';
 
 @Injectable()
 export class MemberService {
@@ -32,6 +34,16 @@ export class MemberService {
     return member;
   }
 
+  async getOneByNick(nickName: string) {
+    const member = await this.prisma.member.findUnique({
+      where: { nickName },
+    });
+    if (member === null) {
+      throw new NotFoundException('Member Not Found by nickName', nickName);
+    }
+    return member;
+  }
+
   async checkNickDuplicate(nick: string) {
     const member = await this.prisma.member.findUnique({
       where: { nickName: nick },
@@ -44,14 +56,14 @@ export class MemberService {
     return member;
   }
 
-  async checkIntraIdDuplicate(IntraId: string) {
+  async checkIntraIdDuplicate(intraId: string) {
     const member = await this.prisma.member.findUnique({
-      where: { intraId: IntraId },
+      where: { intraId: intraId },
     });
     if (member)
       throw new ConflictException(
         'IntraId Already Exist',
-        `IntraId : ${IntraId}`,
+        `IntraId : ${intraId}`,
       );
   }
 
@@ -64,6 +76,7 @@ export class MemberService {
     await this.prisma.member.create({
       data: {
         ...memberDto,
+        rank: 100, // 기본 랭크 100
         currentRefreshTokenExp: undefined,
         currentRefreshToken: undefined,
       },
@@ -71,19 +84,19 @@ export class MemberService {
     return HttpStatus.CREATED;
   }
 
-  async updateNick(id: string, memberDto: UpdateMemberDto) {
-    await this.checkNickDuplicate(memberDto.nickName);
+  async updateNick(member: MemberInfoDto, updateDto: UpdateMemberDto) {
+    await this.checkNickDuplicate(updateDto.nickName);
     await this.prisma.member.update({
-      where: { intraId: id },
-      data: memberDto,
+      where: { intraId: member.intraId },
+      data: updateDto,
     });
     return HttpStatusCode.Ok;
   }
 
-  async updateAvatar(id: string, memberDto: UpdateMemberDto) {
+  async updateAvatar(member: MemberInfoDto, updateInfo: UpdateMemberDto) {
     await this.prisma.member.update({
-      where: { intraId: id },
-      data: memberDto,
+      where: { intraId: member.intraId },
+      data: updateInfo,
     });
     return HttpStatusCode.Ok;
   }
@@ -105,6 +118,36 @@ export class MemberService {
       where: { intraId: id },
     });
     return HttpStatus.OK;
+  }
+
+  async isFriend(member: MemberInfoDto, friend: MemberInfoDto) {
+    const isFriend = await this.prisma.member.findUnique({
+      where: {
+        intraId: member.intraId,
+      },
+      select: {
+        friend: {
+          where: {
+            intraId: friend.intraId,
+          },
+        },
+      },
+    });
+    if (isFriend) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  async searchMember(member: MemberInfoDto, nickName: string) {
+    const friend = await this.getOneByNick(nickName);
+    const isFriend = this.isFriend(member, friend);
+    if (isFriend) {
+      return { ...friend, isFriend: true };
+    } else {
+      return { ...friend, isFriend: false };
+    }
   }
 
   async getCurrentHashedRefreshToken(refreshToken: string) {
@@ -142,6 +185,7 @@ export class MemberService {
   async getMemberIfRefreshTokenMatches(refreshToken: string, intraId: string) {
     const member: Member = await this.getOne(intraId);
     // user에 currentRefreshToken이 없다면 null을 반환 (즉, 토큰 값이 null일 경우)
+    // user가 한번도 auth/login을 호출한적이 없다는 뜻 => auth/login을 호출하도록 유도
     if (!member.currentRefreshToken) {
       return null;
     }
@@ -154,5 +198,103 @@ export class MemberService {
     if (isRefreshTokenMatching) {
       return member;
     }
+    throw new UnauthorizedException('Invalid Refresh Token');
+  }
+
+  async addFriend(member: MemberInfoDto, friendNick: string) {
+    const friend = await this.getOneByNick(friendNick);
+    const isFriend = await this.isFriend(member, friend);
+    if (isFriend) {
+      throw new ConflictException(
+        'Already Friend',
+        `IntraId : ${friend.intraId}`,
+      );
+    }
+    await this.prisma.member.update({
+      where: { intraId: member.intraId },
+      data: { friend: { connect: { intraId: friend.intraId } } },
+    });
+    console.log(friend);
+    return HttpStatus.OK;
+  }
+
+  async deleteFriend(member: MemberInfoDto, friendNick: string) {
+    const friend = await this.getOneByNick(friendNick);
+    const isFriend = await this.isFriend(member, friend);
+    if (!isFriend) {
+      throw new NotFoundException(
+        'Cannot Find Friend',
+        `IntraId : ${friend.intraId}`,
+      );
+    }
+    await this.prisma.member.update({
+      where: { intraId: member.intraId },
+      data: { friend: { disconnect: { intraId: friend.intraId } } },
+    });
+    return HttpStatus.OK;
+  }
+
+  async getFriendList(member: MemberInfoDto) {
+    const friendList = await this.prisma.member.findMany({
+      where: { friendOf: { some: { intraId: member.intraId } } },
+    });
+    console.log(friendList);
+    return friendList;
+  }
+
+  async isBan(member: MemberInfoDto, banMember: MemberInfoDto) {
+    const isBan = await this.prisma.member.findUnique({
+      where: {
+        intraId: member.intraId,
+      },
+      select: {
+        banned: {
+          where: {
+            intraId: banMember.intraId,
+          },
+        },
+      },
+    });
+    if (isBan) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  async banMember(member: MemberInfoDto, nickName: string) {
+    const banMember = await this.getOneByNick(nickName);
+    const isFriend = await this.isFriend(member, banMember);
+    if (isFriend) {
+      await this.deleteFriend(member, nickName);
+    }
+    const isBan = await this.isBan(member, banMember);
+    if (isBan) {
+      throw new ConflictException(
+        'Already Banned Member',
+        `IntraId : ${banMember.intraId}`,
+      );
+    }
+    await this.prisma.member.update({
+      where: { intraId: member.intraId },
+      data: { banned: { connect: { intraId: banMember.intraId } } },
+    });
+    return HttpStatus.OK;
+  }
+
+  async unbanMember(member: MemberInfoDto, nickName: string) {
+    const unbanMember = await this.getOneByNick(nickName);
+    const isBan = await this.isBan(member, unbanMember);
+    if (!isBan) {
+      throw new NotFoundException(
+        'Cannot Find Ban Member',
+        `IntraId : ${unbanMember.intraId}`,
+      );
+    }
+    await this.prisma.member.update({
+      where: { intraId: member.intraId },
+      data: { banned: { disconnect: { intraId: unbanMember.intraId } } },
+    });
+    return HttpStatus.OK;
   }
 }

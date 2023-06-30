@@ -1,97 +1,87 @@
 import React, { useEffect } from "react";
 import { useState, ChangeEvent, FormEvent } from "react";
+import { ConnectionState } from "./ConnectionState";
 import { socket } from "./socket";
 import { useLocation } from "react-router-dom";
 import Contents from "./Contents";
 import Sidebar from "./sidebar/Sidebar";
 import Menu from "./menu/Menu";
+import axios from "axios";
 
-interface MessageText {
+interface Message {
+    id: number;
     name: string;
     text: string;
 }
 
 function Chat() {
-    return <div>
-         <Contents headerComponent={<Menu showBackButton={true}/>} mainComponent={<ChatComponent/>}/>
-         <Sidebar />
-    </div>
-    ;
+    return (
+        <div>
+            <Contents
+                headerComponent={<Menu showBackButton={true} />}
+                mainComponent={<ChatComponent />}
+            />
+            <Sidebar />
+        </div>
+    );
 }
-
 
 function ChatComponent() {
     const location = useLocation();
     const [channelName, setChannelName] = useState("");
-    const [nickName, setNickName] = useState("jonkim");
-    const [msgList, setMsgList] = useState<MessageText[]>(() => initialData());
-
-    function initialData(): MessageText[]  {
-        return [];
-      }
-
     useEffect(() => {
-        const state = location.state as { channelName: string };
-        if (state && state.channelName) {
-            setChannelName(state.channelName);
+        const state = location.state as { chIdx: number };
+        if (state && state.chIdx) {
+            axios
+                .get(`http://localhost:5001/channel/name/${state.chIdx}`)
+                .then((response) => {
+                    // 요청이 성공하면 데이터를 상태로 설정
+                    // setChannelName(response.data);
+                    setChannelName(response.data.chName);
+                    console.log(channelName);
+                })
+                .catch((error) => {
+                    // 요청이 실패하면 에러 처리
+                    console.error("API 요청 실패:", error);
+                });
+            // setChannelName(state.channelName);
         } else {
             setChannelName("error");
         }
-        socket.connect();
-
-        socket.on("welcome", (nickName) => {
-            const newMessage = {name: nickName, text: `${nickName} : 이 입장했습니다.` };
-            addMessage(newMessage);
-        });
-
-
-        socket.on("send-message", (payload:any) => {
-            console.log("send-message");
-            const {nickname, text}=payload;
-            const newMessage = {name: nickname, text: text};
-            addMessage(newMessage);
-        });
-    }, []);
-    
-    useEffect(() => {
-        if(channelName)
-        {  
-              socket.emit("enter-channel", {channelName: channelName,nickname: nickName});
-        }
-    }, [channelName])
-    
-    const addMessage = (messageText: MessageText) => {
-        const message = {name: messageText.name, text: messageText.text };
+    }, [location.state]);
+    const addMessage = (message: Message) => {
         setMsgList((prevMsgList) => [...prevMsgList, message]);
-      };
-
-    return (  
+    };
+    const [msgList, setMsgList] = useState<Message[]>([]);
+    return (
         <div className="chat">
             <div>{channelName}</div>
             <div className="chat-scroll">
-                {msgList.map((message, index) => (
+                {msgList.map((message) => (
                     <ChatBox
-                        key={index}
+                        key={message.id}
+                        id={message.id}
                         name={message.name}
                         text={message.text}
                     />
                 ))}
             </div>
-            <ChatInput addMessage={addMessage} nickname={nickName} channelname={channelName} />
+            <ChatInput addMessage={addMessage} />
         </div>
     );
 }
 
-function ChatInput({ addMessage, nickname, channelname }: { addMessage: (message: MessageText) => void, nickname: string, channelname:string }) {
+function ChatInput({ addMessage }: { addMessage: (message: Message) => void }) {
     const [text, setText] = useState("");
+    const [msgId, setMsgId] = useState(0);
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         setText(event.target.value);
     };
     const onSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const newMessage = {name: "나", text: text };
+        const newMessage = { id: msgId, name: "new", text: text };
         addMessage(newMessage);
-        socket.emit("message",{channelname, nickname, text});
+        setMsgId(msgId + 1);
         setText("");
     };
     return (
@@ -110,7 +100,7 @@ function ChatInput({ addMessage, nickname, channelname }: { addMessage: (message
     );
 }
 
-function ChatBox({ name, text }: MessageText) {
+function ChatBox({ name, text }: Message) {
     return (
         <div className="chat-box">
             <div className="chat-userimg">img</div>
