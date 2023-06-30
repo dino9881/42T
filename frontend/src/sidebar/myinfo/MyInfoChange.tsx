@@ -35,7 +35,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 			...prevData,
 			nickName: text
 		}));
-		setText("");
+		// setText("");
 	};
 
 	const onKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -47,22 +47,45 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 	const handleModifyClick = () => {
 		console.log(changeData);
 
-		// axios.patch(`http://localhost:5001/member/update/${myData.intraId}`, 
-		// {
-		// 	changeData
-		// }
-		// )
-		// .then(function (response) {
-		// 	console.log(response);
-		// })
-		// .catch(function (error) {
-		// 	console.log(error);
-		// });
+		if (myData.nickName !== changeData.nickName){
+			axios.patch(`http://localhost:5001/member/update/nick/${myData.intraId}`, 
+			{
+				"intraId": changeData.intraId,
+  				"nickName": changeData.nickName
+			})
+			.then(function (response) {
+				console.log(response);
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+		}
+		if (myData.avatar !== changeData.avatar){
+			axios.patch(`http://localhost:5001/member/update/avatar/${myData.intraId}`,
+			{
+				"intraId": changeData.intraId,
+  				"avatar": changeData.avatar
+			})
+			.then(function (response) {
+				console.log(response);
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+		}
+		axios.post("http://localhost:5001/auth/refresh").then((res) => {
+			// console.log(res.data);
+			axios.get('http://localhost:5001/auth/me').then((response => {
+				// console.log(response);
+				myData = response.data; 
+			}))
+		});
+		onClose();
 	};
 
 	return (
 		<div className="my-info-change">
-			<img className="my-info-change-close" src="close_button.svg" alt="Close" onClick={onClose} width={28} height={28} />
+			<img className="my-info-change-close" src="close_button.svg" alt="Close" onClick={onClose} width={28} height={28} style={{ cursor: 'pointer' }}/>
 			<img
 				className="my-info-change-avatar"
 				src={avatarUrl}

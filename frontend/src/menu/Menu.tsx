@@ -12,11 +12,12 @@ const Menu = ({ showBackButton}: MenuProps) => {
   const [toggleImgSrc, setToggleImgSrc] = useState("toggle_down.svg");
   const [showWaiting, setShowWaiting] = useState(false);
   const [showCancel, setShowCancel] = useState(false);
+  const [showDropDownBox, setShowDropDownBox] = useState(false); // 추가된 상태 값
 
-  const handleToggle = () => {
-    setIsExpanded(!isExpanded);
-    setToggleImgSrc(isExpanded ? "toggle_down.svg" : "toggle_up.svg");
-  };
+  // const handleToggle = () => {
+  //   setIsExpanded(!isExpanded);
+  //   setToggleImgSrc(isExpanded ? "toggle_down.svg" : "toggle_up.svg");
+  // };
 
   const handleStartClick = () => {
     setShowWaiting(true);
@@ -28,12 +29,32 @@ const Menu = ({ showBackButton}: MenuProps) => {
     setShowCancel(false);
   };
 
+  const handleDropDownBoxToggle = () => {
+    setIsExpanded(!isExpanded);
+    setToggleImgSrc(isExpanded ? "toggle_down.svg" : "toggle_up.svg");
+    setShowDropDownBox(!showDropDownBox);
+  };
+
   return (
     <div className="menu-box">
-      <button className="menu-channel-drop-box" onClick={handleToggle}>
-		{showBackButton ? "channelname" : "Home"}
-        <img src={toggleImgSrc} alt="toggle" className="menu-channel-drop-down-button" />
-      </button>
+      <div className="menu-channel-drop-box" >
+		  {showBackButton ? "channelname" : "Home"}
+        <img src={toggleImgSrc} alt="toggle" className="menu-channel-drop-down-button" onClick={handleDropDownBoxToggle} style={{ cursor: 'pointer' }}/>
+        {showDropDownBox && (
+          <div className="menu-drop-down-channel-list">
+            <div className="menu-drop-down-channel">
+              <img
+                className="menu-drop-down-channel-avatar"
+                // src={avatarUrl}
+                src="img/avatar.jpeg"
+                alt="User Avatar"
+              />
+              {/* <span>{chName}</span> */}
+              <span className="menu-drop-down-channel-text">tests1</span>
+            </div>
+          </div>
+        )}
+      </div>
       {showBackButton ? (
         <button className="menu-channel-new-box" style={{fontSize : "20px"}}>Setting</button>
       ) : (
