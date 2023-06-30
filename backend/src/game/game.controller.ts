@@ -2,7 +2,6 @@ import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { GameService } from './game.service';
 import { CreateGameDto } from './dto/create-game.dto';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { GameResultDto } from './dto/game-result.dto';
 
 @ApiTags('game')
 @ApiResponse({
@@ -28,22 +27,6 @@ export class GameController {
     return this.gameService.addHistory(game);
   }
 
-  @ApiOperation({ summary: '내 게임 전적 가져오기' })
-  @ApiResponse({
-    status: 404,
-    description: '멤버를 찾지 못함',
-  })
-  @ApiResponse({
-    status: 200,
-    description: '최근 전적 5개를 가져옴',
-  })
-  @Get('history/me')
-  findMyGames() {
-    //내 intraId가져오기 : accestoken에서
-    // intraId = this.authService.getMyIntraId();
-    // return this.gameService.findGamesByIntraId(intraId);
-  }
-
   @ApiOperation({ summary: 'intraId로 게임 전적 가져오기' })
   @ApiResponse({
     status: 404,
@@ -52,7 +35,8 @@ export class GameController {
   @ApiResponse({
     status: 200,
     description: '최근 전적 5개를 가져옴 (총 개수, 데이터)',
-    type: GameResultDto,
+    type: CreateGameDto,
+    isArray: true,
   })
   @Get('history/:intraId')
   findGamesByIntraId(@Param('intraId') intraId: string) {

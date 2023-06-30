@@ -7,7 +7,6 @@ import {
   Patch,
   Delete,
   UseGuards,
-  HttpCode,
 } from '@nestjs/common';
 import { MemberService } from './member.service';
 import { CreateMemberDto } from './dto/create-member.dto';
@@ -76,14 +75,14 @@ export class MemberController {
   @ApiBody({
     schema: {
       properties: {
-        id: { example: 'heeskim', type: 'string' },
+        intraId: { example: 'heeskim', type: 'string' },
       },
     },
     required: true,
     description: '인트라아이디',
   })
-  delete(@Body('id') id: string) {
-    return this.memberService.delete(id);
+  delete(@Body('intraId') intraId: string) {
+    return this.memberService.delete(intraId);
   }
 
   @ApiOperation({ summary: '전 멤버정보 찾기' })
@@ -101,13 +100,13 @@ export class MemberController {
   })
   @ApiNotFoundResponse({ description: '멤버를 찾지 못함' })
   @ApiParam({
-    name: 'id',
+    name: 'intraId',
     required: true,
     description: '인트라아이디',
   })
-  @Get(':id')
-  getMemberDetail(@Param('id') id: string) {
-    return this.memberService.getOne(id);
+  @Get(':intraId')
+  getMemberDetail(@Param('intraId') intraId: string) {
+    return this.memberService.getOne(intraId);
   }
 
   @ApiOperation({ summary: '멤버 닉네임 변경' })
