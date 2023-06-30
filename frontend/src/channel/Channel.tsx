@@ -60,7 +60,7 @@ function Channel() {
     //  {(channelData.length === 0 || (channelData.length / 8 > 0 && channelData.length % 8 === 0)) && (
         <div className="chan-left-right_button">
           <button
-            className="chan-left_button"
+            className={`chan-left_button ${currentPage === 1 ? "chan-empty_left_button" : ""}`}
             onClick={goToPreviousPage}
             disabled={currentPage === 1} // 첫 번째 페이지면 비활성화
           ></button>

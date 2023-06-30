@@ -255,7 +255,7 @@ body {
 
 .chan-lockcheck{
   width: 30px;
-  height: 30px;
+  height: 35px;
   display: inline-block;
   overflow: hidden;
   display: flex;
@@ -391,6 +391,17 @@ body {
     margin-right: 10px;
     border: none;
     background: url("../public/channel/left_icon.png") no-repeat center center;
+    background-size: contain; /* 이미지를 버튼에 맞게 조정 */
+    padding: 0;
+}
+
+.chan-empty_left_button{
+    width: 30px;
+    height: 30px;
+    margin-left: 10px;
+    margin-right: 10px;
+    border: none;
+    background: url(    "../public/img/bg.jpg") no-repeat center center;
     background-size: contain; /* 이미지를 버튼에 맞게 조정 */
     padding: 0;
 }
