@@ -28,14 +28,6 @@ function ChannelRow({
             {!channelData2 && <div className="chan-emptyrightbox"></div>}
         </div>
     );
-    //     return <div className="chan-rowbox">
-    //     <div className="chan-leftbox">
-    //         <ChannelRoom channelId="channel1" />
-    //         </div>
-    //     <div className="chan-rightbox">
-    //         <ChannelRoom channelId="channel2" />
-    //     </div>
-    // </div>
 }
 
 export default ChannelRow;
