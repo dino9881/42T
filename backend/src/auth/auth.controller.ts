@@ -11,7 +11,19 @@ import {
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import { MemberService } from 'src/member/member.service';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiCookieAuth,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { GetMember } from 'src/decorator/getMember.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { Member } from '@prisma/client';
@@ -30,14 +42,8 @@ export class AuthController {
 
   @ApiOperation({ summary: '42intra인증 코드 전송' })
   @Post('code')
-  @ApiResponse({
-    status: 201,
-    description: '인증 성공',
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'intra 인증실패',
-  })
+  @ApiCreatedResponse({ description: '인증 성공' })
+  @ApiUnauthorizedResponse({ description: 'intra 인증실패' })
   @ApiBody({
     schema: {
       properties: {
@@ -53,13 +59,39 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: '로그인시 access & refresh token 발급' })
-  // @HttpCode(HttpStatus.OK)
+  @ApiBody({
+    schema: {
+      properties: {
+        intraId: { example: 'heeskim', type: 'string' },
+      },
+    },
+    required: true,
+    description: '인트라아이디',
+  })
+  @ApiOkResponse({
+    description: 'access token & refresh token 발급 성공',
+    schema: {
+      properties: {
+        message: { example: 'login success', type: 'string' },
+        access_token: { example: 'access-token', type: 'string' },
+      },
+    },
+    headers: {
+      'Set-Cookie': {
+        description: 'Add refresh token to Cookie header',
+        schema: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  @ApiNotFoundResponse({ description: '멤버를 찾지 못함' })
   @Post('login')
   async signIn(
-    @Body() loginDto: Record<string, any>,
+    @Body('intraId') intraId: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const member = await this.memberService.getOne(loginDto.intraId);
+    const member = await this.memberService.getOne(intraId);
     const access_token = await this.authService.generateAccessToken(member);
     const refresh_token = await this.authService.generateRefreshToken(member);
     await this.memberService.setCurrentRefreshToken(
@@ -76,10 +108,23 @@ export class AuthController {
     res.status(200).json({
       message: 'login success',
       access_token: access_token,
+      refresh_token: refresh_token,
     });
   }
 
   @ApiOperation({ summary: 'refresh token으로 access token재발급' })
+  @ApiOkResponse({
+    schema: {
+      properties: {
+        message: { example: 'refresh success', type: 'string' },
+        access_token: { example: 'access-token', type: 'string' },
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({ description: 'refresh token이 유효하지 않음' })
+  @ApiNotFoundResponse({ description: '멤버를 찾지 못함' })
+  @ApiCookieAuth('refresh_token')
+  @ApiBadRequestResponse({ description: 'invalid user called refresh' })
   @Post('refresh')
   async refresh(
     @Req() req: Request,
@@ -87,6 +132,8 @@ export class AuthController {
   ) {
     try {
       const refreshToken = req.cookies['refresh_token'];
+      if (refreshToken === undefined)
+        throw new UnauthorizedException('Invalid refresh-token');
       const newAccessToken = await this.authService.refresh(refreshToken);
       res.setHeader('Authorization', 'Bearer' + newAccessToken);
       res.status(200).json({
@@ -98,8 +145,13 @@ export class AuthController {
     }
   }
 
-  @Get('me')
+  @ApiOperation({ summary: 'access token 인증 후 내 정보 가져오기' })
+  @ApiOkResponse({ description: '내 정보 가져오기 성공' })
+  @ApiUnauthorizedResponse({ description: 'access token이 유효하지 않음' })
+  @ApiNotFoundResponse({ description: '멤버를 찾지 못함' })
+  @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
+  @Get('me')
   getMyInfo(@GetMember() member: Member) {
     console.log(member);
     return member;
