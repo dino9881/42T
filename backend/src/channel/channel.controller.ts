@@ -12,6 +12,7 @@ import { ChannelService } from './channel.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 import { MemberIdDto } from './dto/member-id.dto';
+import { MessageDto } from './dto/message.dto';
 import { AuthGuard } from '@nestjs/passport';
 import {
   ApiTags,
@@ -29,8 +30,8 @@ export class ChannelController {
   constructor(private readonly channelService: ChannelService) {}
 
   // jwt auth 추가 ex @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  // @ApiBearerAuth()
+  // @UseGuards(AuthGuard('jwt'))
   @Post('/create')
   @ApiOperation({ summary: '채널 생성', description: 'Create Channel API' })
   @ApiResponse({ status: 200, description: '성공' })
@@ -173,5 +174,25 @@ export class ChannelController {
   @ApiParam({ name: 'idx', example: '3', description: 'Channel Idx' })
   getChannelBanUsers(@Param('idx') idx: string) {
     return this.channelService.getChannelBanUsers(+idx);
+  }
+
+  // message
+  @Post('/message/send/:idx')
+  @ApiOperation({ summary: 'idx 채널에 메세지 보내기', description: 'Send message' })
+  @ApiBody({ type: MessageDto })
+  sendMessage(@Param('idx') idx: string, @Body() messageDto: MessageDto) {
+    this.channelService.sendMessage(+idx, messageDto);
+  }
+
+  @Get('/message/:idx')
+  @ApiOperation({ summary: 'idx 채널의 메세지 리스트', description: 'Get message list' })
+  getMessageList(@Param('idx') idx: string) {
+    return this.channelService.getMessageList(+idx);
+  }
+
+  @Delete('/message/delete/:idx')
+  @ApiOperation({ summary: 'idx 채널의 메세지 리스트 리셋하기', description: 'Delete message list' })
+  deleteMessageList(@Param('idx') idx: string) {
+    this.channelService.deleteMessageList(+idx);
   }
 }
