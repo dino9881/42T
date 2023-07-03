@@ -56,7 +56,7 @@ function Channel() {
                 return null;
             })}
 
-      {(channelData.length > 0 && channelData.length > 8) && (
+      {/* {(channelData.length > 0 && channelData.length > 8) && (
     //  {(channelData.length === 0 || (channelData.length / 8 > 0 && channelData.length % 8 === 0)) && (
         <div className="chan-left-right_button">
           <button
@@ -70,7 +70,21 @@ function Channel() {
             disabled={paginatedChannels.length < 8} // 마지막 페이지면 비활성화
           ></button>
         </div>
-      )}
+      )} */}
+          {channelData.length > 0 && (
+      <div className="chan-left-right_button">
+        <button
+          className={`chan-left_button ${currentPage === 1 ? "chan-empty_left_button" : ""}`}
+          onClick={goToPreviousPage}
+          disabled={currentPage === 1} // 첫 번째 페이지면 비활성화
+        ></button>
+        <button
+          className={`chan-right_button ${currentPage === Math.ceil(channelData.length / 8) ? "chan-empty_right_button" : ""}`}
+          onClick={goToNextPage}
+          disabled={currentPage === Math.ceil(channelData.length / 8) || paginatedChannels.length < 8} // 마지막 페이지면 비활성화
+          ></button>
+      </div>
+    )}
     </div>
   );
 }
