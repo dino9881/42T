@@ -153,7 +153,7 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
   getMyInfo(@GetMember() member: Member) {
-    console.log(member);
+    // console.log(member);
     return member;
   }
 }
