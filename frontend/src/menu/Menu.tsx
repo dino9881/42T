@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import './Menu.css';
+import ChannelNew from "../channel/ChannelNew"
 
 type MenuProps = {
   showBackButton: boolean;
@@ -12,6 +13,7 @@ const Menu = ({ showBackButton}: MenuProps) => {
   const [toggleImgSrc, setToggleImgSrc] = useState("toggle_down.svg");
   const [showWaiting, setShowWaiting] = useState(false);
   const [showCancel, setShowCancel] = useState(false);
+  const [showNewChat, setShowNewChat] = useState(false);
 
   const handleToggle = () => {
     setIsExpanded(!isExpanded);
@@ -28,6 +30,14 @@ const Menu = ({ showBackButton}: MenuProps) => {
     setShowCancel(false);
   };
 
+  const handleMakeNew = () =>{
+    setShowNewChat(!showNewChat);
+  }
+
+  const handleCloseMakeNew = () =>{
+    setShowNewChat(false);
+  }
+
   return (
     <div className="menu-box">
       <button className="menu-channel-drop-box" onClick={handleToggle}>
@@ -37,14 +47,8 @@ const Menu = ({ showBackButton}: MenuProps) => {
       {showBackButton ? (
         <button className="menu-channel-new-box" style={{fontSize : "20px"}}>Setting</button>
       ) : (
-        <button className="menu-channel-new-box">new</button>
+        <button className="menu-channel-new-box" onClick={handleMakeNew}>new</button>
       )}
-
-      {/* {showBackButton && (
-        <button className="menu-back-button" >
-          <img src="back-button.svg" alt="back" />
-        </button>
-      )} */}
 
       <button className="menu-grin-button menu-start-button" onClick={handleStartClick}>
         {showWaiting ? "Waiting" : "START"}
@@ -56,7 +60,9 @@ const Menu = ({ showBackButton}: MenuProps) => {
       )}
       <Link to="/ranking"> <button className="menu-grin-button menu-lank-button">Rank</button> </Link>
       <button className="menu-grin-button menu-custom-button">custom</button>
+      {showNewChat && <ChannelNew/>}
     </div>
+    
   );
 }
 

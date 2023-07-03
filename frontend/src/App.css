@@ -214,7 +214,7 @@ body {
 .channel_list{
   position: relative; /* 추가: 상대적인 위치 설정 */
   flex-direction: column;
-  border: solid black;
+  /* border: solid black; */
   height: 100%;
   width: 100%;
   position: relative;
@@ -233,14 +233,16 @@ body {
 }
 
 .chan-leftbox{
-  border: 2px solid black;
+  /* border: 2px solid black; */
+  border: 1px solid black;
   width: 48%;
   height:100%;
   
 }
 
 .chan-rightbox{
-  border: 2px solid black;
+  /* border: 2px solid black; */
+  border: 1px solid black;
   width: 48%;
   height:100%;  
 }
@@ -276,7 +278,8 @@ body {
 
 .chan-hostimg {
   margin : 10px;
-  border:solid 2px gray;
+  /* border:solid 2px gray; */
+  border:solid 1px gray;
   width: 70px;
   height: 70px;
   display: inline-block;
@@ -293,7 +296,8 @@ body {
 
 .chan-hostname {
   background-image: url("../public/img/bg.jpg");
-  border: solid 2px gray;
+  /* border: solid 2px gray; */
+  border: solid 1px gray;
   width: 60px;
   height: 20px;
   font-size: small;
@@ -313,7 +317,8 @@ body {
 
 .chan-name{
   margin-top: 10px;
-  border: solid 2px gray;
+  /* border: solid 2px gray; */
+  border: solid 1px gray;
   padding: 5px;
   width: 250px;
   height: 30px;
@@ -332,14 +337,16 @@ body {
 }
 
 .chan-pw_input{
-  border: solid gray 2px;
+  /* border: solid gray 2px; */
+  border: solid 1px gray;
   margin-right: 10px;
   width: 70px;
   height: 30px;
 }
 
 .chan-count{
-  border: solid gray 2px;
+  /* border: solid gray 2px; */
+  border: solid 1px gray;
   display: flex;
   width: 40px;
   margin-left: 210px;
@@ -413,4 +420,95 @@ body {
 
 .hidden{
   display: none;
+}
+
+.chan-new_make {
+  border:solid 2px black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 30%;
+  left: 35%;
+  transform: translate(-50, -50%);
+  width: 350px;
+  height: 435px;
+  background: url("../public/img/bg.jpg") no-repeat center center;
+  flex-direction: column;
+  z-index: 1;
+}
+
+.chan-new-make_close {
+	background-color:transparent;
+	border: none;
+	position: absolute;
+	top: 10px;
+	left: 8px;
+}
+
+.chan-new_namebox{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+}
+
+.chan-new_name{
+  font-size: x-large;
+  padding-bottom: 10px;
+}
+
+.chan-new_input_title{
+  width: 200px;
+  text-align: center; /* 가운데 정렬로 설정 */
+
+}
+
+.chan-new_pwbox{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  font-size: large;
+}
+
+.chan-new_pw{
+  font-size: x-large;
+  padding-bottom: 5px;
+
+}
+
+.chan-new_input_password{
+  width: 150px;
+  height: 28px;
+  text-align: center; /* 가운데 정렬로 설정 */
+}
+
+.chan-new_make_do_box{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  font-size: large;
+  /* margin-bottom: 10px; */
+}
+
+.chan-new_make_checkbox {
+  transform: scale(1.5); /* Checkbox 크기 조절 */
+  margin-top: 10px; /* 수정: 체크박스 위쪽 여백 추가 */
+  margin-right: 8px;
+  size: large;
+}
+
+.chan-new_make_button {
+  display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 76px;
+	height: 26px;
+	border: 1px solid gray;
+	background-color:transparent;
+  margin-top: 10px;
+  margin-left: 40px;
+  font-size: large;
 }
