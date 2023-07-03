@@ -10,16 +10,20 @@ import { UpdateChannelDto } from './dto/update-channel.dto';
 import { PrismaService } from 'src/prisma.service';
 import { Prisma } from '@prisma/client';
 import { MemberIdDto } from './dto/member-id.dto';
+import { MessageDto } from './dto/message.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChannelService {
   private channelUsers: Record<number, string[]>;
   private banUsers: Record<number, string[] >;
+  // private messageList: Record<number,  Record<string, string>>;
+  private messageList: Record<number, { memberId: string, message: string }[]>;
 
   constructor(private prisma: PrismaService) {
     this.channelUsers = {};
     this.banUsers = {};
+    this.messageList = {};
   }
 
   async hashPassword(channel: CreateChannelDto) {
@@ -276,5 +280,56 @@ export class ChannelService {
     return this.banUsers[idx];
   }
 
+  // message
+  async sendMessage(idx: number, messageDto: MessageDto) {
+    try {
+      const { memberId, message } = messageDto;
+      const channel = await this.findOneById(idx);
+      if (!channel)
+        throw new NotFoundException('channel not found');
+    
+        if (!(idx in this.messageList)) {
+          this.messageList[idx] = [];
+        }
+        this.messageList[idx].push({memberId, message});
+        console.log(this.messageList[idx]);
+    } catch (error) {
+      throw new InternalServerErrorException('Internal Server Error');
+    }
+  }
+  
+  // 채널 들어갈때 한번 호출 후에 메세지를 뽑고 한번 비울까
+  // 여러번 받아올 거면 리셋 만들기
+  async getMessageList(idx: number) {
+    try {
+      const channel = await this.findOneById(idx);
+      if (!channel)
+        throw new NotFoundException('channel not found');
+    
+        if (!(idx in this.messageList)) {
+          this.messageList[idx] = [];
+        }
+        console.log(this.messageList[idx]);
+        return this.messageList[idx];
+    } catch (error) {
+      throw new InternalServerErrorException('Internal Server Error');
+    }
+  }
 
+  async deleteMessageList(idx: number) {
+    try {
+      const channel = await this.findOneById(idx);
+      if (!channel)
+        throw new NotFoundException('channel not found');
+    
+        if (idx in this.messageList) {
+          this.messageList[idx] = [];
+        }
+        console.log(this.messageList[idx]);
+    } catch (error) {
+      throw new InternalServerErrorException('Internal Server Error');
+    }
+  }
 }
+
+// 개인 채널 구분..?
