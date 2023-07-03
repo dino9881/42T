@@ -356,11 +356,12 @@ body {
   position: absolute;
 }
 
-.chan-emptyrightbox
+.chan-empty_rightbox
 {
   width: 48%;
   height:100%;  
 }
+
 
 /* .chan-left-right_button {
   display: flex;
@@ -403,6 +404,17 @@ body {
 }
 
 .chan-empty_left_button{
+    width: 30px;
+    height: 30px;
+    margin-left: 10px;
+    margin-right: 10px;
+    border: none;
+    background: url(    "../public/img/bg.jpg") no-repeat center center;
+    background-size: contain; /* 이미지를 버튼에 맞게 조정 */
+    padding: 0;
+}
+
+.chan-empty_right_button{
     width: 30px;
     height: 30px;
     margin-left: 10px;
