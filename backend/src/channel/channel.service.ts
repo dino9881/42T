@@ -10,20 +10,18 @@ import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 import { PrismaService } from 'src/prisma.service';
 import { Member, Prisma } from '@prisma/client';
-import { MemberIdDto } from './dto/member-id.dto';
+import { ChannelUserDto } from './dto/channel-user.dto';
 import { MessageDto } from './dto/message.dto';
 import * as bcrypt from 'bcrypt';
+import { MemberInfoDto } from 'src/member/dto/member-info.dto';
 
+// mute 5분........ 
 
-// channel user 가져오기에 operator 도
-// get my channel intraid 까서 가져오기
-// nickname intraid 저장
-// channel interid, nickname 다 반환
 @Injectable()
 export class ChannelService {
-  private channelUsers: Record<number, string[]>;
-  private banUsers: Record<number, string[] >;
-  private messageList: Record<number, { memberId: string, message: string }[]>;
+  private channelUsers: Record<number, { intraId: string, nickName: string }[]>;
+  private banUsers: Record<number, { intraId: string, nickName: string }[] >;
+  private messageList: Record<number, { intraId: string, message: string }[]>;
 
   constructor(private prisma: PrismaService) {
     this.channelUsers = {};
@@ -37,7 +35,7 @@ export class ChannelService {
     return channel;
   }
 
-  async create(operatorId: string, createChannelDto: CreateChannelDto) {
+  async create(member: MemberInfoDto, createChannelDto: CreateChannelDto) {
     try {
       if (createChannelDto.chPwd !== undefined)
       {
@@ -46,9 +44,10 @@ export class ChannelService {
       const { chName, chPwd, isDM } = createChannelDto;
       const createData = await this.prisma.channel.create({
         data: { chName, chUserCnt: 1, chPwd, isDM: isDM === undefined ? false : isDM,
-          operator: { connect: { intraId: operatorId }, } },
+          operator: { connect: { intraId: member.intraId }, } },
       });
-      this.channelUsers[createData.chIdx] = [];
+
+      this.channelUsers[createData.chIdx] = [{intraId: member.intraId, nickName: member.nickName}];
       this.banUsers[createData.chIdx] = [];
       this.messageList[createData.chIdx] = [];
       return createData;
@@ -74,7 +73,7 @@ export class ChannelService {
 
   async update(idx: number, updateChannelDto: UpdateChannelDto) {
     try {
-      const { chName, chPwd } = updateChannelDto;
+      const { chName, chPwd, operatorId } = updateChannelDto;
       if (chPwd !== undefined)
       {
         await this.hashPasswordModify(updateChannelDto);
@@ -82,7 +81,7 @@ export class ChannelService {
       }
       const updateData = await this.prisma.channel.update({
         where: { chIdx: idx },
-        data: { chName, chPwd },
+        data: { chName, chPwd, operatorId },
       });
       return updateData;
     } catch (error) {
@@ -195,13 +194,13 @@ export class ChannelService {
     }
   }
   
-  async isOperator(idx: number, memberIdDto: MemberIdDto) {
+  async isOperator(idx: number, intraId: string) {
     try {
       const channel = await this.findOneById(idx);
       const { operatorId } = channel;
       if (!channel)
         throw new NotFoundException('channel not found');
-      if (operatorId === memberIdDto.memberId)
+      if (operatorId === intraId)
         return true;
       return false;
     } catch (error) {
@@ -214,9 +213,9 @@ export class ChannelService {
   async isDM(idx: number) {
     try {
       const channel = await this.findOneById(idx);
-      const { isDM } = channel;
       if (!channel)
         throw new NotFoundException('channel not found');
+      const { isDM } = channel;
       if (isDM === true)
         return true;
       return false;
@@ -229,47 +228,78 @@ export class ChannelService {
 
   // channel users
 
-  async enter(idx: number, memberIdDto: MemberIdDto) {
-    const { memberId } = memberIdDto;
+  async enter(idx: number, member: MemberInfoDto) {
     try {
+      const { intraId, nickName } = member;
       const channel = await this.findOneById(idx);
       if (!channel)
         throw new NotFoundException('channel not found');
 
-      this.banUsers[idx].map((id) => {
-        if (id === memberId) {
+      // user check
+      if (this.channelUsers[idx].find(user => user.intraId === member.intraId))
+        return ;
+      // ban check
+      this.banUsers[idx].map((data) => {
+        if (data.intraId === member.intraId) {
           throw new ForbiddenException('banned user');
         }
       })
+      if (channel.chUserCnt >= 5)
+        throw new ForbiddenException('max capacity');
       const updatedChannel = await this.prisma.channel.update({
         where: { chIdx: idx},
         data: {
           chUserCnt: { increment: 1},
         }
       });
-      this.channelUsers[idx].push(memberId);
+      this.channelUsers[idx].push({ intraId, nickName });
     } catch (error) {
+      console.log(error);
       if (error.status === 404)
         throw new NotFoundException('channel not found');
       throw new InternalServerErrorException('Internal Server Error');
     }
   }
 
-  async leave(idx: number, memberIdDto: MemberIdDto) {
-    const { memberId } = memberIdDto;
+  // oper 가 나갔을때 다음사람 물려줌
+  // 아무도 없으면 채널 삭제
+  async leave(idx: number, memberId: string) {
     try {
       const channel = await this.findOneById(idx);
       if (!channel)
         throw new NotFoundException('channel not found');
-    
       const updatedChannel = await this.prisma.channel.update({
         where: { chIdx: idx},
         data: {
           chUserCnt: { decrement: 1},
         }
       });
-      this.channelUsers[idx] = this.channelUsers[idx].filter(item => item !== memberId);
+      this.channelUsers[idx] = this.channelUsers[idx].filter(item => item.intraId !== memberId);
+      if (updatedChannel.chUserCnt == 0)
+        this.delete(idx);
+      else if (memberId === updatedChannel.operatorId)
+        this.update(idx, {operatorId: this.channelUsers[idx][0].intraId});
+    } catch (error) {
+      console.log(error);
+      if (error.status === 404)
+        throw new NotFoundException('channel not found');
+      throw new InternalServerErrorException('Internal Server Error');
+    }
+  }
 
+  async kick(idx: number, memberDto: ChannelUserDto)
+  {
+    try {
+      const channel = await this.findOneById(idx);
+      if (!channel)
+        throw new NotFoundException('channel not found');
+      const updatedChannel = await this.prisma.channel.update({
+        where: { chIdx: idx},
+        data: {
+          chUserCnt: { decrement: 1},
+        }
+      });
+      this.channelUsers[idx] = this.channelUsers[idx].filter(item => item.intraId !== memberDto.intraId);
     } catch (error) {
       if (error.status === 404)
         throw new NotFoundException('channel not found');
@@ -290,23 +320,17 @@ export class ChannelService {
   }
 
   async getChannels(intraId: string) {
-    console.log(intraId);
     var channels = [];
-    // const channels = [];
     try {
       const allChannel = await this.findChannelAll();
+      console.log("get all Channel");
       const chIdxList = allChannel.map((channel) => channel.chIdx);
+      console.log(chIdxList);
       for (const idx of chIdxList) {
-        console.log(idx);
         const channel = await this.findOneById(idx);
-        const { operatorId } = channel;
-        if (operatorId === intraId)
-          channels.push(channel);
         const users = this.channelUsers[idx];
-        console.log(users);
-        for (const id of users) {
-          console.log(channel);
-          if (id === intraId) {
+        for (const data of users) {
+          if (data.intraId === intraId) {
             channels.push(channel);
           }
         }
@@ -329,13 +353,9 @@ export class ChannelService {
       const chIdxList = allChannel.map((channel) => channel.chIdx);
       for (const idx of chIdxList) {
         const channel = await this.findOneById(idx);
-        const { operatorId } = channel;
-        if (operatorId === intraId)
-          channels.push(channel);
         const users = this.channelUsers[idx];
-        for (const id of users) {
-
-          if (id === intraId) {
+        for (const data of users) {
+          if (data.intraId === intraId) {
             channels.push(channel);
           }
         }
@@ -348,17 +368,15 @@ export class ChannelService {
     }
   }
 
-  // ban
-
-  async saveBanUser(idx: number, memberIdDto: MemberIdDto) {
-    const { memberId } = memberIdDto;
+  // ban id 랑 nick 둘다 넘겨줘야함
+  async saveBanUser(idx: number, channelUserDto: ChannelUserDto) {
+    const { intraId, nickName } = channelUserDto;
     try {
       const channel = await this.findOneById(idx);
       if (!channel)
         throw new NotFoundException('channel not found');
-
-      this.banUsers[idx].push(memberId);
-      console.log(this.banUsers);
+      this.banUsers[idx].push({intraId, nickName});
+      console.log(this.banUsers[idx]);
     } catch (error) {
       if (error.status === 404)
         throw new NotFoundException('channel not found');
@@ -366,13 +384,13 @@ export class ChannelService {
     }
   }
 
-  async deleteBanUser(idx: number, memberIdDto: MemberIdDto) {
-    const { memberId } = memberIdDto;
+  async deleteBanUser(idx: number, channelUserDto: ChannelUserDto) {
+    const { intraId } = channelUserDto;
     try {
       const channel = await this.findOneById(idx);
       if (!channel)
         throw new NotFoundException('channel not found');
-      this.banUsers[idx] = this.banUsers[idx].filter(item => item !== memberId);
+      this.banUsers[idx] = this.banUsers[idx].filter(item => item.intraId !== intraId);
     } catch (error) {
       if (error.status === 404)
         throw new NotFoundException('channel not found');
@@ -394,13 +412,13 @@ export class ChannelService {
 
   // message
 
-  async sendMessage(idx: number, messageDto: MessageDto) {
+  async sendMessage(idx: number, messageDto: MessageDto, intraId: string) {
     try {
-      const { memberId, message } = messageDto;
+      const { message } = messageDto;
       const channel = await this.findOneById(idx);
       if (!channel)
         throw new NotFoundException('channel not found');
-      this.messageList[idx].push({memberId, message});
+      this.messageList[idx].push({intraId, message});
     } catch (error) {
       if (error.status === 404)
         throw new NotFoundException('channel not found');
@@ -408,8 +426,11 @@ export class ChannelService {
     }
   }
   
-  async getMessageList(idx: number) {
+  // ban user 면 리스트 안가져오는거 확인
+  async getMessageList(idx: number, intraId: string) {
     try {
+      if (this.banUsers[idx].find(user => user.intraId === intraId))
+        return ;
       const channel = await this.findOneById(idx);
       if (!channel)
         throw new NotFoundException('channel not found');
