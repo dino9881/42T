@@ -64,7 +64,7 @@ export class MemberController {
   @Public()
   @Post('create')
   create(@Body() memberDto: CreateMemberDto) {
-    console.log(memberDto);
+    // console.log(memberDto);
     return this.memberService.create(memberDto);
   }
 

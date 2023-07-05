@@ -2,9 +2,6 @@ import React, { useEffect } from "react";
 import { useState, ChangeEvent, FormEvent } from "react";
 import { socket } from "./socket";
 import { useLocation } from "react-router-dom";
-import Contents from "./Contents";
-import Sidebar from "./sidebar/Sidebar";
-import Menu from "./menu/Menu";
 import axios from "axios";
 
 interface MessageText {
@@ -12,6 +9,7 @@ interface MessageText {
     text: string;
 }
 
+<<<<<<< HEAD
 function Chat() {
     return <div>
          <Contents headerComponent={<Menu showBackButton={true}/>} mainComponent={<ChatComponent/>}/>
@@ -30,8 +28,32 @@ function ChatComponent() {
 					setNickName(response.data.nickName); 
 			});
 	
+=======
+interface MessageItem {
+    name: string;
+    text: string;
+    isMine: boolean;
+}
 
-    function initialData(): MessageText[]  {
+interface ChatProps {
+    channelName: string;
+    channelInit: (channelName : string) => void;
+}
+
+
+>>>>>>> socket-chat
+
+function Chat({channelName , channelInit}:ChatProps) {
+    const location = useLocation();
+    const [nickName, setNickName] = useState("");
+    const [msgList, setMsgList] = useState<MessageItem[]>(() => initialData());
+    axios.get('http://localhost:5001/auth/me').then((response) => {
+			// console.log(response);
+					setNickName(response.data.nickName); 
+			});
+	
+
+    function initialData(): MessageItem[]  {
         return [];
       }
 
@@ -43,8 +65,9 @@ function ChatComponent() {
             .then((response) => {
                 // 요청이 성공하면 데이터를 상태로 설정
                 // setChannelName(response.data);
-                setChannelName(response.data.chName);
-                console.log(channelName);
+                channelInit(response.data.chName);
+                // console.log(`channel = s{channelName}`);
+
             })
             .catch((error) => {
                 // 요청이 실패하면 에러 처리
@@ -52,12 +75,11 @@ function ChatComponent() {
             });
             // setChannelName(state.channelName);
         } else {
-            setChannelName("error");
+            channelInit("error");
         }
-        socket.connect();
 
         socket.on("welcome", (nickName) => {
-            const newMessage = {name: nickName, text: `${nickName} : 이 입장했습니다.` };
+            const newMessage = {name: "System", text: `${nickName} : 이 입장했습니다.` };
             addMessage(newMessage);
         });
 
@@ -71,35 +93,45 @@ function ChatComponent() {
     }, []);
     
     useEffect(() => {
-        if(channelName)
+        if(channelName && nickName)
         {  
               socket.emit("enter-channel", {channelName: channelName,nickname: nickName});
         }
     }, [channelName])
     
     const addMessage = (messageText: MessageText) => {
-        const message = {name: messageText.name, text: messageText.text };
+        const message = {name: messageText.name, text: messageText.text, isMine:false };
         setMsgList((prevMsgList) => [...prevMsgList, message]);
       };
 
+      const addMyMessage = (messageText: MessageText) => {
+        const message = {name: messageText.name, text: messageText.text, isMine:true };
+        setMsgList((prevMsgList) => [...prevMsgList, message]);
+      };
+
+    function exitChannel(){
+    }
+
     return (  
         <div className="chat">
-            <div>{channelName}</div>
+            <span>{channelName}</span>
+            <button onClick={exitChannel}>채널 나가기</button>
             <div className="chat-scroll">
                 {msgList.map((message, index) => (
-                    <ChatBox
+                    <ChatItem
                         key={index}
                         name={message.name}
                         text={message.text}
+                        isMine={message.isMine}
                     />
                 ))}
             </div>
-            <ChatInput addMessage={addMessage} nickname={nickName} channelname={channelName} />
+            <ChatInput addMyMessage={addMyMessage} nickname={nickName} channelname={channelName} />
         </div>
     );
 }
 
-function ChatInput({ addMessage, nickname, channelname }: { addMessage: (message: MessageText) => void, nickname: string, channelname:string }) {
+function ChatInput({ addMyMessage, nickname, channelname }: { addMyMessage: (message: MessageText) => void, nickname: string, channelname:string }) {
     const [text, setText] = useState("");
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         setText(event.target.value);
@@ -107,7 +139,7 @@ function ChatInput({ addMessage, nickname, channelname }: { addMessage: (message
     const onSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const newMessage = {name: "나", text: text };
-        addMessage(newMessage);
+        addMyMessage(newMessage);
         socket.emit("message",{channelname, nickname, text});
         setText("");
     };
@@ -127,9 +159,16 @@ function ChatInput({ addMessage, nickname, channelname }: { addMessage: (message
     );
 }
 
-function ChatBox({ name, text }: MessageText) {
+function ChatItem({ name, text, isMine }: MessageItem) {
+    const getItemType = (): string => {
+        if (isMine) {
+          return 'chat-box-mine';
+        } else {
+          return 'chat-box';
+        }
+      };
     return (
-        <div className="chat-box">
+        <div className={`${getItemType()}`}>
             <div className="chat-userimg">img</div>
             <div className="chat-userinfo">
                 <span className="chat-username">{name}</span>
