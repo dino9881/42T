@@ -5,7 +5,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
 
-  sendMail(intraId: string): boolean {
+  sendMail(intraId: string, code: number): boolean {
     this.mailerService
       .sendMail({
         to: `${intraId}@student.42seoul.kr`,
@@ -15,7 +15,7 @@ export class MailService {
         },
         subject: 'Testing Nest MailerModule ✔',
         text: 'welcome to 42T',
-        html: '<b>Hello User, this is you code</b>',
+        html: `<b>Hello User, this is you code. ${code}</b>`,
       })
       .catch(() => {
         throw new BadRequestException('some error');
