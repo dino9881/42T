@@ -17,7 +17,6 @@ import {
   ApiBody,
   ApiConflictResponse,
   ApiCreatedResponse,
-  ApiNotAcceptableResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -33,7 +32,6 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { HttpStatusCode } from 'axios';
 import { MailService } from '../mail.service';
 
-@ApiTags('member')
 @ApiResponse({
   status: 500,
   description: '서버 에러',
@@ -48,9 +46,10 @@ export class MemberController {
     private readonly mailerService: MailService,
   ) {}
 
+  @ApiTags('Two-Factor-Autentication')
   @ApiOperation({ summary: '2차 인증 코드 생성 및 메일 전송' })
   @ApiOkResponse({ description: '메일 전송 성공' })
-  @Get('mail')
+  @Get('mail/send')
   async sendMail(@GetMember() member: MemberInfoDto) {
     const code = await this.memberService.generateTFACode();
     this.memberService.updateCode(member.intraId, {
@@ -60,6 +59,7 @@ export class MemberController {
     return this.mailerService.sendMail(member.intraId, code);
   }
 
+  @ApiTags('Two-Factor-Autentication')
   @ApiOperation({ summary: '2차 인증 코드 검증' })
   @ApiCreatedResponse({ description: '코드 검증 성공' })
   @ApiBadRequestResponse({ description: '코드 검증 실패' })
@@ -72,7 +72,7 @@ export class MemberController {
     required: true,
     description: '2차 인증 코드',
   })
-  @Post('mail')
+  @Post('mail/verify')
   async verifyTFACode(
     @GetMember() member: MemberInfoDto,
     @Body('code') code: number,
@@ -80,6 +80,7 @@ export class MemberController {
     return this.memberService.verifyTFACode(member, code);
   }
 
+  @ApiTags('Member')
   @ApiOperation({ summary: '새로운 멤버 생성' })
   @ApiCreatedResponse({
     description: '생성 완료',
@@ -91,10 +92,10 @@ export class MemberController {
   @Public()
   @Post('create')
   create(@Body() memberDto: CreateMemberDto) {
-    // console.log(memberDto);
     return this.memberService.create(memberDto);
   }
 
+  @ApiTags('Member')
   @ApiOperation({ summary: 'intraId로 멤버인지 아닌지 확인' })
   @ApiOkResponse({ description: '멤버가 존재함' })
   @ApiNotFoundResponse({ description: '멤버를 찾지 못함' })
@@ -105,6 +106,7 @@ export class MemberController {
     if (member) return HttpStatusCode.Ok;
   }
 
+  @ApiTags('Member')
   @ApiOperation({ summary: 'intraId로 멤버삭제' })
   @ApiOkResponse({ description: '삭제 성공' })
   @ApiNotFoundResponse({ description: '삭제할 멤버를 찾지 못함' })
@@ -123,6 +125,7 @@ export class MemberController {
     return this.memberService.delete(intraId);
   }
 
+  @ApiTags('Member')
   @ApiOperation({ summary: '전 멤버정보 찾기' })
   @ApiOkResponse({ description: '성공', type: CreateMemberDto, isArray: true })
   @Public()
@@ -131,6 +134,7 @@ export class MemberController {
     return this.memberService.getAll();
   }
 
+  @ApiTags('Member')
   @ApiOperation({ summary: 'intraId로 멤버정보 찾기' })
   @ApiOkResponse({
     description: '성공',
@@ -147,6 +151,7 @@ export class MemberController {
     return this.memberService.getOne(intraId);
   }
 
+  @ApiTags('Member')
   @ApiOperation({ summary: '멤버 닉네임 변경' })
   @ApiOkResponse({ description: '성공' })
   @ApiConflictResponse({ description: '닉네임 중복값 존재' })
@@ -159,6 +164,7 @@ export class MemberController {
     return this.memberService.updateNick(member, updateDto);
   }
 
+  @ApiTags('Member')
   @ApiOperation({ summary: '멤버 아바타 변경' })
   @ApiOkResponse({ description: '성공' })
   @ApiBody({ type: UpdateMemberDto })
@@ -170,6 +176,7 @@ export class MemberController {
     return this.memberService.updateAvatar(member, updateinfo);
   }
 
+  @ApiTags('Member')
   @ApiOperation({ summary: '멤버 검색' })
   @ApiParam({
     name: 'nickName',
@@ -186,7 +193,15 @@ export class MemberController {
     return this.memberService.searchMember(member, nickName);
   }
 
-  @ApiTags('friend')
+  @ApiTags('Friend')
+  @ApiOperation({ summary: '친구 목록' })
+  @ApiOkResponse({ description: '성공', type: MemberInfoDto, isArray: true })
+  @Get('friend/list')
+  getFriendList(@GetMember() member: MemberInfoDto) {
+    return this.memberService.getFriendList(member);
+  }
+
+  @ApiTags('Friend')
   @ApiOperation({ summary: '친구 추가' })
   @ApiParam({
     name: 'nickName',
@@ -205,15 +220,7 @@ export class MemberController {
     return this.memberService.addFriend(member, nickName);
   }
 
-  @ApiTags('friend')
-  @ApiOperation({ summary: '친구 목록' })
-  @ApiOkResponse({ description: '성공', type: MemberInfoDto, isArray: true })
-  @Get('friend/list')
-  getFriendList(@GetMember() member: MemberInfoDto) {
-    return this.memberService.getFriendList(member);
-  }
-
-  @ApiTags('friend')
+  @ApiTags('Friend')
   @ApiOperation({ summary: '친구 삭제' })
   @ApiParam({
     name: 'nickName',
@@ -232,7 +239,7 @@ export class MemberController {
     return this.memberService.deleteFriend(member, nickName);
   }
 
-  @ApiTags('ban')
+  @ApiTags('Ban')
   @ApiOperation({ summary: '차단 멤버 목록' })
   @ApiOkResponse({ description: '성공', type: MemberInfoDto, isArray: true })
   @Get('ban/list')
@@ -240,7 +247,7 @@ export class MemberController {
     return this.memberService.getBanList(member);
   }
 
-  @ApiTags('ban')
+  @ApiTags('Ban')
   @ApiOperation({ summary: '멤버 차단' })
   @ApiParam({
     name: 'nickName',
@@ -258,7 +265,7 @@ export class MemberController {
     return this.memberService.banMember(member, nickName);
   }
 
-  @ApiTags('ban')
+  @ApiTags('Ban')
   @ApiOperation({ summary: '멤버 차단 해제' })
   @ApiParam({
     name: 'nickName',
