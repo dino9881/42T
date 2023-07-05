@@ -12,10 +12,12 @@ import { MemberService } from './member.service';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiNotAcceptableResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -46,11 +48,36 @@ export class MemberController {
     private readonly mailerService: MailService,
   ) {}
 
+  @ApiOperation({ summary: '2차 인증 코드 생성 및 메일 전송' })
+  @ApiOkResponse({ description: '메일 전송 성공' })
   @Get('mail')
-  @Public()
-  sendMail() {
-    const intraId = 'hjeong';
-    return this.mailerService.sendMail(intraId);
+  async sendMail(@GetMember() member: MemberInfoDto) {
+    const code = await this.memberService.generateTFACode();
+    this.memberService.updateCode(member.intraId, {
+      code: code,
+      codeTime: new Date(),
+    });
+    return this.mailerService.sendMail(member.intraId, code);
+  }
+
+  @ApiOperation({ summary: '2차 인증 코드 검증' })
+  @ApiCreatedResponse({ description: '코드 검증 성공' })
+  @ApiBadRequestResponse({ description: '코드 검증 실패' })
+  @ApiBody({
+    schema: {
+      properties: {
+        code: { type: 'number' },
+      },
+    },
+    required: true,
+    description: '2차 인증 코드',
+  })
+  @Post('mail')
+  async verifyTFACode(
+    @GetMember() member: MemberInfoDto,
+    @Body('code') code: number,
+  ) {
+    return this.memberService.verifyTFACode(member, code);
   }
 
   @ApiOperation({ summary: '새로운 멤버 생성' })
@@ -163,12 +190,13 @@ export class MemberController {
   @ApiOperation({ summary: '친구 추가' })
   @ApiParam({
     name: 'nickName',
+    type: 'string',
     required: true,
     description: '친구로 등록할 멤버 닉네임',
   })
   @ApiOkResponse({ description: '친구 추가 성공' })
   @ApiConflictResponse({ description: '이미 친구로 등록된 멤버' })
-  @ApiNotFoundResponse({ description: '친구로 등록한 멤버를 찾지 못함' })
+  @ApiNotFoundResponse({ description: '친구로 등록할 멤버를 찾지 못함' })
   @Post('friend/add/:nickName')
   addFriend(
     @GetMember() member: MemberInfoDto,
@@ -202,6 +230,14 @@ export class MemberController {
     @Param('nickName') nickName: string,
   ) {
     return this.memberService.deleteFriend(member, nickName);
+  }
+
+  @ApiTags('ban')
+  @ApiOperation({ summary: '차단 멤버 목록' })
+  @ApiOkResponse({ description: '성공', type: MemberInfoDto, isArray: true })
+  @Get('ban/list')
+  getBanList(@GetMember() member: MemberInfoDto) {
+    return this.memberService.getBanList(member);
   }
 
   @ApiTags('ban')

@@ -18,6 +18,8 @@ model Member {
   rank      Int
   winCnt    Int @default(0)
   loseCnt   Int @default(0)
+  code      Int?
+  codeTime  DateTime?
   currentRefreshTokenExp DateTime?
   currentRefreshToken String?
 
@@ -35,7 +37,8 @@ model Channel {
   chIdx       Int @id @default(autoincrement())
   chName      String @unique
   chPwd       String?
-  chUserCnt   Int? 
+  chUserCnt   Int?
+  isDM        Boolean?
   operator    Member @relation("channel", fields: [operatorId], references: [intraId])
   operatorId  String
 }

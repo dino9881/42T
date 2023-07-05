@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString, IsOptional } from 'class-validator';
+import { IsNumber, IsString, IsOptional, IsBoolean } from 'class-validator';
 
 export class CreateChannelDto {
   @IsString()
@@ -10,11 +10,14 @@ export class CreateChannelDto {
   chPwd?: string;
 
   @IsString()
-  @ApiProperty({ description: '방장 인트라 Id', example: 'hjeong' })
+  @ApiProperty({ description: '방장 인트라 Id', example: 'heeskim' })
   operatorId: string;
 
   @IsNumber()
   @IsOptional()
   chUserCnt?: number;
 
+  @IsBoolean()
+  @IsOptional()
+  isDM?: boolean;
 }

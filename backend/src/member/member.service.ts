@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   HttpStatus,
   Injectable,
@@ -18,6 +19,23 @@ import { MemberInfoDto } from './dto/member-info.dto';
 export class MemberService {
   constructor(private prisma: PrismaService, private config: ConfigService) {}
 
+  async generateTFACode() {
+    //6 digit code
+    const code = Math.floor(100000 + Math.random() * 900000);
+    return code;
+  }
+
+  async verifyTFACode(member: MemberInfoDto, code: number) {
+    if (member.code != null && member.code == code) {
+      if (member.codeTime.getTime() + 300 * 1000 < Date.now()) {
+        // 5분체킹
+        await this.updateCode(member.intraId, { code: null, codeTime: null });
+        return true;
+      }
+    }
+    throw new BadRequestException('Code Not Match');
+  }
+
   // 전체 유저 확인 용 메소드
   async getAll() {
     const members = this.prisma.member.findMany();
@@ -35,6 +53,7 @@ export class MemberService {
   }
 
   async getOneByNick(nickName: string) {
+    console.log(nickName);
     const member = await this.prisma.member.findUnique({
       where: { nickName },
     });
@@ -125,6 +144,15 @@ export class MemberService {
     return HttpStatusCode.Ok;
   }
 
+  async updateCode(id: string, updateInfo: UpdateMemberDto) {
+    await this.prisma.member.update({
+      where: { intraId: id },
+      data: updateInfo,
+    });
+    console.log(updateInfo.code);
+    return HttpStatusCode.Ok;
+  }
+
   async delete(id: string) {
     const member = await this.getOne(id);
     if (member == null) {
@@ -137,33 +165,22 @@ export class MemberService {
   }
 
   async isFriend(member: MemberInfoDto, friend: MemberInfoDto) {
-    const isFriend = await this.prisma.member.findUnique({
-      where: {
-        intraId: member.intraId,
-      },
-      select: {
-        friend: {
-          where: {
-            intraId: friend.intraId,
-          },
-        },
-      },
-    });
-    if (isFriend.friend.length) {
-      return true;
-    } else {
-      return false;
-    }
+    const isFriend = await this.prisma.member
+      .findUnique({
+        where: { intraId: member.intraId },
+      })
+      .friend({
+        where: { intraId: friend.intraId },
+        select: { intraId: true },
+      });
+    if (isFriend.length) return true;
+    else return false;
   }
 
   async searchMember(member: MemberInfoDto, nickName: string) {
     const friend = await this.getOneByNick(nickName);
     const isFriend = await this.isFriend(member, friend);
-    if (isFriend) {
-      return { ...friend, isFriend: true };
-    } else {
-      return { ...friend, isFriend: false };
-    }
+    return { ...friend, isFriend: isFriend };
   }
 
   async getCurrentHashedRefreshToken(refreshToken: string) {
@@ -230,7 +247,6 @@ export class MemberService {
       where: { intraId: member.intraId },
       data: { friend: { connect: { intraId: friend.intraId } } },
     });
-    console.log(friend);
     return HttpStatus.OK;
   }
 
@@ -259,23 +275,24 @@ export class MemberService {
   }
 
   async isBan(member: MemberInfoDto, banMember: MemberInfoDto) {
-    const isBan = await this.prisma.member.findUnique({
-      where: {
-        intraId: member.intraId,
-      },
-      select: {
-        banned: {
-          where: {
-            intraId: banMember.intraId,
-          },
-        },
-      },
+    const isBan = await this.prisma.member
+      .findUnique({
+        where: { intraId: member.intraId },
+      })
+      .banned({
+        where: { intraId: banMember.intraId },
+        select: { intraId: true },
+      });
+    if (isBan.length) return true;
+    else return false;
+  }
+
+  async getBanList(member: MemberInfoDto) {
+    const banList = await this.prisma.member.findMany({
+      where: { bannedOf: { some: { intraId: member.intraId } } },
     });
-    if (isBan.banned.length) {
-      return true;
-    } else {
-      return false;
-    }
+    console.log(banList);
+    return banList;
   }
 
   async banMember(member: MemberInfoDto, nickName: string) {
