@@ -15,7 +15,6 @@ interface MessageText {
 function Chat() {
     return <div>
          <Contents headerComponent={<Menu showBackButton={true}/>} mainComponent={<ChatComponent/>}/>
-         <Sidebar />
     </div>
     ;
 }
@@ -26,6 +25,11 @@ function ChatComponent() {
     const [channelName, setChannelName] = useState("");
     const [nickName, setNickName] = useState("jonkim");
     const [msgList, setMsgList] = useState<MessageText[]>(() => initialData());
+    axios.get('http://localhost:5001/auth/me').then((response) => {
+			// console.log(response);
+					setNickName(response.data.nickName); 
+			});
+	
 
     function initialData(): MessageText[]  {
         return [];

@@ -6,11 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 import { MemberIdDto } from './dto/member-id.dto';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiTags,
   ApiOperation,
@@ -18,6 +20,7 @@ import {
   ApiResponse,
   ApiBody,
   ApiParam,
+  ApiBearerAuth
 } from '@nestjs/swagger';
 
 @Controller('channel')
@@ -26,6 +29,11 @@ export class ChannelController {
   constructor(private readonly channelService: ChannelService) {}
 
   // jwt auth 추가 ex @UseGuards(JwtAuthGuard)
+<<<<<<< HEAD
+=======
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+>>>>>>> side
   @Post('/create')
   @ApiOperation({ summary: '채널 생성', description: 'Create Channel API' })
   @ApiResponse({ status: 200, description: '성공' })
@@ -114,7 +122,15 @@ export class ChannelController {
     return this.channelService.getChannelUserCnt(+idx);
   }
 
-  // getChannelUser
+  @Post('/check/:idx')
+  @ApiOperation({ summary: 'idx 채널 password 확인', description: 'Password check By Idx' })
+  @ApiBody({ type: CreateChannelDto })
+  @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx'})
+  checkPassword(@Param('idx') idx: string, @Body() updateChannelDto : UpdateChannelDto) {
+    return this.channelService.checkPassword(+idx, updateChannelDto);
+  }
+
+  // channel users
 
   @Post('/enter/:idx')
   @ApiOperation({ summary: 'idx 채널에 들어가기', description: 'Enter channel By Idx' })
@@ -138,6 +154,7 @@ export class ChannelController {
     return this.channelService.getChannelUsers(+idx);
   }
 
+<<<<<<< HEAD
   @Post('/check/:idx')
   @ApiOperation({ summary: 'idx 채널 password 확인', description: 'Password check By Idx' })
   @ApiBody({ type: CreateChannelDto })
@@ -146,6 +163,8 @@ export class ChannelController {
     return this.channelService.checkPassword(+idx, updateChannelDto);
   }
 
+=======
+>>>>>>> side
   // ban
 
   @Post('/ban/save/:idx')
