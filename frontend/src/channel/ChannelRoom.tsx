@@ -54,7 +54,9 @@ function ChannelRoom({ channelData }: ChannelRoomProps) {
             <div className="chan-lockcheck">
                 {/* {chPwd && (<img src="/channel/lock.png" alt="lock" />)}
                 {!chPwd && (<img src="/channel/lock_not.png" alt="open_lock"/>)} */}
-                {chPwd ? <img src="/channel/lock.png" alt="lock" /> : <img src="/channel/lock_not.png" alt="open_lock"/>}
+                {/* {chPwd ? <img src="/channel/lock.png" alt="lock" /> : <img src="/channel/lock_not.png" alt="open_lock"/>} */}
+                {chPwd && <img src="/channel/lock.png" alt="lock" />}
+            {!chPwd && ( <div style={{ display: "none" }}> <img src="/channel/lock_not.png" alt="open_lock" /></div>)}
             </div>
             <div className="chan-hostinfo">
                 <div className="chan-hostimg">

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import './Menu.css';
+import ChannelNew from "../channel/ChannelNew"
 
 type MenuProps = {
 	showBackButton: boolean;
