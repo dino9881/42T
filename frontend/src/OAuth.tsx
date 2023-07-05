@@ -29,18 +29,10 @@ const OAuth: React.FC = () => {
                     console.log(res);
                     const token = res.data.access_token;
                     console.log(token);
-<<<<<<< HEAD
                     localStorage.setItem("jwtToken", token);
                     setAuthorizationToken(token);
                     navigate("/main");
                 })
-=======
-                    localStorage.setItem("jwtToken", token); // 지금은 access token인데 refresh token으로 바껴야함
-                    setAuthorizationToken(token);
-                    navigate("/main");
-                })
-                // navigate("/main");
->>>>>>> socket-chat
                 .catch((error) => {
                     console.log(error);
                     if (error.response.status === 404) {

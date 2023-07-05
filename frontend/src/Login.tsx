@@ -18,14 +18,6 @@ function Login() {
             <button className="login-button" onClick={Oauth}>
                 42 Login
             </button>
-<<<<<<< HEAD
-=======
-            
-            {/* <button onClick={test}>oauth</button>
-            <button onClick={test1}>sub</button>
-            <button onClick={test2}>sub2</button>
-            <button onClick={test3}>sub3</button> */}
->>>>>>> socket-chat
         </div>
     );
 }

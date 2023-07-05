@@ -10,14 +10,11 @@ import Ranking from "./ranking/Ranking";
 import OAuth from "./OAuth";
 import Background from "./Background";
 import SetNick from "./login/SetNick";
-<<<<<<< HEAD
 import CheckEmail from "./login/CheckEmail";
-=======
 import Contents from "./Contents";
 import Menu from "./menu/Menu";
 import { useState } from "react";
 import ChannelAdmin from "./ChannelAdmin";
->>>>>>> socket-chat
 
 function App() {
     axios.defaults.withCredentials = true;
@@ -36,10 +33,7 @@ function App() {
                     <Route path="/" element={<Login />}></Route>
                     <Route path="/login" element={<OAuth />}></Route>
                     <Route path="/login/nick" element={<SetNick />}></Route>
-<<<<<<< HEAD
                     <Route path="/login/email" element={<CheckEmail />}></Route>
-=======
->>>>>>> socket-chat
                     <Route path="/main" element={<Main />}></Route>
                     <Route path="/chat" element={<Contents mainComponent={<Chat channelName={channelName} channelInit={channelInit}/>} headerComponent={<Menu showBackButton={true}/>}/>}></Route>
                     <Route path="/admin" element={<Contents mainComponent={<ChannelAdmin channelName={channelName}/>} headerComponent={<Menu showBackButton={true}/>}/>}></Route>

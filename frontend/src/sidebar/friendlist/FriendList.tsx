@@ -39,11 +39,7 @@ const FriendList = () => {
 	return (
 	  <div className="list-scroll">
 		{friends.map((friend, index) => (
-<<<<<<< HEAD
         	<FriendInfo key={index} intraId={friend.intraId} nickName={friend.nickName} rank={friend.rank} avatar={friend.avatar} winCnt={friend.winCnt} loseCnt={friend.loseCnt}/>
-=======
-        <FriendInfo key={index} intraId={friend.intraId} nickName={friend.nickName} rank={friend.rank} avatar={friend.avatar}/>
->>>>>>> socket-chat
      	 ))}
 		<div className="friend-list-text"> - 차단목록</div>
 			<BanList />

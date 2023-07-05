@@ -9,26 +9,6 @@ interface MessageText {
     text: string;
 }
 
-<<<<<<< HEAD
-function Chat() {
-    return <div>
-         <Contents headerComponent={<Menu showBackButton={true}/>} mainComponent={<ChatComponent/>}/>
-    </div>
-    ;
-}
-
-
-function ChatComponent() {
-    const location = useLocation();
-    const [channelName, setChannelName] = useState("");
-    const [nickName, setNickName] = useState("jonkim");
-    const [msgList, setMsgList] = useState<MessageText[]>(() => initialData());
-    axios.get('http://localhost:5001/auth/me').then((response) => {
-			// console.log(response);
-					setNickName(response.data.nickName); 
-			});
-	
-=======
 interface MessageItem {
     name: string;
     text: string;
@@ -41,7 +21,6 @@ interface ChatProps {
 }
 
 
->>>>>>> socket-chat
 
 function Chat({channelName , channelInit}:ChatProps) {
     const location = useLocation();

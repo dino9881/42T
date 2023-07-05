@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import Chat from "./Chat";
 import Sidebar from "./sidebar/Sidebar";
-import Menu from "./menu/Menu";
 
 interface ContentsProps {
   headerComponent: React.ReactNode;

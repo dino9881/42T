@@ -11,15 +11,9 @@ interface SearchFriendProps {
 }
 
 interface FriendInfoProps {
-<<<<<<< HEAD
   nickName: string;
   rank: number;
   avatar: string;
-=======
-	nickName: string;
-	rank: number;
-	avatar: string;
->>>>>>> socket-chat
 }
 
 const SearchFriend: React.FC<SearchFriendProps> = ({
@@ -29,7 +23,6 @@ const SearchFriend: React.FC<SearchFriendProps> = ({
 }) => {
   const [userData, setUserData] = useState<any>(null);
 
-<<<<<<< HEAD
   useEffect(() => {
     axios.get(`http://localhost:5001/member/${intraId}`).then((response) => {
       console.log(response);
@@ -71,60 +64,5 @@ const SearchFriend: React.FC<SearchFriendProps> = ({
     </div>
   );
 };
-=======
-	const nickName = "GOAT"
-	const rank = 28
-	const avatar = "avatar/GOAT.jpeg"
-
-	return (
-	  <div className='search-result'>
-		<img
-		  className='search-result-close-button'
-		  src="close_button.svg"
-		  alt="Close"
-		  width="20"
-		  height="20"
-		  onClick={onClose}
-		/>
-		{friendStatus === 1 ?
-			(<FriendInfoSimple  nickName={nickName} rank={rank} avatar={avatar}/>)
-			: (<IsNotFriend nickName={nickName} rank={rank} avatar={avatar}/>)
-		}
-	  </div>
-	);
-};
-  
-const IsNotFriend: React.FC<FriendInfoProps> = ({ nickName, rank, avatar }) => {
-	const handleAdd = () => {
-		console.log('친구 추가');
-	}
-
-	const handleBlock = () => {
-		console.log('차단');
-	}
-
-	return (
-		<div className='friend-info-simple'>
-			<div
-				className='friend-info-avatar'
-				style={{ backgroundImage: `url(${avatar})` }}
-			></div>
-			<div className='friend-info-info'>
-				<div className='friend-info-text'>
-					<div className='small-square'>{nickName}</div>
-					<div className='small-square'>{rank}</div>
-				</div>
-				<div className='friend-info-button'>
-					<div className="friend-button">
-						<button className='dm-button' onClick={handleAdd}>친구추가</button>
-						<button className='vs-button' onClick={handleBlock}>차단</button>
-					</div>
-						<div className='small-square'>전적</div>
-				</div>
-			</div>
-		</div>
-	)
-}
->>>>>>> socket-chat
 
 export default SearchFriend;
