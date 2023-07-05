@@ -48,7 +48,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 		console.log(changeData);
 
 		if (myData.nickName !== changeData.nickName){
-			axios.patch(`http://localhost:5001/member/update/nick/${myData.intraId}`, 
+			axios.patch("http://localhost:5001/member/update/nick/", 
 			{
 				"intraId": changeData.intraId,
   				"nickName": changeData.nickName
@@ -60,8 +60,9 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 				console.log(error);
 			});
 		}
+		console.log(changeData)
 		if (myData.avatar !== changeData.avatar){
-			axios.patch(`http://localhost:5001/member/update/avatar/${myData.intraId}`,
+			axios.patch("http://localhost:5001/member/update/avatar/",
 			{
 				"intraId": changeData.intraId,
   				"avatar": changeData.avatar
@@ -73,14 +74,15 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 				console.log(error);
 			});
 		}
-		axios.post("http://localhost:5001/auth/refresh").then((res) => {
+		// axios.post("http://localhost:5001/auth/refresh").then((res) => {
 			// console.log(res.data);
 			axios.get('http://localhost:5001/auth/me').then((response => {
 				// console.log(response);
 				myData = response.data; 
 			}))
-		});
+		// });
 		onClose();
+		window.location.reload();
 	};
 
 	return (

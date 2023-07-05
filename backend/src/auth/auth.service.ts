@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { MemberService } from '../member/member.service';
 import { JwtService } from '@nestjs/jwt';
 import { Member } from '@prisma/client';
@@ -68,7 +72,7 @@ export class AuthService {
       intraId,
     );
     if (member == null) {
-      throw new UnauthorizedException('Invalid user!');
+      throw new BadRequestException('Invalid user!');
     }
     // new access token 생성
     const accessToken = await this.generateAccessToken(member);

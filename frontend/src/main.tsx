@@ -10,7 +10,6 @@ function Main() {
                 headerComponent={<Menu showBackButton={false} />}
                 mainComponent={<Channel />}
             />
-            <Sidebar />
         </div>
     );
 }

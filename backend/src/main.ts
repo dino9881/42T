@@ -21,7 +21,15 @@ async function bootstrap() {
       .setTitle('42T')
       .setDescription('The 42seoul Transcendence API description')
       .setVersion('1.0')
-      .addTag('app', '')
+      .addBearerAuth({
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'access_token',
+        in: 'header',
+        description: 'JWT Access Token',
+      })
+      .addCookieAuth('refresh_token')
       .setDescription(
         'The 42seoul Transcendence API description<br/><br/><a href="https://insomnia.rest/run/?label=My%20API&uri=http%3A%2F%2Flocalhost%3A5001%2Fapi-json" target="_blank"><img src="https://insomnia.rest/images/run.svg" alt="Run in Insomnia"></a>',
       )
@@ -29,7 +37,10 @@ async function bootstrap() {
       .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, document, {
-      swaggerOptions: { defaultModelsExpandDepth: -1 },
+      swaggerOptions: {
+        defaultModelsExpandDepth: -1,
+        persistAuthorization: true,
+      },
     });
 
     await app.listen(5001);

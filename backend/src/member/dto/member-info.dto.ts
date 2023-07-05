@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsDateString,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class MemberInfoDto {
   @ApiProperty({
@@ -48,11 +54,36 @@ export class MemberInfoDto {
   @IsNumber()
   loseCnt: number;
 
+  @ApiProperty({
+    description: '현재 사용중인 refresh token (hash)',
+  })
   @IsOptional()
   @IsString()
   currentRefreshToken?: string;
 
+  @ApiProperty({
+    type: Date,
+    description: 'refresh token expire date',
+  })
   @IsOptional()
   @IsDateString()
   currentRefreshTokenExp?: Date;
+
+  @ApiProperty({
+    type: Boolean,
+    example: true,
+    description: '멤버와 친구인지 여부',
+  })
+  @IsOptional()
+  @IsBoolean()
+  isFriend?: boolean;
+
+  @ApiProperty({
+    type: Boolean,
+    example: true,
+    description: '멤버를 밴했는지 여부',
+  })
+  @IsOptional()
+  @IsBoolean()
+  isBan?: boolean;
 }

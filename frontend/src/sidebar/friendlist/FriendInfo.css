@@ -81,7 +81,6 @@
 }
 
 .dm-button {
-	
 	border: 1px solid black;
 	background-color:transparent;
 }
@@ -158,7 +157,59 @@
 }
 
 #score {
+	display: flex;
+	justify-content: space-around;
 	border: 1px solid black;
 	width: 100%;
 	height: 20%;
+}
+
+.friend-list-text {
+	margin-top: 15px;
+	font-size: 20px;
+}
+
+.friend-info-line-ban {
+	margin-top: 10px;
+	position: relative;
+	width: 290px;
+	height: 60px;
+	border: 1px solid black;
+}
+
+.friend-ban-list {
+	display: flex;
+	align-items: center;
+	/* justify-content: space-between; */
+}
+
+.friend-info-avatar-ban {
+	margin-left: 13px;
+	/* border: 1px solid; */
+	border-radius: 30%;
+	width: 50px;
+	height: 50px;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.small-square-ban {
+	margin-left: 27px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 76px;
+	height: 26px;
+	border: 1px solid black;
+	background-color:transparent;
+}
+
+.ban-cancle-button {
+	margin-left: 22px;
+	border: 1px solid black;
+	background-color:transparent;
+	/* margin-right: 30px; */
+	width: 76px;
+	height: 26px;
 }
