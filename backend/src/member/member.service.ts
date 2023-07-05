@@ -53,7 +53,6 @@ export class MemberService {
   }
 
   async getOneByNick(nickName: string) {
-    console.log(nickName);
     const member = await this.prisma.member.findUnique({
       where: { nickName },
     });
