@@ -23,15 +23,16 @@ import {
   ApiParam,
   ApiBearerAuth
 } from '@nestjs/swagger';
+import { GetMember } from 'src/decorator/getMember.decorator';
+import { MemberInfoDto } from 'src/member/dto/member-info.dto';
 
+@ApiBearerAuth()
+@UseGuards(AuthGuard('jwt'))
 @Controller('channel')
 @ApiTags('Channel API')
 export class ChannelController {
   constructor(private readonly channelService: ChannelService) {}
 
-  // jwt auth 추가 ex @UseGuards(JwtAuthGuard)
-  // @ApiBearerAuth()
-  // @UseGuards(AuthGuard('jwt'))
   @Post('/create')
   @ApiOperation({ summary: '채널 생성', description: 'Create Channel API' })
   @ApiResponse({ status: 200, description: '성공' })
@@ -41,8 +42,8 @@ export class ChannelController {
   @ApiResponse({ status: 500, description: '서버 에러' })
   @ApiCreatedResponse({ type: CreateChannelDto })
   @ApiBody({ type: CreateChannelDto })
-  create(@Body() createChannelDto: CreateChannelDto) {
-    return this.channelService.create(createChannelDto);
+  create(@GetMember() member: MemberInfoDto, @Body() createChannelDto: CreateChannelDto) {
+    return this.channelService.create(member.intraId, createChannelDto);
   }
 
   @Patch(':idx')
@@ -212,24 +213,22 @@ export class ChannelController {
     return this.channelService.getChannelUsers(+idx);
   }
 
-  @Get('/all/:intraId')
+  @Get('/my/all')
   @ApiResponse({ status: 200, description: '성공' })
   @ApiResponse({ status: 404, description: '없는 채널 번호' })
   @ApiResponse({ status: 500, description: '서버 에러' })
-  @ApiOperation({ summary: 'intraId 의 모든 채널 가져오기', description: 'Get all channel By intraId' })
-  @ApiParam({ name: 'intraId', example: 'heeskim', description: 'intraid'})
-  getChannels(@Param('intraId') intraId: string) {
-    return this.channelService.getChannels(intraId);
+  @ApiOperation({ summary: '나의 모든 채널 가져오기', description: 'Get my all channel' })
+  getChannels(@GetMember() member: MemberInfoDto) {
+    return this.channelService.getChannels(member.intraId);
   }
 
-  @Get('/dm/all/:intraId')
+  @Get('/my/dm')
   @ApiResponse({ status: 200, description: '성공' })
   @ApiResponse({ status: 404, description: '없는 채널 번호' })
   @ApiResponse({ status: 500, description: '서버 에러' })
-  @ApiOperation({ summary: 'intraId 의 모든 채널 가져오기', description: 'Get all channel By intraId' })
-  @ApiParam({ name: 'intraId', example: 'heeskim', description: 'intraid'})
-  getDMChannels(@Param('intraId') intraId: string) {
-    return this.channelService.getDMChannels(intraId);
+  @ApiOperation({ summary: '나의 모든 DM 채널 가져오기', description: 'Get my all DM channel' })
+  getDMChannels(@GetMember() member: MemberInfoDto) {
+    return this.channelService.getDMChannels(member.intraId);
   }
   
   // ban
@@ -284,15 +283,6 @@ export class ChannelController {
   @ApiOperation({ summary: 'idx 채널의 메세지 리스트', description: 'Get message list' })
   getMessageList(@Param('idx') idx: string) {
     return this.channelService.getMessageList(+idx);
-  }
-
-  @Delete('/message/delete/:idx')
-  @ApiResponse({ status: 200, description: '성공' })
-  @ApiResponse({ status: 404, description: '없는 채널 번호' })
-  @ApiResponse({ status: 500, description: '서버 에러' })
-  @ApiOperation({ summary: 'idx 채널의 메세지 리스트 리셋하기', description: 'Delete message list' })
-  deleteMessageList(@Param('idx') idx: string) {
-    return this.channelService.deleteMessageList(+idx);
   }
 
 }
