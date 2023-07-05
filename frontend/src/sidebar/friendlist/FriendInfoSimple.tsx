@@ -11,11 +11,7 @@ interface FriendInfoProps {
 	winCnt: number;
 }
 
-<<<<<<< HEAD
 const FriendInfoSimple: React.FC<FriendInfoProps> = ({ nickName, rank, avatar, winCnt, loseCnt }) => {
-=======
-const FriendInfoSimple: React.FC<FriendInfoProps> = ({ nickName, rank, avatar }) => {
->>>>>>> socket-chat
 	return (
 		<div className='friend-info-simple'>
 			<div className='state-circle'></div>
@@ -39,10 +35,6 @@ const FriendInfoSimple: React.FC<FriendInfoProps> = ({ nickName, rank, avatar })
 						/
 						<span style={{color: "red"}}>{loseCnt}</span>
 					</div>
-<<<<<<< HEAD
-=======
-					<div className='small-square'>전적</div>
->>>>>>> socket-chat
 				</div>
 			</div>
 		</div>

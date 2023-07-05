@@ -60,11 +60,7 @@ const MyInfo = () => {
 					<div className='small-square'>
 						<span style={{color: "blue"}}>{myData && myData.winCnt}</span>
 						/
-<<<<<<< HEAD
 						<span style={{color: "red"}}>{myData && myData.loseCnt}</span>
-=======
-						 <span style={{color: "red"}}>{myData && myData.loseCnt}</span>
->>>>>>> socket-chat
 					<img src={toggleImgSrc} alt="toggle" className="my-toggle-position" onClick={handleToggle} style={{ cursor: 'pointer' }}></img>
 					</div>
 				</div>

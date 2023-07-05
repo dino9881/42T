@@ -82,10 +82,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 			}))
 		// });
 		onClose();
-<<<<<<< HEAD
 		window.location.reload();
-=======
->>>>>>> socket-chat
 	};
 
 	return (
