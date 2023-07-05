@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CreateMemberDto {
   @ApiProperty({
@@ -25,12 +25,4 @@ export class CreateMemberDto {
   })
   @IsString()
   avatar: string;
-
-  @ApiProperty({
-    example: 100,
-    description: '랭크점수',
-    required: true,
-  })
-  @IsNumber()
-  rank: number;
 }

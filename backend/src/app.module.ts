@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { SocketIOGateway } from './socketio.gateway';
 import { PrismaModule } from './prisma/prisma.module';
+import { MailModule } from './mail.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PrismaModule } from './prisma/prisma.module';
       isGlobal: true,
       envFilePath: '../.env',
     }),
+    MailModule,
   ],
   providers: [SocketIOGateway],
 })

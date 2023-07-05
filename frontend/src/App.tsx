@@ -1,18 +1,14 @@
 import "./App.css";
 import axios, { AxiosResponse } from "axios";
+import { BrowserRouter, Route, Routes, } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Login from "./Login";
 import Main from "./main";
 import Chat from "./Chat";
 import Channel from "./channel/Channel";
 import Ranking from "./ranking/Ranking";
-import {
-    BrowserRouter,
-    Route,
-    Routes,
-} from "react-router-dom";
 import OAuth from "./OAuth";
 import Background from "./Background";
-import { Link } from "react-router-dom";
 import SetNick from "./login/SetNick";
 import CheckEmail from "./login/CheckEmail";
 
@@ -28,6 +24,7 @@ function App() {
                     <Route path="/" element={<Login />}></Route>
                     <Route path="/login" element={<OAuth />}></Route>
                     <Route path="/login/nick" element={<SetNick />}></Route>
+                    <Route path="/login/email" element={<CheckEmail />}></Route>
                     <Route path="/main" element={<Main />}></Route>
                     <Route path="/chat" element={<Chat />}></Route>
                     <Route path="/channel" element={<Channel />}></Route>
