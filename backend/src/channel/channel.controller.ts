@@ -119,13 +119,7 @@ export class ChannelController {
     return this.channelService.getChannelUserCnt(+idx);
   }
 
-  @Post('/check/:idx')
-  @ApiOperation({ summary: 'idx 채널 password 확인', description: 'Password check By Idx' })
-  @ApiBody({ type: CreateChannelDto })
-  @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx'})
-  checkPassword(@Param('idx') idx: string, @Body() updateChannelDto : UpdateChannelDto) {
-    return this.channelService.checkPassword(+idx, updateChannelDto);
-  }
+
 
   // channel users
 
@@ -151,7 +145,6 @@ export class ChannelController {
     return this.channelService.getChannelUsers(+idx);
   }
 
-<<<<<<< HEAD
   @Post('/check/:idx')
   @ApiOperation({ summary: 'idx 채널 password 확인', description: 'Password check By Idx' })
   @ApiBody({ type: CreateChannelDto })
@@ -160,8 +153,6 @@ export class ChannelController {
     return this.channelService.checkPassword(+idx, updateChannelDto);
   }
 
-=======
->>>>>>> side
   // ban
 
   @Post('/ban/save/:idx')
