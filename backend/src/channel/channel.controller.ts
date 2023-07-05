@@ -29,11 +29,8 @@ export class ChannelController {
   constructor(private readonly channelService: ChannelService) {}
 
   // jwt auth 추가 ex @UseGuards(JwtAuthGuard)
-<<<<<<< HEAD
-=======
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
->>>>>>> side
   @Post('/create')
   @ApiOperation({ summary: '채널 생성', description: 'Create Channel API' })
   @ApiResponse({ status: 200, description: '성공' })

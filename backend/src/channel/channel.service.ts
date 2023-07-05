@@ -158,8 +158,6 @@ export class ChannelService {
     return findData;
   }
 
-<<<<<<< HEAD
-=======
   async checkPassword(idx: number, updateChannelDto: UpdateChannelDto) {
     var isMatch;
     try {
@@ -175,7 +173,6 @@ export class ChannelService {
   
   // channel users
 
->>>>>>> side
   async enter(idx: number, memberIdDto: MemberIdDto) {
     var updatedChannel;
     var { memberId } = memberIdDto;
@@ -233,22 +230,6 @@ export class ChannelService {
     return this.channelUsers[idx];
   }
 
-<<<<<<< HEAD
-  async checkPassword(idx: number, updateChannelDto: UpdateChannelDto) {
-    var isMatch;
-    try {
-      const channel = await this.findOneById(idx);
-      if (!channel)
-        throw new NotFoundException('channel not found');
-      isMatch = await bcrypt.compare(updateChannelDto.chPwd, channel.chPwd);
-    } catch (error) {
-      throw new InternalServerErrorException('Internal Server Error');
-    }
-    return isMatch;
-  }
-
-=======
->>>>>>> side
   // ban
 
   async saveBanUser(idx: number, memberIdDto: MemberIdDto) {

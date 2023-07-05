@@ -10,44 +10,30 @@ interface SettingInfo {
     setting :string
 }
 
-const userList = [
-    {
-        intra : "jonkim",
-        nick : "dino"
-    },
-    {
-        intra : "yyoo",
-        nick : "yo"
-    },
-]
+interface ChannelAdminProps{
+    channelName:string
+}
 
-const banList = [
-    {
-        intra : "heeskim",
-        nick : "hk"
-    },
-    {
-        intra : "hjeong",
-        nick : "hj"
-    },
-    {
-        intra : "junhyuki",
-        nick : "jh"
-    },
-]
-
-function ChannelAdmin(){
+function ChannelAdmin({channelName} :ChannelAdminProps){
+    console.log(`channel = ${channelName}`);
     return <div className="channel-admin">
+        <span>{channelName}</span>
         <AdminUserList/>
         <AdminChannelSetting/>
     </div>
 }
 
 function AdminUserList(){
+    const [banList, setBanList] = useState<UserInfos[]>(() => initialData());
+    const [userList, setUserList] = useState<UserInfos[]>(() => initialData());
+    function initialData(): UserInfos[]  {
+        return [];
+      }
+      
     return<div className="admin-list-box">
         <div className="admin-user-box">
         <h1>User List</h1>
-            {userList.map(info => <UserInfo intra={info.intra} nick={info.nick}/>)}
+            {userList.map((info, index) => <UserInfo key={index} intra={info.intra} nick={info.nick}/>)}
         </div>
         <div className="admin-user-box">
         <h1>Ban List</h1>
