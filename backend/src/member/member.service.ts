@@ -98,6 +98,7 @@ export class MemberService {
         rank: 100, // 기본 랭크 100
         currentRefreshTokenExp: undefined,
         currentRefreshToken: undefined,
+        status: 1,
       },
     });
     return HttpStatus.CREATED;
@@ -153,6 +154,15 @@ export class MemberService {
     return HttpStatusCode.Ok;
   }
 
+  async updateStatus(id: string, status: number) {
+    await this.prisma.member.update({
+      where: { intraId: id },
+      data: { status: status },
+    });
+    console.log(status);
+    return HttpStatusCode.Ok;
+  }
+
   async delete(id: string) {
     const member = await this.getOne(id);
     if (member == null) {
@@ -164,7 +174,7 @@ export class MemberService {
     return HttpStatus.OK;
   }
 
-  async isFriend(member: MemberInfoDto, friend: MemberInfoDto) {
+  async isFriend(member: MemberInfoDto, friend: Member) {
     const isFriend = await this.prisma.member
       .findUnique({
         where: { intraId: member.intraId },
@@ -274,7 +284,7 @@ export class MemberService {
     return friendList;
   }
 
-  async isBan(member: MemberInfoDto, banMember: MemberInfoDto) {
+  async isBan(member: MemberInfoDto, banMember: Member) {
     const isBan = await this.prisma.member
       .findUnique({
         where: { intraId: member.intraId },

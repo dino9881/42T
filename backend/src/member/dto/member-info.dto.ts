@@ -103,4 +103,12 @@ export class MemberInfoDto {
   @IsOptional()
   @IsDate()
   codeTime?: Date;
+
+  @ApiProperty({
+    type: 'Number',
+    description: '멤버 상태정보',
+    example: 0,
+  })
+  @IsNumber()
+  status: number;
 }
