@@ -45,7 +45,8 @@ function Chat({channelName , channelInit}:ChatProps) {
                 // 요청이 성공하면 데이터를 상태로 설정
                 // setChannelName(response.data);
                 channelInit(response.data.chName);
-                console.log(channelName);
+                // console.log(`channel = s{channelName}`);
+
             })
             .catch((error) => {
                 // 요청이 실패하면 에러 처리
@@ -87,9 +88,13 @@ function Chat({channelName , channelInit}:ChatProps) {
         setMsgList((prevMsgList) => [...prevMsgList, message]);
       };
 
+    function exitChannel(){
+    }
+
     return (  
         <div className="chat">
-            <div>{channelName}</div>
+            <span>{channelName}</span>
+            <button onClick={exitChannel}>채널 나가기</button>
             <div className="chat-scroll">
                 {msgList.map((message, index) => (
                     <ChatItem

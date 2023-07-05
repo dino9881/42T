@@ -16,6 +16,7 @@ import SetNick from "./login/SetNick";
 import Contents from "./Contents";
 import Menu from "./menu/Menu";
 import { useState } from "react";
+import ChannelAdmin from "./ChannelAdmin";
 
 function App() {
     axios.defaults.withCredentials = true;
@@ -36,6 +37,7 @@ function App() {
                     <Route path="/login/nick" element={<SetNick />}></Route>
                     <Route path="/main" element={<Main />}></Route>
                     <Route path="/chat" element={<Contents mainComponent={<Chat channelName={channelName} channelInit={channelInit}/>} headerComponent={<Menu showBackButton={true}/>}/>}></Route>
+                    <Route path="/admin" element={<Contents mainComponent={<ChannelAdmin channelName={channelName}/>} headerComponent={<Menu showBackButton={true}/>}/>}></Route>
                     <Route path="/channel" element={<Channel />}></Route>
                     <Route path="/ranking" element={<Ranking />}></Route>
                 </Routes>
