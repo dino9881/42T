@@ -28,7 +28,7 @@ import { GetMember } from 'src/decorator/getMember.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { Member } from '@prisma/client';
 
-@ApiTags('auth')
+@ApiTags('Auth')
 @ApiResponse({
   status: 500,
   description: '서버 에러',
