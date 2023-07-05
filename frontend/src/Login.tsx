@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import setAuthorizationToken from "./setAuthorizationToken";
 import { ConnectionState } from "./ConnectionState";
+import Timer from "./login/Timer";
 
 function Login() {
     const url =
@@ -11,56 +12,12 @@ function Login() {
         window.location.href = url;
     }
 
-    function test() {
-        axios
-            .post("http://localhost:5001/member/create", {
-                intraId: "yyoo",
-                nickName: "heeskim",
-                avatar: "../public/img/avatar.jpg",
-                rank: 100,
-            })
-            .then((res) => {});
-    }
-    function test1() {
-        axios
-            .post("http://localhost:5001/auth/login", { intraId: "yyoo" })
-            .then((res) => {
-                const token = res.data.access_token;
-                console.log(token);
-                localStorage.setItem("jwtToken", token);
-                setAuthorizationToken(token);
-            });
-    }
-
-    function test2() {
-        axios.get("http://localhost:5001/member/all").then((res) => {
-            console.log(res.data);
-        });
-        // .catch((err) => {
-        //     if (err.data.status == 401) {
-        //         axios
-        //             .post("http://localhost:5001/auth/refresh")
-        //             .then((res) => {});
-        //     }
-        // });
-    }
-    function test3() {
-        axios.post("http://localhost:5001/auth/refresh").then((res) => {
-            console.log(res.data);
-        });
-    }
-
     return (
         <div className="login-box">
             <h1>42트</h1>
             <button className="login-button" onClick={Oauth}>
                 42 Login
             </button>
-            
-            {/* <button onClick={test}>oauth</button>
-            <button onClick={test1}>sub</button>
-            <button onClick={test2}>sub2</button>
-            <button onClick={test3}>sub3</button> */}
         </div>
     );
 }

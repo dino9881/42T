@@ -1,6 +1,8 @@
 import React, { useState, ChangeEvent, KeyboardEvent } from 'react';
 import SearchFriend from './SearchFriend';
 import './AddFriend.css';
+import axios from 'axios';
+import { locale } from 'yargs';
 
 interface IsFriendProps {
 	friendStatus: number;
@@ -10,17 +12,24 @@ interface IsFriendProps {
 const AddFriend = () => {
   const [text, setText] = useState<string>("");
   const [friendStatus, setFriendStatus] = useState<number>(-1); // -1: 초기 상태, 0: IsNotFriend, 1: IsFriend
+  const [intraId, setintraId] = useState<string>("");
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value);
   };
 
   const onReset = () => {
-    console.log(text);
-    // 특정 조건에 따라 friendStatus 값을 변경
-    const newFriendStatus = Math.random() < 0.5 ? 0 : 1;
-    setFriendStatus(newFriendStatus);
-    console.log(newFriendStatus);
+    // console.log(text);
+    axios.get(`http://localhost:5001/member/search/${text}`).then((response) => {
+      console.log(response)
+      if (response.data.isFriend === true){
+        setFriendStatus(1);
+      }
+      else {
+        setFriendStatus(0);
+      }
+      setintraId(response.data.intraId);
+    })
     setText("");
   };
 
@@ -50,7 +59,7 @@ const AddFriend = () => {
       />
       <button id='serch-friend-button' onClick={onReset}>친구추가</button>
       {friendStatus !== -1 && (
-        <SearchFriend friendStatus={friendStatus} onClose={closeFriendStatus} />
+        <SearchFriend intraId={intraId} friendStatus={friendStatus} onClose={closeFriendStatus} />
       )}
     </div>
   );
