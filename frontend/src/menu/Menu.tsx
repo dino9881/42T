@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import './Menu.css';
 import ChannelNew from "../channel/ChannelNew"
 
+
 type MenuProps = {
 	showBackButton: boolean;
 };
@@ -13,6 +14,8 @@ const Menu = ({ showBackButton}: MenuProps) => {
 	const [showWaiting, setShowWaiting] = useState(false);
 	const [showCancel, setShowCancel] = useState(false);
 	const [showDropDownBox, setShowDropDownBox] = useState(false); // 추가된 상태 값
+	const [showNewChat, setShowNewChat] = useState(false);
+
 
 	const handleStartClick = () => {
 		setShowWaiting(true);
@@ -30,6 +33,10 @@ const Menu = ({ showBackButton}: MenuProps) => {
 		setShowDropDownBox(!showDropDownBox);
 	};
 
+	const handleMakeNew = () =>{
+		setShowNewChat(!showNewChat);
+	}
+	
 	return (
 		<div className="menu-box">
 		<div className="menu-channel-drop-box" >
@@ -53,7 +60,7 @@ const Menu = ({ showBackButton}: MenuProps) => {
 		{showBackButton ? (
 			<button className="menu-channel-new-box" style={{fontSize : "20px"}}>Setting</button>
 		) : (
-			<button className="menu-channel-new-box">new</button>
+			<button className="menu-channel-new-box" onClick={handleMakeNew}>new</button>
 		)}
 
 
@@ -67,6 +74,7 @@ const Menu = ({ showBackButton}: MenuProps) => {
 		)}
 		<Link to="/ranking"> <button className="menu-grin-button menu-lank-button">Rank</button> </Link>
 		<button className="menu-grin-button menu-custom-button">custom</button>
+		{showNewChat && <ChannelNew/>}
 		</div>
 	);
 }
