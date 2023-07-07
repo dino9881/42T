@@ -86,11 +86,8 @@ export class MemberService {
   }
 
   async create(memberDto: CreateMemberDto) {
-    //intra id 중복체크
     await this.checkIntraIdDuplicate(memberDto.intraId);
-    //nickname 중복체크
     await this.checkNickDuplicate(memberDto.nickName);
-    // member 생성
     await this.prisma.member.create({
       data: {
         ...memberDto,
@@ -189,7 +186,8 @@ export class MemberService {
   async searchMember(member: MemberInfoDto, nickName: string) {
     const friend = await this.getOneByNick(nickName);
     const isFriend = await this.isFriend(member, friend);
-    return { ...friend, isFriend: isFriend };
+    const isBan = await this.isBan(member, friend);
+    return { ...friend, isFriend: isFriend, isBan: isBan };
   }
 
   async getCurrentHashedRefreshToken(refreshToken: string) {
