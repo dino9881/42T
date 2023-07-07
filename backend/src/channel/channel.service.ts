@@ -22,11 +22,13 @@ export class ChannelService {
   private channelUsers: Record<number, { intraId: string, nickName: string }[]>;
   private banUsers: Record<number, { intraId: string, nickName: string }[] >;
   private messageList: Record<number, { intraId: string, message: string }[]>;
+  private mutedUsers: Record<number, { intraId: string, timeoutId: NodeJS.Timeout }[]>;
 
   constructor(private prisma: PrismaService) {
     this.channelUsers = {};
     this.banUsers = {};
     this.messageList = {};
+    this.mutedUsers = {};
   }
 
   async hashPassword(channel: CreateChannelDto) {
@@ -50,6 +52,7 @@ export class ChannelService {
       this.channelUsers[createData.chIdx] = [{intraId: member.intraId, nickName: member.nickName}];
       this.banUsers[createData.chIdx] = [];
       this.messageList[createData.chIdx] = [];
+      this.mutedUsers[createData.chIdx] = [];
       return createData;
     } catch (error) {
       console.log(error);
@@ -101,6 +104,7 @@ export class ChannelService {
       this.channelUsers[idx] = [];
       this.banUsers[idx] = [];
       this.messageList[idx] = [];
+      this.mutedUsers[idx] = [];
       return deleteData;
     } catch (error) {
       if (error.code === 'P2016' || error.code === 'P2025') {
@@ -320,7 +324,7 @@ export class ChannelService {
   }
 
   async getChannels(intraId: string) {
-    var channels = [];
+    let channels = [];
     try {
       const allChannel = await this.findChannelAll();
       console.log("get all Channel");
@@ -346,7 +350,7 @@ export class ChannelService {
   }
 
   async getDMChannels(intraId: string) {
-    var channels = [];
+    let channels = [];
     try {
       const allChannel = await this.findDMAll();
       console.log("get all DMChannel");
@@ -434,7 +438,7 @@ export class ChannelService {
       const channel = await this.findOneById(idx);
       if (!channel)
         throw new NotFoundException('channel not found');
-        return this.messageList[idx];
+      return this.messageList[idx];
     } catch (error) {
       if (error.status === 404)
         throw new NotFoundException('channel not found');
@@ -442,4 +446,52 @@ export class ChannelService {
     }
   }
 
+  // mute
+  async muteUser(idx: number, intraId: string) {
+    try {
+      const channel = await this.findOneById(idx);
+      if (!channel)
+        throw new NotFoundException('channel not found');
+
+      const foundUser = this.mutedUsers[idx].find(id => id.intraId === intraId);
+      if (foundUser) {
+        clearTimeout(foundUser.timeoutId);
+        this.mutedUsers[idx] = this.mutedUsers[idx].filter(id => id.intraId !== intraId);
+      }
+
+      const timeoutId = setTimeout(() => {
+        this.unmuteUser(idx, intraId);
+      }, 1 * 60 * 1000);
+      this.mutedUsers[idx].push({ intraId, timeoutId });
+      console.log("mute");
+      console.log(this.mutedUsers[idx]);
+    } catch (error) {
+      if (error.status === 404)
+        throw new NotFoundException('channel not found');
+      throw new InternalServerErrorException('Internal Server Error');
+    }
+  }
+
+  async unmuteUser(idx: number, intraId: string) {
+    if (this.mutedUsers[idx].find(id => id.intraId === intraId))
+    {
+      this.mutedUsers[idx] = this.mutedUsers[idx].filter(id => id.intraId !== intraId);
+      console.log("unmute");
+    }
+  }
+
+  async ismuted(idx: number, intraId: string) {
+    try {
+      const channel = await this.findOneById(idx);
+      if (!channel)
+        throw new NotFoundException('channel not found');
+      if (this.mutedUsers[idx].find(id => id.intraId === intraId))
+        return true;
+      return false;
+    } catch (error) {
+      if (error.status === 404)
+        throw new NotFoundException('channel not found');
+      throw new InternalServerErrorException('Internal Server Error');
+    }
+  }
 }
