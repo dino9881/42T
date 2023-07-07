@@ -11,7 +11,7 @@ import {
 import { ChannelService } from './channel.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
-import { MemberIdDto } from './dto/member-id.dto';
+import { ChannelUserDto } from './dto/channel-user.dto';
 import { MessageDto } from './dto/message.dto';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -23,15 +23,16 @@ import {
   ApiParam,
   ApiBearerAuth
 } from '@nestjs/swagger';
+import { GetMember } from 'src/decorator/getMember.decorator';
+import { MemberInfoDto } from 'src/member/dto/member-info.dto';
 
+@ApiBearerAuth()
+@UseGuards(AuthGuard('jwt'))
 @Controller('channel')
 @ApiTags('Channel API')
 export class ChannelController {
   constructor(private readonly channelService: ChannelService) {}
 
-  // jwt auth 추가 ex @UseGuards(JwtAuthGuard)
-  // @ApiBearerAuth()
-  // @UseGuards(AuthGuard('jwt'))
   @Post('/create')
   @ApiOperation({ summary: '채널 생성', description: 'Create Channel API' })
   @ApiResponse({ status: 200, description: '성공' })
@@ -41,8 +42,8 @@ export class ChannelController {
   @ApiResponse({ status: 500, description: '서버 에러' })
   @ApiCreatedResponse({ type: CreateChannelDto })
   @ApiBody({ type: CreateChannelDto })
-  create(@Body() createChannelDto: CreateChannelDto) {
-    return this.channelService.create(createChannelDto);
+  create(@GetMember() member: MemberInfoDto, @Body() createChannelDto: CreateChannelDto) {
+    return this.channelService.create(member, createChannelDto);
   }
 
   @Patch(':idx')
@@ -151,7 +152,7 @@ export class ChannelController {
   @ApiResponse({ status: 404, description: '없는 채널 번호' })
   @ApiResponse({ status: 500, description: '서버 에러' })
   @ApiOperation({ summary: 'idx 채널 password 확인', description: 'Password check By Idx' })
-  @ApiBody({ type: CreateChannelDto })
+  @ApiBody({ type: UpdateChannelDto })
   @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx'})
   checkPassword(@Param('idx') idx: string, @Body() updateChannelDto : UpdateChannelDto) {
     return this.channelService.checkPassword(+idx, updateChannelDto);
@@ -162,10 +163,10 @@ export class ChannelController {
   @ApiResponse({ status: 404, description: '없는 채널 번호' })
   @ApiResponse({ status: 500, description: '서버 에러' })
   @ApiOperation({ summary: 'idx 채널의 operator 인지 확인', description: 'Is operator' })
-  @ApiBody({ type: MemberIdDto })
+  @ApiBody({ type: MemberInfoDto })
   @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx'})
-  isOperator(@Param('idx') idx: string, @Body() memberIdDto: MemberIdDto) {
-    return this.channelService.isOperator(+idx, memberIdDto);
+  isOperator(@Param('idx') idx: string, @GetMember() member: MemberInfoDto) {
+    return this.channelService.isOperator(+idx, member.intraId);
   }
 
   @Post('/dm/:idx')
@@ -186,10 +187,9 @@ export class ChannelController {
   @ApiResponse({ status: 404, description: '없는 채널 번호' })
   @ApiResponse({ status: 500, description: '서버 에러' })
   @ApiOperation({ summary: 'idx 채널에 들어가기', description: 'Enter channel By Idx' })
-  @ApiBody({ type: MemberIdDto })
   @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx'})
-  enterChannel(@Body() memberIdDto: MemberIdDto, @Param('idx') idx: string) {
-    return this.channelService.enter(+idx, memberIdDto);
+  enterChannel(@GetMember() member: MemberInfoDto, @Param('idx') idx: string) {
+    return this.channelService.enter(+idx, member);
   }
 
   @Post('/leave/:idx')
@@ -197,9 +197,19 @@ export class ChannelController {
   @ApiResponse({ status: 404, description: '없는 채널 번호' })
   @ApiResponse({ status: 500, description: '서버 에러' })
   @ApiOperation({ summary: 'idx 채널에서 나오기', description: 'Leave channel By Idx' })
-  @ApiBody({ type: MemberIdDto })
-  leaveChannel(@Body() memberIdDto: MemberIdDto, @Param('idx') idx: string) {
-    return this.channelService.leave(+idx, memberIdDto);
+  leaveChannel(@GetMember() member: MemberInfoDto, @Param('idx') idx: string) {
+    return this.channelService.leave(+idx, member.intraId);
+  }
+
+  @Post('/kick/:idx')
+  @ApiResponse({ status: 200, description: '성공' })
+  @ApiResponse({ status: 404, description: '없는 채널 번호' })
+  @ApiResponse({ status: 500, description: '서버 에러' })
+  @ApiOperation({ summary: 'idx 채널의 user 쫓아내기', description: 'Is operator' })
+  @ApiBody({ type: ChannelUserDto })
+  @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx'})
+  kickChannel(@Body() channelUserDto: ChannelUserDto, @Param('idx') idx: string) {
+    return this.channelService.kick(+idx, channelUserDto);
   }
 
   @Get('/users/:idx')
@@ -212,24 +222,22 @@ export class ChannelController {
     return this.channelService.getChannelUsers(+idx);
   }
 
-  @Get('/all/:intraId')
+  @Get('/my/all')
   @ApiResponse({ status: 200, description: '성공' })
   @ApiResponse({ status: 404, description: '없는 채널 번호' })
   @ApiResponse({ status: 500, description: '서버 에러' })
-  @ApiOperation({ summary: 'intraId 의 모든 채널 가져오기', description: 'Get all channel By intraId' })
-  @ApiParam({ name: 'intraId', example: 'heeskim', description: 'intraid'})
-  getChannels(@Param('intraId') intraId: string) {
-    return this.channelService.getChannels(intraId);
+  @ApiOperation({ summary: '나의 모든 채널 가져오기', description: 'Get my all channel' })
+  getChannels(@GetMember() member: MemberInfoDto) {
+    return this.channelService.getChannels(member.intraId);
   }
 
-  @Get('/dm/all/:intraId')
+  @Get('/my/dm')
   @ApiResponse({ status: 200, description: '성공' })
   @ApiResponse({ status: 404, description: '없는 채널 번호' })
   @ApiResponse({ status: 500, description: '서버 에러' })
-  @ApiOperation({ summary: 'intraId 의 모든 채널 가져오기', description: 'Get all channel By intraId' })
-  @ApiParam({ name: 'intraId', example: 'heeskim', description: 'intraid'})
-  getDMChannels(@Param('intraId') intraId: string) {
-    return this.channelService.getDMChannels(intraId);
+  @ApiOperation({ summary: '나의 모든 DM 채널 가져오기', description: 'Get my all DM channel' })
+  getDMChannels(@GetMember() member: MemberInfoDto) {
+    return this.channelService.getDMChannels(member.intraId);
   }
   
   // ban
@@ -239,10 +247,10 @@ export class ChannelController {
   @ApiResponse({ status: 404, description: '없는 채널 번호' })
   @ApiResponse({ status: 500, description: '서버 에러' })
   @ApiOperation({ summary: 'idx 채널에 밴 유저 등록하기', description: 'Save ban user'})
-  @ApiBody({ type: MemberIdDto })
+  @ApiBody({ type: ChannelUserDto })
   @ApiParam({ name: 'idx', example: '3', description: 'Channel Idx' })
-  saveBanUser(@Body() memberIdDto: MemberIdDto, @Param('idx') idx:string) {
-    return this.channelService.saveBanUser(+idx, memberIdDto);
+  saveBanUser(@Body() channelUserDto: ChannelUserDto, @Param('idx') idx:string) {
+    return this.channelService.saveBanUser(+idx, channelUserDto);
   }
 
   @Post('/ban/delete/:idx')
@@ -250,9 +258,9 @@ export class ChannelController {
   @ApiResponse({ status: 404, description: '없는 채널 번호' })
   @ApiResponse({ status: 500, description: '서버 에러' })
   @ApiOperation({ summary: 'idx 채널에서 밴 유저 삭제하기', description: 'Delete ban user' })
-  @ApiBody({ type: MemberIdDto })
-  deleteBanUser(@Body() memberIdDto: MemberIdDto, @Param('idx') idx: string) {
-    return this.channelService.deleteBanUser(+idx, memberIdDto);
+  @ApiBody({ type: ChannelUserDto })
+  deleteBanUser(@Body() channelUserDto: ChannelUserDto, @Param('idx') idx: string) {
+    return this.channelService.deleteBanUser(+idx, channelUserDto);
   }
 
   @Get('/ban/:idx')
@@ -273,8 +281,8 @@ export class ChannelController {
   @ApiResponse({ status: 500, description: '서버 에러' })
   @ApiOperation({ summary: 'idx 채널에 메세지 보내기', description: 'Send message' })
   @ApiBody({ type: MessageDto })
-  sendMessage(@Param('idx') idx: string, @Body() messageDto: MessageDto) {
-    return this.channelService.sendMessage(+idx, messageDto);
+  sendMessage(@Param('idx') idx: string, @Body() message: MessageDto, @GetMember() member: MemberInfoDto) {
+    return this.channelService.sendMessage(+idx, message, member.intraId);
   }
 
   @Get('/message/:idx')
@@ -282,17 +290,27 @@ export class ChannelController {
   @ApiResponse({ status: 404, description: '없는 채널 번호' })
   @ApiResponse({ status: 500, description: '서버 에러' })
   @ApiOperation({ summary: 'idx 채널의 메세지 리스트', description: 'Get message list' })
-  getMessageList(@Param('idx') idx: string) {
-    return this.channelService.getMessageList(+idx);
+  getMessageList(@Param('idx') idx: string, @GetMember() member:MemberInfoDto) {
+    return this.channelService.getMessageList(+idx, member.intraId);
   }
 
-  @Delete('/message/delete/:idx')
+  // mute
+  @Post('/mute/:idx')
   @ApiResponse({ status: 200, description: '성공' })
   @ApiResponse({ status: 404, description: '없는 채널 번호' })
   @ApiResponse({ status: 500, description: '서버 에러' })
-  @ApiOperation({ summary: 'idx 채널의 메세지 리스트 리셋하기', description: 'Delete message list' })
-  deleteMessageList(@Param('idx') idx: string) {
-    return this.channelService.deleteMessageList(+idx);
+  @ApiOperation({ summary: 'idx 채널의 유저 mute 하기', description: 'Mute user' })
+  muteUser(@Param('idx') idx: string, @Body() channelUserDto: ChannelUserDto) {
+    this.channelService.muteUser(+idx, channelUserDto.intraId);
+  }
+
+  @Get('/ismute/:idx')
+  @ApiResponse({ status: 200, description: '성공' })
+  @ApiResponse({ status: 404, description: '없는 채널 번호' })
+  @ApiResponse({ status: 500, description: '서버 에러' })
+  @ApiOperation({ summary: 'idx 채널에서 뮤트 당했는지', description: 'Is mute' })
+  isMuted(@Param('idx') idx: string, @GetMember() channelUserDto: ChannelUserDto) {
+    return this.channelService.ismuted(+idx, channelUserDto.intraId);
   }
 
 }
