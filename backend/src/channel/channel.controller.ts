@@ -275,16 +275,6 @@ export class ChannelController {
 
   // message
 
-  @Post('/message/send/:idx')
-  @ApiResponse({ status: 200, description: '성공' })
-  @ApiResponse({ status: 404, description: '없는 채널 번호' })
-  @ApiResponse({ status: 500, description: '서버 에러' })
-  @ApiOperation({ summary: 'idx 채널에 메세지 보내기', description: 'Send message' })
-  @ApiBody({ type: MessageDto })
-  sendMessage(@Param('idx') idx: string, @Body() message: MessageDto, @GetMember() member: MemberInfoDto) {
-    return this.channelService.sendMessage(+idx, message, member.intraId);
-  }
-
   @Get('/message/:idx')
   @ApiResponse({ status: 200, description: '성공' })
   @ApiResponse({ status: 404, description: '없는 채널 번호' })
