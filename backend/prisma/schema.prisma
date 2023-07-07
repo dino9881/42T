@@ -18,11 +18,11 @@ model Member {
   rank      Int
   winCnt    Int @default(0)
   loseCnt   Int @default(0)
+  status    Int
   code      Int?
   codeTime  DateTime?
   currentRefreshTokenExp DateTime?
   currentRefreshToken String?
-  status    Int
 
 	friend		 Member[]	@relation("friend") // 내가 등록한 친구들
   friendOf   Member[] @relation("friend") // 내가 친구로 등록됨
