@@ -41,16 +41,26 @@ function PwInput({ chIdx, chPwd } : PwInputProps) {
         // 입력값이 4자리인지 확인
         if(!chPwd)
         {   navigate("/chat", { state: { chIdx } });
-            return 
+            return;
         }
         if (inputValue.length === 4) {
             pwCorrect().then((data: boolean) => {
                 if (data) {
-                    navigate("/chat", { state: { chIdx } });
-                } else {
-                    alert("비밀번호를 확인해주세요. ^^");
-                }
-            });
+                  axios
+                    .post(`http://localhost:5001/channel/enter/${chIdx}`)
+                    .then((response) => {
+                      // 요청이 성공하면 채널 입장 처리
+                      // ...
+                      navigate("/chat", { state: { chIdx } });
+                    })
+                    .catch((error) => {
+                      // 요청이 실패하면 에러 처리
+                      console.error("API 요청 실패:", error);
+                });
+            }else {
+                alert("비밀번호를 확인해주세요. ^^");
+            }
+        });
         } else {
             alert("비밀번호를 확인해주세요. ^^");
         }

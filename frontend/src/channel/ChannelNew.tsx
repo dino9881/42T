@@ -33,20 +33,51 @@ function ChannelNew() {
             if(password) {
                 return axios
                     .post("http://localhost:5001/channel/create" ,{ 
-                        title: title,
-                        password: password,
-                        //인트라 아디도 넘겨줘야하는데 인트라 아디가 어디에있는지 아직 몰루
+                        chName: title,
+                        operatorId: "junhyuki",
+                        chPwd: password,
+                        
                     })
                     .then((response) => {
-                    // navigate("/chat", { state: { response.data.chIdx } }); //chidx가 어디에있는지 찾아보자
+                        console.log(response.data.chIdx)
+                        navigate("/chat", { state: { chIdx:response.data.chIdx } });
                     })
                     .catch((error) => {
-                        // 요청이 실패하면 에러 처리
-                        console.error("API 요청 실패:", error);
-                        alert("같은 제목의 방이 이미 있습니다.");
+                        console.log(error.response.status);
+                        if(error.response.status === 409)
+                            alert("같은 제목의 방이 이미 있습니다.");
+                        else if (error.response.status === 400)
+                            alert("입력정보가 잘못되었습니다(bad request).");
+                        else if (error.response.status === 400)
+                            alert("입력정보가 잘못되었습니다(bad request).");
+                        else if(error.response.status === 404)
+                            alert("멤버가 아님...;;");    
+                        else if(error.response.status === 500)
+                            alert("서버에러 (뺵 잘못)");
                     });
                 } else {
-                    navigate("/chat");
+                    return axios
+                    .post("http://localhost:5001/channel/create" ,{ 
+                        chName: title,
+                        operatorId: "junhyuki",                        
+                    })
+                    .then((response) => {
+                        console.log(response.data.chIdx)
+                        navigate("/chat", { state: { chIdx:response.data.chIdx } });
+                    })
+                    .catch((error) => {
+                        console.log(error.response.status);
+                        if(error.response.status === 409)
+                            alert("같은 제목의 방이 이미 있습니다.");
+                        else if (error.response.status === 400)
+                            alert("입력정보가 잘못되었습니다(bad request).");
+                        else if(error.response.status === 404)
+                            alert("멤버가 아님...;;");    
+                        else if(error.response.status === 500)
+                            alert("서버에러 (뺵 잘못)");
+                        // 요청이 실패하면 에러 처리
+                        // console.error("API 요청 실패:", error);
+                    });
                 } 
         };
 
@@ -70,7 +101,8 @@ function ChannelNew() {
                 <input type="checkbox" className="chan-new_make_checkbox" name="make_password" value="1"  checked={isChecked} onChange={handleCheckboxChange}></input>
                 비밀의방
                 </div>
-                {/* <button onClick={makeNewChannel} className="chan-new_make_button">만들기</button> */}
+                {/* <button className="chan-new_make_button">만들기</button> */}
+                <button onClick={makeNewChannel} className="chan-new_make_button">만들기</button>
             </div>
         </div>
     )}

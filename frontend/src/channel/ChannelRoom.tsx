@@ -52,9 +52,6 @@ function ChannelRoom({ channelData }: ChannelRoomProps) {
     return (
         <div className="chan-room">
             <div className="chan-lockcheck">
-                {/* {chPwd && (<img src="/channel/lock.png" alt="lock" />)}
-                {!chPwd && (<img src="/channel/lock_not.png" alt="open_lock"/>)} */}
-                {/* {chPwd ? <img src="/channel/lock.png" alt="lock" /> : <img src="/channel/lock_not.png" alt="open_lock"/>} */}
                 {chPwd && <img src="/channel/lock.png" alt="lock" />}
             {!chPwd && ( <div style={{ display: "none" }}> <img src="/channel/lock_not.png" alt="open_lock" /></div>)}
             </div>
@@ -66,7 +63,6 @@ function ChannelRoom({ channelData }: ChannelRoomProps) {
             </div>
             <div className="chan-info">
                 <span className="chan-name">{chName}</span>
-                
                     <PwInput chIdx={chIdx} chPwd={chPwd} />
                 <div className="chan-count">{chUserCnt}/5</div>
             </div>
