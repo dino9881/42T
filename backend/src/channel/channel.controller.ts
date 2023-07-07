@@ -294,4 +294,23 @@ export class ChannelController {
     return this.channelService.getMessageList(+idx, member.intraId);
   }
 
+  // mute
+  @Post('/mute/:idx')
+  @ApiResponse({ status: 200, description: '성공' })
+  @ApiResponse({ status: 404, description: '없는 채널 번호' })
+  @ApiResponse({ status: 500, description: '서버 에러' })
+  @ApiOperation({ summary: 'idx 채널의 유저 mute 하기', description: 'Mute user' })
+  muteUser(@Param('idx') idx: string, @Body() channelUserDto: ChannelUserDto) {
+    this.channelService.muteUser(+idx, channelUserDto.intraId);
+  }
+
+  @Get('/ismute/:idx')
+  @ApiResponse({ status: 200, description: '성공' })
+  @ApiResponse({ status: 404, description: '없는 채널 번호' })
+  @ApiResponse({ status: 500, description: '서버 에러' })
+  @ApiOperation({ summary: 'idx 채널에서 뮤트 당했는지', description: 'Is mute' })
+  isMuted(@Param('idx') idx: string, @GetMember() channelUserDto: ChannelUserDto) {
+    return this.channelService.ismuted(+idx, channelUserDto.intraId);
+  }
+
 }
