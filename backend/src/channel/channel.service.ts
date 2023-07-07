@@ -21,7 +21,7 @@ import { MemberInfoDto } from 'src/member/dto/member-info.dto';
 export class ChannelService {
   private channelUsers: Record<number, { intraId: string, nickName: string }[]>;
   private banUsers: Record<number, { intraId: string, nickName: string }[] >;
-  private messageList: Record<number, { intraId: string, message: string }[]>;
+  private messageList: Record<number, { nickName: string, message: string }[]>;
   private mutedUsers: Record<number, { intraId: string, timeoutId: NodeJS.Timeout }[]>;
 
   constructor(private prisma: PrismaService) {
@@ -416,13 +416,12 @@ export class ChannelService {
 
   // message
 
-  async sendMessage(idx: number, messageDto: MessageDto, intraId: string) {
+  async sendMessage(chanName: string, nickName: string, message: string) {
     try {
-      const { message } = messageDto;
-      const channel = await this.findOneById(idx);
+      const channel = await this.findOneByName(chanName);
       if (!channel)
         throw new NotFoundException('channel not found');
-      this.messageList[idx].push({intraId, message});
+      this.messageList[channel.chIdx].push({ nickName, message });
     } catch (error) {
       if (error.status === 404)
         throw new NotFoundException('channel not found');
