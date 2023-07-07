@@ -127,7 +127,7 @@ export class MemberController {
 
   @ApiTags('Member')
   @ApiOperation({ summary: '전 멤버정보 찾기' })
-  @ApiOkResponse({ description: '성공', type: CreateMemberDto, isArray: true })
+  @ApiOkResponse({ description: '성공', type: MemberInfoDto, isArray: true })
   @Public()
   @Get('all')
   getMemberAll() {
@@ -138,7 +138,7 @@ export class MemberController {
   @ApiOperation({ summary: 'intraId로 멤버정보 찾기' })
   @ApiOkResponse({
     description: '성공',
-    type: CreateMemberDto,
+    type: MemberInfoDto,
   })
   @ApiNotFoundResponse({ description: '멤버를 찾지 못함' })
   @ApiParam({
