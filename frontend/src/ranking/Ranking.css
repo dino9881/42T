@@ -1,0 +1,75 @@
+    .ranking{
+        height:100%;
+    }
+
+    .ranking-123rk{
+        height: 100%;
+        width: 100%;
+        border: green solid 2px;
+        display: flex;
+
+    }
+
+    .ranking-2rk{
+        height: 100%;
+        width: 20%;
+        border: yellow solid 2px;
+        text-align: center;
+        justify-content: flex-start;
+        order: 1;
+    }
+
+    .ranking-1rk{
+        height: 100%;
+        width: 20%;
+        border: red solid 2px;
+        text-align: center;
+        justify-content: flex-start;
+        order: 2;
+
+    }
+
+    .ranking-3rk{
+        height: 100%;
+        width: 20%;
+        border: blue solid 2px;
+        text-align: center;
+        justify-content: flex-start;
+        order: 3;
+
+    }
+
+    .ranking-etc{
+    border:solid 2px black;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    /* position: fixed; */
+    position: relative; /* 변경된 부분 */
+    height: 100%;
+    width: 40%;
+    transform: translate(-50, -50%);
+    /* background: url("../public/img/bg.jpg") no-repeat center center; */
+    flex-direction: column;
+    z-index: 1;
+    }
+
+    .ranking-etc_titlebox{
+        width: 85%;
+        padding: 10px;
+        border: purple solid 2px;
+        margin-top: 10px;
+    }
+
+    .ranking-etc_ranklist{
+        width: 85%;
+        padding: 10px;
+        border: pink solid 2px;
+        margin-top: 10px;
+    }
+
+    .ranking-1st, .ranking-2nd, .ranking-3rd, .ranking-4th, .ranking-5th, .ranking-6th, .ranking-7th{
+        width: 260px;
+        height: 58px;
+        border: black solid 2px;
+    }
