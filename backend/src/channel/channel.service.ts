@@ -10,20 +10,25 @@ import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 import { PrismaService } from 'src/prisma.service';
 import { Member, Prisma } from '@prisma/client';
-import { MemberIdDto } from './dto/member-id.dto';
+import { ChannelUserDto } from './dto/channel-user.dto';
 import { MessageDto } from './dto/message.dto';
 import * as bcrypt from 'bcrypt';
+import { MemberInfoDto } from 'src/member/dto/member-info.dto';
+
+// mute 5분........ 
 
 @Injectable()
 export class ChannelService {
-  private channelUsers: Record<number, string[]>;
-  private banUsers: Record<number, string[] >;
-  private messageList: Record<number, { memberId: string, message: string }[]>;
+  private channelUsers: Record<number, { intraId: string, nickName: string }[]>;
+  private banUsers: Record<number, { intraId: string, nickName: string }[] >;
+  private messageList: Record<number, { intraId: string, message: string }[]>;
+  private mutedUsers: Record<number, { intraId: string, timeoutId: NodeJS.Timeout }[]>;
 
   constructor(private prisma: PrismaService) {
     this.channelUsers = {};
     this.banUsers = {};
     this.messageList = {};
+    this.mutedUsers = {};
   }
 
   async hashPassword(channel: CreateChannelDto) {
@@ -32,22 +37,23 @@ export class ChannelService {
     return channel;
   }
 
-  async create(createChannelDto: CreateChannelDto) {
-    var createData;
+  async create(member: MemberInfoDto, createChannelDto: CreateChannelDto) {
     try {
       if (createChannelDto.chPwd !== undefined)
       {
         createChannelDto = await this.hashPassword(createChannelDto);
       }
-      const { chName, chPwd, operatorId, isDM } = createChannelDto;
-      console.log(isDM === undefined ? false : isDM);
-      createData = await this.prisma.channel.create({
+      const { chName, chPwd, isDM } = createChannelDto;
+      const createData = await this.prisma.channel.create({
         data: { chName, chUserCnt: 1, chPwd, isDM: isDM === undefined ? false : isDM,
-          operator: { connect: { intraId: operatorId }, } },
+          operator: { connect: { intraId: member.intraId }, } },
       });
-      this.channelUsers[createData.chIdx] = [];
+
+      this.channelUsers[createData.chIdx] = [{intraId: member.intraId, nickName: member.nickName}];
       this.banUsers[createData.chIdx] = [];
       this.messageList[createData.chIdx] = [];
+      this.mutedUsers[createData.chIdx] = [];
+      return createData;
     } catch (error) {
       console.log(error);
       if (error.code === 'P2002' && error.meta?.target?.includes('chName')) {
@@ -61,7 +67,6 @@ export class ChannelService {
       }
       throw new InternalServerErrorException('Internal Server Error');
     }
-    return createData;
   }
 
   async hashPasswordModify(channel: UpdateChannelDto) {
@@ -70,18 +75,18 @@ export class ChannelService {
   }
 
   async update(idx: number, updateChannelDto: UpdateChannelDto) {
-    var updateData;
     try {
-      const { chName, operatorId, chPwd } = updateChannelDto;
+      const { chName, chPwd, operatorId } = updateChannelDto;
       if (chPwd !== undefined)
       {
         await this.hashPasswordModify(updateChannelDto);
         console.log(updateChannelDto.chPwd);
       }
-      updateData = await this.prisma.channel.update({
+      const updateData = await this.prisma.channel.update({
         where: { chIdx: idx },
-        data: { chName, operatorId, chPwd },
+        data: { chName, chPwd, operatorId },
       });
+      return updateData;
     } catch (error) {
       if (error.code === 'P2002' && error.meta?.target?.includes('chName')) {
         throw new ConflictException('Duplicate chName');
@@ -91,23 +96,22 @@ export class ChannelService {
       }
       throw new InternalServerErrorException('Internal Server Error');
     }
-    return updateData;
   }
 
   async delete(idx: number) {
-    var deleteData;
     try {
-      deleteData = await this.prisma.channel.delete({ where: { chIdx: idx } });
+      const deleteData = await this.prisma.channel.delete({ where: { chIdx: idx } });
       this.channelUsers[idx] = [];
       this.banUsers[idx] = [];
       this.messageList[idx] = [];
+      this.mutedUsers[idx] = [];
+      return deleteData;
     } catch (error) {
       if (error.code === 'P2016' || error.code === 'P2025') {
         throw new NotFoundException('channel not found');
       }
       throw new InternalServerErrorException('Internal Server Error');
     }
-    return deleteData;
   }
 
   async findChannelAll() {
@@ -119,143 +123,90 @@ export class ChannelService {
   }
 
   async findOneById(idx: number) {
-    var findData;
     try {
-      findData = await this.prisma.channel.findUnique({
+      const findData = await this.prisma.channel.findUnique({
         where: { chIdx: idx },
       });
       if (findData === null) throw new NotFoundException('channel not found');
+      return findData;
     } catch (error) {
       if (error.code === 'P2016' || error.code === 'P2025' || error.status === 404) {
         throw new NotFoundException('channel not found');
       }
       throw new InternalServerErrorException('Internal Server Error');
     }
-    console.log(findData)
-    return findData;
   }
 
   async findOneByName(name: string) {
-    var findData;
     try {
-      findData = await this.prisma.channel.findUnique({
+      const findData = await this.prisma.channel.findUnique({
         where: { chName: name },
       });
       if (findData === null) throw new NotFoundException('channel not found');
+      return findData;
     } catch (error) {
       if (error.code === 'P2016' || error.code === 'P2025' || error.status === 404) {
         throw new NotFoundException('channel not found');
       }
       throw new InternalServerErrorException('Internal Server Error');
     }
-    console.log(findData)
-    return findData;
   }
 
   async getChannelName(idx: number) {
-    var findData;
     try {
-      findData = await this.prisma.channel.findUnique({
+      const findData = await this.prisma.channel.findUnique({
         where: { chIdx: idx },
         select: { chName: true },
       });
       if (findData === null) throw new NotFoundException('channel not found');
+      return findData;
     } catch (error) {
       if (error.code === 'P2016' || error.code === 'P2025' || error.status === 404) {
         throw new NotFoundException('channel not found');
       }
       throw new InternalServerErrorException('Internal Server Error');
     }
-    if (findData == null) throw new NotFoundException('channel not found');
-    return findData;
   }
 
   async getChannelUserCnt(idx: number) {
-    var findData;
     try {
-      findData = await this.prisma.channel.findUnique({
+      const findData = await this.prisma.channel.findUnique({
         where: { chIdx: idx },
         select: { chUserCnt: true },
       });
+      if (findData == null) throw new NotFoundException('channel not found');
+      return findData;
     } catch (error) {
       if (error.code === 'P2016' || error.code === 'P2025') {
         throw new NotFoundException('channel not found');
       }
       throw new InternalServerErrorException('Internal Server Error');
     }
-    if (findData == null) throw new NotFoundException('channel not found');
-    return findData;
   }
 
   async checkPassword(idx: number, updateChannelDto: UpdateChannelDto) {
-    var isMatch;
     try {
       const channel = await this.findOneById(idx);
       if (!channel)
         throw new NotFoundException('channel not found');
-      isMatch = await bcrypt.compare(updateChannelDto.chPwd, channel.chPwd);
+      const isMatch = await bcrypt.compare(updateChannelDto.chPwd, channel.chPwd);
+      return isMatch;
     } catch (error) {
       if (error.status === 404)
         throw new NotFoundException('channel not found');
       throw new InternalServerErrorException('Internal Server Error');
     }
-    return isMatch;
   }
   
-  async isOperator(idx: number, memberIdDto: MemberIdDto) {
+  async isOperator(idx: number, intraId: string) {
     try {
       const channel = await this.findOneById(idx);
       const { operatorId } = channel;
       if (!channel)
         throw new NotFoundException('channel not found');
-      if (operatorId === memberIdDto.memberId)
+      if (operatorId === intraId)
         return true;
-      } catch (error) {
-        if (error.status === 404)
-          throw new NotFoundException('channel not found');
-        throw new InternalServerErrorException('Internal Server Error');
-      }
       return false;
-    }
-
-  async isDM(idx: number) {
-    try {
-      const channel = await this.findOneById(idx);
-      const { isDM } = channel;
-      if (!channel)
-        throw new NotFoundException('channel not found');
-      if (isDM === true)
-        return true;
-      } catch (error) {
-        if (error.status === 404)
-          throw new NotFoundException('channel not found');
-        throw new InternalServerErrorException('Internal Server Error');
-      }
-      return false;
-  }
-
-  // channel users
-
-  async enter(idx: number, memberIdDto: MemberIdDto) {
-    var updatedChannel;
-    var { memberId } = memberIdDto;
-    try {
-      const channel = await this.findOneById(idx);
-      if (!channel)
-        throw new NotFoundException('channel not found');
-
-      this.banUsers[idx].map((id) => {
-        if (id === memberId) {
-          throw new ForbiddenException('banned user');
-        }
-      })
-      updatedChannel = await this.prisma.channel.update({
-        where: { chIdx: idx},
-        data: {
-          chUserCnt: { increment: 1},
-        }
-      });
-      this.channelUsers[idx].push(memberId);
     } catch (error) {
       if (error.status === 404)
         throw new NotFoundException('channel not found');
@@ -263,22 +214,96 @@ export class ChannelService {
     }
   }
 
-  async leave(idx: number, memberIdDto: MemberIdDto) {
-    var updatedChannel;
-    var { memberId } = memberIdDto;
+  async isDM(idx: number) {
     try {
       const channel = await this.findOneById(idx);
       if (!channel)
         throw new NotFoundException('channel not found');
-    
-      updatedChannel = await this.prisma.channel.update({
+      const { isDM } = channel;
+      if (isDM === true)
+        return true;
+      return false;
+    } catch (error) {
+      if (error.status === 404)
+        throw new NotFoundException('channel not found');
+      throw new InternalServerErrorException('Internal Server Error');
+    }
+  }
+
+  // channel users
+
+  async enter(idx: number, member: MemberInfoDto) {
+    try {
+      const { intraId, nickName } = member;
+      const channel = await this.findOneById(idx);
+      if (!channel)
+        throw new NotFoundException('channel not found');
+
+      // user check
+      if (this.channelUsers[idx].find(user => user.intraId === member.intraId))
+        return ;
+      // ban check
+      this.banUsers[idx].map((data) => {
+        if (data.intraId === member.intraId) {
+          throw new ForbiddenException('banned user');
+        }
+      })
+      if (channel.chUserCnt >= 5)
+        throw new ForbiddenException('max capacity');
+      const updatedChannel = await this.prisma.channel.update({
+        where: { chIdx: idx},
+        data: {
+          chUserCnt: { increment: 1},
+        }
+      });
+      this.channelUsers[idx].push({ intraId, nickName });
+    } catch (error) {
+      console.log(error);
+      if (error.status === 404)
+        throw new NotFoundException('channel not found');
+      throw new InternalServerErrorException('Internal Server Error');
+    }
+  }
+
+  // oper 가 나갔을때 다음사람 물려줌
+  // 아무도 없으면 채널 삭제
+  async leave(idx: number, memberId: string) {
+    try {
+      const channel = await this.findOneById(idx);
+      if (!channel)
+        throw new NotFoundException('channel not found');
+      const updatedChannel = await this.prisma.channel.update({
         where: { chIdx: idx},
         data: {
           chUserCnt: { decrement: 1},
         }
       });
-      this.channelUsers[idx] = this.channelUsers[idx].filter(item => item !== memberId);
+      this.channelUsers[idx] = this.channelUsers[idx].filter(item => item.intraId !== memberId);
+      if (updatedChannel.chUserCnt == 0)
+        this.delete(idx);
+      else if (memberId === updatedChannel.operatorId)
+        this.update(idx, {operatorId: this.channelUsers[idx][0].intraId});
+    } catch (error) {
+      console.log(error);
+      if (error.status === 404)
+        throw new NotFoundException('channel not found');
+      throw new InternalServerErrorException('Internal Server Error');
+    }
+  }
 
+  async kick(idx: number, memberDto: ChannelUserDto)
+  {
+    try {
+      const channel = await this.findOneById(idx);
+      if (!channel)
+        throw new NotFoundException('channel not found');
+      const updatedChannel = await this.prisma.channel.update({
+        where: { chIdx: idx},
+        data: {
+          chUserCnt: { decrement: 1},
+        }
+      });
+      this.channelUsers[idx] = this.channelUsers[idx].filter(item => item.intraId !== memberDto.intraId);
     } catch (error) {
       if (error.status === 404)
         throw new NotFoundException('channel not found');
@@ -287,88 +312,59 @@ export class ChannelService {
   }
 
   async getChannelUsers(idx: number) {
-    var findData;
     try {
-      findData = await this.findOneById(idx);
+      const findData = await this.findOneById(idx);
       if (findData == null) throw new NotFoundException('channel not found');
-
+      return this.channelUsers[idx];
     } catch (error) {
       if (error.status === 404)
         throw new NotFoundException('channel not found');
       throw new InternalServerErrorException('Internal Server Error');
     }
-    console.log("get users");
-    console.log(this.channelUsers[idx]);
-    return this.channelUsers[idx];
   }
 
   async getChannels(intraId: string) {
-    var allChannel = [];
-    var channels = [];
+    let channels = [];
     try {
-      allChannel = await this.findChannelAll();
-      console.log("get allChannel");
+      const allChannel = await this.findChannelAll();
+      console.log("get all Channel");
       const chIdxList = allChannel.map((channel) => channel.chIdx);
+      console.log(chIdxList);
       for (const idx of chIdxList) {
         const channel = await this.findOneById(idx);
-        const { operatorId } = channel;
-        if (operatorId === intraId)
-          channels.push(channel);
         const users = this.channelUsers[idx];
-        for (const id of users) {
-
-          if (id === intraId) {
+        for (const data of users) {
+          if (data.intraId === intraId) {
             channels.push(channel);
           }
         }
       }
+      console.log(channels);
+      return channels;
     } catch (error) {
+      console.log(error);
       if (error.status === 404)
         throw new NotFoundException('channel not found');
       throw new InternalServerErrorException('Internal Server Error');
     }
-    return channels;
   }
 
   async getDMChannels(intraId: string) {
-    var allChannel = [];
-    var channels = [];
+    let channels = [];
     try {
-      allChannel = await this.findDMAll();
+      const allChannel = await this.findDMAll();
       console.log("get all DMChannel");
       const chIdxList = allChannel.map((channel) => channel.chIdx);
       for (const idx of chIdxList) {
         const channel = await this.findOneById(idx);
-        const { operatorId } = channel;
-        if (operatorId === intraId)
-          channels.push(channel);
         const users = this.channelUsers[idx];
-        for (const id of users) {
-
-          if (id === intraId) {
+        for (const data of users) {
+          if (data.intraId === intraId) {
             channels.push(channel);
           }
         }
       }
-    } catch (error) {
-      if (error.status === 404)
-        throw new NotFoundException('channel not found');
-      throw new InternalServerErrorException('Internal Server Error');
-    }
-    return channels;
-  }
-
-  // ban
-
-  async saveBanUser(idx: number, memberIdDto: MemberIdDto) {
-    var { memberId } = memberIdDto;
-    try {
-      const channel = await this.findOneById(idx);
-      if (!channel)
-        throw new NotFoundException('channel not found');
-
-      this.banUsers[idx].push(memberId);
-      console.log(this.banUsers);
+      return channels;
     } catch (error) {
       if (error.status === 404)
         throw new NotFoundException('channel not found');
@@ -376,15 +372,29 @@ export class ChannelService {
     }
   }
 
-  async deleteBanUser(idx: number, memberIdDto: MemberIdDto) {
-    var { memberId } = memberIdDto;
+  // ban id 랑 nick 둘다 넘겨줘야함
+  async saveBanUser(idx: number, channelUserDto: ChannelUserDto) {
+    const { intraId, nickName } = channelUserDto;
     try {
       const channel = await this.findOneById(idx);
       if (!channel)
         throw new NotFoundException('channel not found');
+      this.banUsers[idx].push({intraId, nickName});
+      console.log(this.banUsers[idx]);
+    } catch (error) {
+      if (error.status === 404)
+        throw new NotFoundException('channel not found');
+      throw new InternalServerErrorException('Internal Server Error');
+    }
+  }
 
-      this.banUsers[idx] = this.banUsers[idx].filter(item => item !== memberId);
-
+  async deleteBanUser(idx: number, channelUserDto: ChannelUserDto) {
+    const { intraId } = channelUserDto;
+    try {
+      const channel = await this.findOneById(idx);
+      if (!channel)
+        throw new NotFoundException('channel not found');
+      this.banUsers[idx] = this.banUsers[idx].filter(item => item.intraId !== intraId);
     } catch (error) {
       if (error.status === 404)
         throw new NotFoundException('channel not found');
@@ -393,32 +403,26 @@ export class ChannelService {
   }
 
   async getChannelBanUsers(idx: number) {
-    var findData;
     try {
-      findData = await this.findOneById(idx);
+      const findData = await this.findOneById(idx);
       if (findData == null) throw new NotFoundException('channel not found');
-
+      return this.banUsers[idx];
     } catch (error) {
       if (error.status === 404)
         throw new NotFoundException('channel not found');
       throw new InternalServerErrorException('Internal Server Error');
     }
-    console.log("get ban users");
-    console.log(this.banUsers[idx]);
-    return this.banUsers[idx];
   }
 
   // message
 
-  async sendMessage(idx: number, messageDto: MessageDto) {
+  async sendMessage(idx: number, messageDto: MessageDto, intraId: string) {
     try {
-      const { memberId, message } = messageDto;
+      const { message } = messageDto;
       const channel = await this.findOneById(idx);
       if (!channel)
         throw new NotFoundException('channel not found');
-    
-        this.messageList[idx].push({memberId, message});
-        console.log(this.messageList[idx]);
+      this.messageList[idx].push({intraId, message});
     } catch (error) {
       if (error.status === 404)
         throw new NotFoundException('channel not found');
@@ -426,14 +430,15 @@ export class ChannelService {
     }
   }
   
-  async getMessageList(idx: number) {
+  // ban user 면 리스트 안가져오는거 확인
+  async getMessageList(idx: number, intraId: string) {
     try {
+      if (this.banUsers[idx].find(user => user.intraId === intraId))
+        return ;
       const channel = await this.findOneById(idx);
       if (!channel)
         throw new NotFoundException('channel not found');
-    
-        console.log(this.messageList[idx]);
-        return this.messageList[idx];
+      return this.messageList[idx];
     } catch (error) {
       if (error.status === 404)
         throw new NotFoundException('channel not found');
@@ -441,12 +446,48 @@ export class ChannelService {
     }
   }
 
-  async deleteMessageList(idx: number) {
+  // mute
+  async muteUser(idx: number, intraId: string) {
     try {
       const channel = await this.findOneById(idx);
       if (!channel)
         throw new NotFoundException('channel not found');
-        console.log(this.messageList[idx]);
+
+      const foundUser = this.mutedUsers[idx].find(id => id.intraId === intraId);
+      if (foundUser) {
+        clearTimeout(foundUser.timeoutId);
+        this.mutedUsers[idx] = this.mutedUsers[idx].filter(id => id.intraId !== intraId);
+      }
+
+      const timeoutId = setTimeout(() => {
+        this.unmuteUser(idx, intraId);
+      }, 1 * 60 * 1000);
+      this.mutedUsers[idx].push({ intraId, timeoutId });
+      console.log("mute");
+      console.log(this.mutedUsers[idx]);
+    } catch (error) {
+      if (error.status === 404)
+        throw new NotFoundException('channel not found');
+      throw new InternalServerErrorException('Internal Server Error');
+    }
+  }
+
+  async unmuteUser(idx: number, intraId: string) {
+    if (this.mutedUsers[idx].find(id => id.intraId === intraId))
+    {
+      this.mutedUsers[idx] = this.mutedUsers[idx].filter(id => id.intraId !== intraId);
+      console.log("unmute");
+    }
+  }
+
+  async ismuted(idx: number, intraId: string) {
+    try {
+      const channel = await this.findOneById(idx);
+      if (!channel)
+        throw new NotFoundException('channel not found');
+      if (this.mutedUsers[idx].find(id => id.intraId === intraId))
+        return true;
+      return false;
     } catch (error) {
       if (error.status === 404)
         throw new NotFoundException('channel not found');
