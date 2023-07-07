@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
-import { PrismaService } from 'src/prisma.service';
-import { Member, Prisma } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 import { ChannelUserDto } from './dto/channel-user.dto';
 import { MessageDto } from './dto/message.dto';
 import * as bcrypt from 'bcrypt';
