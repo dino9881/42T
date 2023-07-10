@@ -55,12 +55,13 @@ export class MemberController {
   @Get('mail/send')
   async sendMail(@GetMember() member: MemberInfoDto, @Res() res: Response) {
     const code = await this.memberService.generateTFACode();
-    res.cookie('code', code, {
-      httpOnly: true,
-      path: '/',
-      domain: 'localhost',
-      expires: new Date(Date.now() + 1000 * 60 * 5),
-    });
+    expires: new Date(Date.now() + 1000 * 60 * 5),
+      res.cookie('code', code, {
+        httpOnly: true,
+        path: '/',
+        domain: 'localhost',
+        maxAge: 5 * 60 * 1000, // 5min
+      });
     await this.mailerService.sendMail(member.intraId, code);
     res.send();
   }
