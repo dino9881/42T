@@ -7,8 +7,11 @@ import {
   Patch,
   Delete,
   UseGuards,
+  Res,
+  Req,
 } from '@nestjs/common';
 import { MemberService } from './member.service';
+import { Response, Request } from 'express';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import {
@@ -50,13 +53,16 @@ export class MemberController {
   @ApiOperation({ summary: '2차 인증 코드 생성 및 메일 전송' })
   @ApiOkResponse({ description: '메일 전송 성공' })
   @Get('mail/send')
-  async sendMail(@GetMember() member: MemberInfoDto) {
+  async sendMail(@GetMember() member: MemberInfoDto, @Res() res: Response) {
     const code = await this.memberService.generateTFACode();
-    this.memberService.updateCode(member.intraId, {
-      code: code,
-      codeTime: new Date(),
+    res.cookie('code', code, {
+      httpOnly: true,
+      path: '/',
+      domain: 'localhost',
+      expires: new Date(Date.now() + 1000 * 60 * 5),
     });
-    return this.mailerService.sendMail(member.intraId, code);
+    await this.mailerService.sendMail(member.intraId, code);
+    res.send();
   }
 
   @ApiTags('Two-Factor-Autentication')
@@ -66,18 +72,15 @@ export class MemberController {
   @ApiBody({
     schema: {
       properties: {
-        code: { type: 'number' },
+        code: { type: 'string' },
       },
     },
     required: true,
     description: '2차 인증 코드',
   })
   @Post('mail/verify')
-  async verifyTFACode(
-    @GetMember() member: MemberInfoDto,
-    @Body('code') code: number,
-  ) {
-    return this.memberService.verifyTFACode(member, code);
+  async verifyTFACode(@Req() req: Request, @Body('code') code: string) {
+    return this.memberService.verifyTFACode(req, code);
   }
 
   @ApiTags('Member')
