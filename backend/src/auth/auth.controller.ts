@@ -27,6 +27,7 @@ import {
 import { GetMember } from 'src/decorator/getMember.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { Member } from '@prisma/client';
+import exp from 'constants';
 
 @ApiTags('Auth')
 @ApiResponse({
@@ -99,11 +100,12 @@ export class AuthController {
       member.intraId,
     );
     res.setHeader('Authorization', 'Bearer ' + [access_token]);
+    const expires = new Date(Date.now() + 60 * 60 * 24 * 7 * 1000);
     res.cookie('refresh_token', refresh_token, {
       httpOnly: true,
       path: '/',
       domain: 'localhost',
-      maxAge: 60 * 60 * 24 * 7, // week
+      expires: expires,
     });
     res.status(200).json({
       message: 'login success',
