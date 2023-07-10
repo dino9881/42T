@@ -100,12 +100,11 @@ export class AuthController {
       member.intraId,
     );
     res.setHeader('Authorization', 'Bearer ' + [access_token]);
-    const expires = new Date(Date.now() + 60 * 60 * 24 * 7 * 1000);
     res.cookie('refresh_token', refresh_token, {
       httpOnly: true,
       path: '/',
       domain: 'localhost',
-      expires: expires,
+      maxAge: 60 * 60 * 24 * 7 * 1000, // week
     });
     res.status(200).json({
       message: 'login success',
