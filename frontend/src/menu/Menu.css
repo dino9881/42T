@@ -118,4 +118,26 @@
 
 .menu-drop-down-channel-text {
 	color: black;
+	display: flex;
+}
+
+.menu-drop-down-channel-list-text {
+	color: black;
+	font-weight: 600;
+	margin-left: 13px;
+}
+
+.menu-drop-down-channel-text-usercnt {
+	color: black;
+	font-size: 16px;
+	height: 100%;
+	padding-top: 19px;
+}
+
+.menu-drop-down-channel-box {
+	margin-left: 20px;
+	margin-right: 20px;
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
 }

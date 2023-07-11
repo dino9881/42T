@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PwInput from "./PwInput";
-import axios from "axios";
-
+import instance from "../refreshToken";
 
 interface ChannelData {
     chIdx: number;
@@ -36,7 +35,7 @@ function ChannelRoom({ channelData }: ChannelRoomProps) {
     
     // memberData 업데이트 
     useEffect(() => { // API 요청
-    axios
+    instance
       .get(`http://localhost:5001/member/${operatorId}`)
       .then((response) => {
         // 요청이 성공하면 데이터를 상태로 설정
@@ -63,7 +62,7 @@ function ChannelRoom({ channelData }: ChannelRoomProps) {
             </div>
             <div className="chan-info">
                 <span className="chan-name">{chName}</span>
-                    <PwInput chIdx={chIdx} chPwd={chPwd} />
+                    <PwInput chIdx={chIdx} chPwd={chPwd} chUserCnt={chUserCnt}/>
                 <div className="chan-count">{chUserCnt}/5</div>
             </div>
         </div>

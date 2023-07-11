@@ -29,7 +29,7 @@ const OAuth: React.FC = () => {
                     console.log(res);
                     const token = res.data.access_token;
                     console.log(token);
-                    localStorage.setItem("jwtToken", token);
+                    localStorage.setItem("jwtToken", token); // 지금은 access token인데 refresh token으로 바껴야함
                     setAuthorizationToken(token);
                     navigate("/main");
                 })

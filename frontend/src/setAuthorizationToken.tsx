@@ -1,9 +1,10 @@
 import axios from 'axios';
+import instance from './refreshToken';
 
 export default function setAuthorizationToken(token: string | undefined) {
     if (token) {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     } else {
-        delete axios.defaults.headers.common['Authorization'];
+        delete instance.defaults.headers.common['Authorization'];
     }
 }

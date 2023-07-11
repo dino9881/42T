@@ -25,7 +25,7 @@ function ChannelRow({
                     <ChannelRoom channelData={channelData2} />
                 </div>
             )}
-            {!channelData2 && <div className="chan-emptyrightbox"></div>}
+            {!channelData2 && <div className="chan-empty_rightbox"></div>}
         </div>
     );
 }
