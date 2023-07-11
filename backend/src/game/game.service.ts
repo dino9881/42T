@@ -4,6 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { MemberService } from 'src/member/member.service';
 import { MemberInfoDto } from 'src/member/dto/member-info.dto';
 import { HttpStatusCode } from 'axios';
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class GameService {
@@ -13,7 +14,7 @@ export class GameService {
   ) {
     this.queue = [];
   }
-  private queue: MemberInfoDto[];
+  private queue: Socket[];
 
   async addHistory(game: CreateGameDto) {
     if (game.winnerId == game.loserId)
@@ -48,8 +49,8 @@ export class GameService {
     return games;
   }
 
-  async joinQueue(member: MemberInfoDto) {
-    const mem = this.queue.find((mem) => mem.intraId == member.intraId);
+  async joinQueue(member: Socket) {
+    const mem = this.queue.find((mem) => mem['intraId'] == member['intraId']);
     if (mem == undefined) {
       this.queue.push(member);
       await this.checkQueue();
@@ -69,13 +70,13 @@ export class GameService {
     return HttpStatusCode.Ok;
   }
 
-  async makeGame(p1: MemberInfoDto, p2: MemberInfoDto) {
+  async makeGame(p1: Socket, p2: Socket) {
     console.log('makeGame');
-    // game 화면으로 바꿔야함. 어떻게 하지?
-    // 소켓을 미리 받아놓고, socket에 game방 아이디를 주면
-    // front에서 게임화면으로 nav 가능
-    this.memberService.updateStatus(p1.intraId, 2);
-    this.memberService.updateStatus(p2.intraId, 2);
+    // p1.emit('game-start', p2['nickName']); // 보내줄 데이터 정해야함
+    // p2.emit('game-start', p1['nickName']);
+    // p1.join('game-room' + p2['intraId']); // 방 이름 정해야함
+    this.memberService.updateStatus(p1['intraId'], 2);
+    this.memberService.updateStatus(p2['intraId'], 2);
     return;
   }
 

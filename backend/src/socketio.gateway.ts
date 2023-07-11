@@ -11,6 +11,7 @@ import { Socket, Server } from 'socket.io';
 import { ChannelService } from './channel/channel.service';
 import { Injectable } from '@nestjs/common';
 import { MemberService } from './member/member.service';
+import { GameService } from './game/game.service';
 
 interface Payload {
   channelName: string;
@@ -32,6 +33,7 @@ export class SocketIOGateway
   constructor(
     private readonly channelService: ChannelService,
     private readonly memberService: MemberService,
+    private readonly gameService: GameService,
   ) {}
 
   afterInit() {
@@ -46,6 +48,11 @@ export class SocketIOGateway
   handleDisconnect(@ConnectedSocket() socket: Socket) {
     console.log(`${socket.id}, ${socket['intraId']} 소켓 연결 끝`);
     // 현재 소켓에 들어있는 intraId값이 없음
+    socket.rooms.forEach((room) => {
+      if (room !== socket.id) {
+        socket.leave(room);
+      }
+    });
     if (socket['intraId'])
       this.memberService.updateStatus(socket['intraId'], 0); // 0 : offline
   }
@@ -74,5 +81,12 @@ export class SocketIOGateway
     client['nickName'] = nickName;
     console.log(`${nickName} enter channel : ${channelName}`);
     client.to(channelName).emit('welcome', nickName);
+  }
+
+  @SubscribeMessage('game-queue')
+  handleGameQueue(client: Socket, payload: Payload) {
+    const { intraId, nickName } = payload;
+    console.log(`${nickName}(${intraId}) 님이 게임 큐에 들어왔습니다.`);
+    this.gameService.joinQueue(client);
   }
 }
