@@ -67,20 +67,33 @@ export class SocketIOGateway
   }
 
   @SubscribeMessage('message')
-  handleMessage(client: Socket, payload: Payload): string {
+  async handleMessage(client: Socket, payload: Payload): string {
     const { channelName, nickName, text } = payload;
+    // mute check
+    const ismuted = await this.channelService.ismuted(channelName, nickName);
+    if (ismuted)
+      return ;
     client.to(channelName).emit('send-message', { nickName, text });
     this.channelService.sendMessage(channelName, nickName, text);
     return 'Message received!';
   }
 
   @SubscribeMessage('enter-channel')
-  handleChannelEnter(client: Socket, payload: Payload) {
+  async handleChannelEnter(client: Socket, payload: Payload) {
     const { channelName, nickName } = payload;
+    const isChanUsers = await this.channelService.isChanUsers(channelName, nickName);
+    if (!isChanUsers) 
+      client.to(channelName).emit("welcome", nickName);
     client.join(channelName);
     client['nickName'] = nickName;
     console.log(`${nickName} enter channel : ${channelName}`);
-    client.to(channelName).emit('welcome', nickName);
+  }
+
+  @SubscribeMessage('leave-channel')
+  async handleChannelLeave(client:any, payload:any) {
+    const {channelName, nickname} = payload;
+    client.leave(channelName);
+    console.log(`${nickname} leave channel : ${channelName}`);
   }
 
   @SubscribeMessage('game-queue')
