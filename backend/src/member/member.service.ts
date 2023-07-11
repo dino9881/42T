@@ -343,10 +343,11 @@ export class MemberService {
   }
 
   async getSevenRanks() {
-    const ranks: Member[] = await this.prisma.member.findMany({
+    const ranks = await this.prisma.member.findMany({
       orderBy: { rank: 'desc' },
       take: 7,
     });
+    console.log(ranks);
     return { length: ranks.length, data: ranks };
   }
 }
