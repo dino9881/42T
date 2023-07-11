@@ -139,6 +139,22 @@ export class MemberController {
   }
 
   @ApiTags('Member')
+  @ApiOperation({ summary: '랭크 큰거부터 7명의 멤버 정보 불러오기' })
+  @ApiOkResponse({
+    description: '성공',
+    schema: {
+      properties: {
+        length: { example: 7, type: 'number' },
+        data: { example: ['MemberInfo'], type: 'array' },
+      },
+    },
+  })
+  @Get('rank')
+  getRank() {
+    return this.memberService.getSevenRanks();
+  }
+
+  @ApiTags('Member')
   @ApiOperation({ summary: 'intraId로 멤버정보 찾기' })
   @ApiOkResponse({
     description: '성공',
@@ -286,17 +302,5 @@ export class MemberController {
     @Param('nickName') nickName: string,
   ) {
     return this.memberService.unbanMember(member, nickName);
-  }
-
-  @ApiTags('Member')
-  @ApiOperation({ summary: '랭크 큰거부터 7명의 멤버 정보 불러오기' })
-  @ApiOkResponse({
-    description: '성공',
-    type: MemberInfoDto,
-    isArray: true,
-  })
-  @Get('rank')
-  getRank() {
-    return this.memberService.getSevenRanks();
   }
 }
