@@ -208,13 +208,13 @@ export class ChannelController {
   @Post('/mute/:idx')
   @ApiOperation({ summary: 'idx 채널의 유저 mute 하기', description: 'Mute user' })
   muteUser(@Param('idx') idx: string, @Body() channelUserDto: ChannelUserDto) {
-    this.channelService.muteUser(+idx, channelUserDto.intraId);
+    this.channelService.muteUser(+idx, channelUserDto);
   }
 
-  @Get('/ismute/:idx')
-  @ApiOperation({ summary: 'idx 채널에서 뮤트 당했는지', description: 'Is mute' })
-  isMuted(@Param('idx') idx: string, @GetMember() channelUserDto: ChannelUserDto) {
-    return this.channelService.ismuted(+idx, channelUserDto.intraId);
-  }
+  // @Get('/ismute/:idx')
+  // @ApiOperation({ summary: 'idx 채널에서 뮤트 당했는지', description: 'Is mute' })
+  // isMuted(@Param('idx') idx: string, @GetMember() channelUserDto: ChannelUserDto) {
+  //   return this.channelService.ismuted(+idx, channelUserDto.intraId);
+  // }
 
 }
