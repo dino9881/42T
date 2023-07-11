@@ -21,7 +21,7 @@ export class ChannelService {
   private channelUsers: Record<number, { intraId: string, nickName: string }[]>;
   private banUsers: Record<number, { intraId: string, nickName: string }[] >;
   private messageList: Record<number, { nickName: string, message: string }[]>;
-  private mutedUsers: Record<number, { intraId: string, timeoutId: NodeJS.Timeout }[]>;
+  private mutedUsers: Record<number, { intraId: string, nickName: string, timeoutId: NodeJS.Timeout }[]>;
 
   constructor(private prisma: PrismaService) {
     this.channelUsers = {};
@@ -75,7 +75,7 @@ export class ChannelService {
   }
 
   async update(idx: number, updateChannelDto: UpdateChannelDto) {
-    const { chName, chPwd, operatorId } = updateChannelDto;
+    const { chPwd, operatorId } = updateChannelDto;
     if (chPwd !== undefined)
     {
       await this.hashPasswordModify(updateChannelDto);
@@ -226,6 +226,14 @@ export class ChannelService {
       return this.channelUsers[idx];
   }
 
+  async isChanUsers(chanName: string, nickName: string) {
+    const channel = await this.findOneByName(chanName);
+    const users = this.channelUsers[channel.chIdx];
+    if (users.find(user => user.nickName === nickName))
+      return true;
+    return false;
+}
+
   async getChannels(intraId: string) {
     let channels = [];
     const allChannel = await this.findChannelAll();
@@ -282,8 +290,6 @@ export class ChannelService {
 
   async sendMessage(chanName: string, nickName: string, message: string) {
     const channel = await this.findOneByName(chanName);
-    if (!channel)
-      throw new NotFoundException('channel not found');
     this.messageList[channel.chIdx].push({ nickName, message });
   }
   
@@ -296,33 +302,35 @@ export class ChannelService {
   }
 
   // mute
-  async muteUser(idx: number, intraId: string) {
+  async muteUser(idx: number, channelUserDto: ChannelUserDto) {
+    const { intraId, nickName } = channelUserDto;
     await this.findOneById(idx);
-    const foundUser = this.mutedUsers[idx].find(id => id.intraId === intraId);
+    const foundUser = this.mutedUsers[idx].find(user => user.intraId === intraId);
     
     // reset
     if (foundUser) {
       clearTimeout(foundUser.timeoutId);
-      this.mutedUsers[idx] = this.mutedUsers[idx].filter(id => id.intraId !== intraId);
+      this.mutedUsers[idx] = this.mutedUsers[idx].filter(user => user.intraId !== intraId);
     }
 
     const timeoutId = setTimeout(() => {
       this.unmuteUser(idx, intraId);
     }, 1 * 60 * 1000);
-    this.mutedUsers[idx].push({ intraId, timeoutId });
+    this.mutedUsers[idx].push({ intraId, nickName, timeoutId });
   }
 
   async unmuteUser(idx: number, intraId: string) {
     if (this.mutedUsers[idx].find(id => id.intraId === intraId))
     {
-      this.mutedUsers[idx] = this.mutedUsers[idx].filter(id => id.intraId !== intraId);
+      this.mutedUsers[idx] = this.mutedUsers[idx].filter(user => user.intraId !== intraId);
       console.log("unmute");
     }
   }
 
-  async ismuted(idx: number, intraId: string) {
-    await this.findOneById(idx);
-    if (this.mutedUsers[idx].find(id => id.intraId === intraId))
+  async ismuted(chanName: string, nickName: string) {
+    const channel = await this.findOneByName(chanName);
+    const ismuted = this.mutedUsers[channel.chIdx].find(user => user.nickName === nickName);
+    if (ismuted && ismuted !== undefined)
       return true;
     return false;
   }
