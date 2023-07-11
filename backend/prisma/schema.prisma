@@ -19,8 +19,6 @@ model Member {
   winCnt    Int @default(0)
   loseCnt   Int @default(0)
   status    Int
-  code      Int?
-  codeTime  DateTime?
   currentRefreshTokenExp DateTime?
   currentRefreshToken String?
 
