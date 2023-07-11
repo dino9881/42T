@@ -3,31 +3,62 @@ import Contents from "../Contents";
 import Sidebar from "../sidebar/Sidebar";
 import Menu from "../menu/Menu";
 import './Ranking.css';
-import axios from "axios";
+import instance from "../refreshToken";
+
 
 const Ranking = () => {
 	return (
 		<div>
-        	<Contents headerComponent={<Menu showBackButton={true}/>} mainComponent={<RankingComponent/>}/>
-       		<Sidebar />
+        	<RankingComponent></RankingComponent>
     	</div>
 	);
 };
 
-
+// Response.data{ 이렇게 들어옴
+// 	avatar
+// : 
+// "img/avatar.jpeg"
+// code
+// : 
+// null
+// codeTime
+// : 
+// null
+// currentRefreshToken
+// : 
+// "$2b$10$kSHvN0w68W5Fvg394A3qoOrL7vYXQXEczjVglo3pT577gYsIk.PVO"
+// currentRefreshTokenExp
+// : 
+// "2023-07-07T11:42:32.612Z"
+// intraId
+// : 
+// "junhyuki"
+// loseCnt
+// : 
+// 0
+// nickName
+// : 
+// "dwd"
+// rank
+// : 
+// 100
+// winCnt
+// : 
+// 0
+// }
 
 const RankingComponent = () => {
 	const [ranking, setRanking] = useState([]);
-	axios
+	instance
 		.get("http://localhost:5001/member/all")
-		.then((response) => (setRanking(response.data)))
-			
+		.then((response) => 
+			// (setRanking(response.data))
+			console.log(response.data)
+		)
 		.catch((error) => {
 			console.log(error.response.status);
 			if(error.response.status === 409)
 				alert("같은 제목의 방이 이미 있습니다.");
-			else if (error.response.status === 400)
-				alert("입력정보가 잘못되었습니다(bad request).");
 			else if (error.response.status === 400)
 				alert("입력정보가 잘못되었습니다(bad request).");
 			else if(error.response.status === 404)

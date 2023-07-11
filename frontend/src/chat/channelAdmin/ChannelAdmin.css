@@ -1,0 +1,40 @@
+.channel-admin{
+    flex-direction: column;
+    border: solid black;
+    height: 100%;
+    width: 100%;
+    display: block
+  }
+  
+  .admin-list-box{
+    float: left;
+    height: 100%;
+    width: 40%;
+  }
+  
+  .admin-setting-box{
+    float: right;
+    border: solid red;
+    height: 100%;
+    width: 40%;
+  }
+  
+  .admin-user-box{
+    border: solid blue;
+    height: 45%;
+    margin-bottom: 5%;
+  }
+  
+  .user-info-box{
+    border: solid black;
+    display: flex;
+    margin-bottom: 1px;
+  }
+  
+  .user-info-intra{
+    margin-left: 10%;
+    width: 30%;
+  }
+  .admin-pass-box{
+    
+  }

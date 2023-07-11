@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AddFriend from './search/AddFriend';
 import MyInfo from './myinfo/MyInfo';
 import FriendList from './friendlist/FriendList';
-import DmList from './dmlist/DmList';
+import ChannelUser from './channeluser/ChannelUser';
 import './Sidebar.css';
 
 const Sidebar = () => {
@@ -13,7 +13,7 @@ const Sidebar = () => {
 			<AddFriend />
 			<MyInfo />
 			<div className='side-list'>
-				{ viewList ? <FriendList /> : <DmList/> }
+				{ viewList ? <FriendList /> : <ChannelUser/> }
 				<div className='side-list-buttons'>
 					
 					<button

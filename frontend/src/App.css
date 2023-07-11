@@ -86,55 +86,6 @@ body {
   height: 100%;
   /* height: 80vh; */
 }
-/* 채팅 css */
-.chat{
-  flex-direction: column;
-  border: solid black;
-  height: 100%;
-  width: 100%;
-  position: relative;
-}
-
-.chat-box{
-  flex-direction: row;
-  background-color: yellow;
-  margin: 20px 20px;
-  display: flex;
-}
-
-.chat-box-mine{
-  flex-direction: row;
-  background-color: white;
-  margin: 20px 20px;
-  display: flex;
-}
-
-.chat-userimg{
-  background-color: black;
-  width:10%;
-  height: 100%;
-}
-
-.chat-userinfo{
-  display: flex;
-  align-items:baseline;
-  flex-direction: column;
-}
-
-.chat-inputbox{
-  display: block;
-  position : absolute;
-  width: 100%;
-  bottom : 10px;
-}
-.chat-input{
-  width: 90%;
-  margin-left: 15px;
-}
-
-.chat-input-button{
-  margin-left: 20px;
-}
 
 .contents {
   border: 1px solid yellow;
@@ -166,53 +117,6 @@ body {
   top: 37%;
   left: 5px;
   border: none;
-}
-
-.chat-scroll {
-  overflow: scroll;
-  height: 80%;
-
-}
-
-.channel-admin{
-  flex-direction: column;
-  border: solid black;
-  height: 100%;
-  width: 100%;
-  display: block
-}
-
-.admin-list-box{
-  float: left;
-  height: 100%;
-  width: 40%;
-}
-
-.admin-setting-box{
-  float: right;
-  border: solid red;
-  height: 100%;
-  width: 40%;
-}
-
-.admin-user-box{
-  border: solid blue;
-  height: 45%;
-  margin-bottom: 5%;
-}
-
-.user-info-box{
-  border: solid black;
-  display: flex;
-  margin-bottom: 1px;
-}
-
-.user-info-intra{
-  margin-left: 10%;
-  width: 30%;
-}
-.admin-pass-box{
-  
 }
 
 

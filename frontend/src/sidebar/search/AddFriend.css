@@ -17,7 +17,7 @@
 }
 
 #serch-friend-button {
-	position: absolute; /* 절대 위치 설정 */
+	position: absolute;
 	top: 5px;
 	right: 8px;
 	width: 92px;

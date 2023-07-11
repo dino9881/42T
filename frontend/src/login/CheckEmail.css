@@ -6,6 +6,8 @@
 	align-items: center;
 	justify-content: center;
 	position: absolute;
+	top: 100px;
+	right: 510px;
 }
 
 .check-email-box {
@@ -16,10 +18,11 @@
 	align-items: center;
 	justify-content: center;
 	flex-direction: column;
+	position: relative;
 }
 
 .text-box {
-	margin-bottom: 50px;
+	margin-bottom: 30px;
 	display: flex;
 	align-items: center;
 	flex-direction: column;
@@ -34,7 +37,7 @@
 }
 
 .button-box {
-	margin-bottom: 58px;
+	margin-bottom: 10px;
 	display: flex;
 	align-items: center;
 	flex-direction: column;
@@ -64,6 +67,33 @@
 	border: 1px solid black;
 	background-color:transparent;
 }
+
+.nick-time-restart {
+	width: 100%;
+	height: 40px;
+	border: 1px solid black;
+	background-color:transparent;
+}
+
+.check-email-input {
+	width: 180px;
+	height: 40px;
+	border: 1px solid black;
+	background-color:transparent;
+	text-align: center;
+}
+
+.check-email-submit-button {
+	width: 50px;
+	height: 40px;
+	border: 1px solid black;
+	background-color:transparent;
+}
+
+.check-email-time-text {
+	margin-top: 20px;
+}
+
 /* 
 #cancel-button {
 	margin-top: 34px;

@@ -1,4 +1,4 @@
-import axios from "axios";
+import instance from "../refreshToken";
 import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -6,9 +6,10 @@ import { useNavigate } from "react-router-dom";
 interface PwInputProps {
     chIdx: number;
     chPwd: string;
+    chUserCnt: number;
 }
 
-function PwInput({ chIdx, chPwd } : PwInputProps) {
+function PwInput({ chIdx, chPwd, chUserCnt } : PwInputProps) {
     const navigate = useNavigate();
     const [inputValue, setInputValue] = useState("");
 
@@ -22,7 +23,7 @@ function PwInput({ chIdx, chPwd } : PwInputProps) {
     const pwCorrect = () : Promise<boolean> => {
         // console.log("chIdx : " + chIdx);
         // console.log("chPwd : " + inputValue);
-        return axios
+        return instance
             .post(`http://localhost:5001/channel/check/${chIdx}` ,{ 
                 chPwd: inputValue 
             })
@@ -34,28 +35,50 @@ function PwInput({ chIdx, chPwd } : PwInputProps) {
             .catch((error) => {
                 // 요청이 실패하면 에러 처리
                 console.error("API 요청 실패:", error);
+                //   403 밴 유저
+                //   404 없는 채널 번호
+                //   500 서버 에러
             });
     }
 
     const handleButtonClick = () => {
         // 입력값이 4자리인지 확인
         if(!chPwd)
-        {   navigate("/chat", { state: { chIdx } });
+        {    instance
+            .post(`http://localhost:5001/channel/enter/${chIdx}`)
+            .then((response) => {
+                navigate("/chat", { state: { chIdx } });
+            })
+            .catch((error) => {
+                // 요청이 실패하면 에러 처리
+                console.error("API 요청 실패:", error);
+                //   403 밴 유저
+                //   404 없는 채널 번호
+                //   500 서버 에러
+        });
             return;
         }
+    
+        if(chUserCnt === 5)
+        {
+            alert("이미 인원이 다 찼습니다.");
+            return;
+        }
+
         if (inputValue.length === 4) {
             pwCorrect().then((data: boolean) => {
                 if (data) {
-                  axios
+                  instance
                     .post(`http://localhost:5001/channel/enter/${chIdx}`)
                     .then((response) => {
-                      // 요청이 성공하면 채널 입장 처리
-                      // ...
-                      navigate("/chat", { state: { chIdx } });
+                        navigate("/chat", { state: { chIdx } });
                     })
                     .catch((error) => {
-                      // 요청이 실패하면 에러 처리
-                      console.error("API 요청 실패:", error);
+                        // 요청이 실패하면 에러 처리
+                        console.error("API 요청 실패:", error);
+                        //   403 밴 유저
+                        //   404 없는 채널 번호
+                        //   500 서버 에러
                 });
             }else {
                 alert("비밀번호를 확인해주세요. ^^");

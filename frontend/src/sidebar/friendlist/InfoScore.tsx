@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import './FriendInfo.css';
+import instance from "../../refreshToken";
 
 interface History {
   winnerId: string;
@@ -24,7 +25,7 @@ const InfoScore: React.FC<InfoScoreProps> = ({ intraId, nickName, rank, state })
   const [history, setHistory] = useState<History[]>([]);
 
   useEffect(() => {
-    axios.get(`http://localhost:5001/game/history/${intraId}`)
+    instance.get(`http://localhost:5001/game/history/${intraId}`)
       .then((res) => {
         setHistory(res.data);
       })
@@ -34,42 +35,38 @@ const InfoScore: React.FC<InfoScoreProps> = ({ intraId, nickName, rank, state })
   }, []);
 
   const handleDelete = () => {
-    axios.delete(`http://localhost:5001/member/friend/delete/${nickName}`).then((res)=>{
+    instance.delete(`http://localhost:5001/member/friend/delete/${nickName}`).then((res)=>{
       // console.log(res);
 			window.location.reload();
     })
   };
 
-  const handleBlock = () => {
-    // axios.delete(`http://localhost:5001/member/ban/${nickName}`).then((res)=>{
+  const handleBan = () => {
+    instance.post(`http://localhost:5001/member/ban/${nickName}`).then((res)=>{
       // console.log(res);
-			// window.location.reload();
-      // })
-      console.log('차단');
+      // console.log('차단');
+			window.location.reload();
+    })
   };
 
   return (
     <div className={state === 1 ? "my-score-box" : "friend-info-full"}>
       <div className="rank">랭킹 {rank}</div>
       <div className={state === 1 ? "my-score-table" : "score-table"}>
-        {history ? (
-          history.map((history, index) => (
-            <GameHistory
-              key={index}
-              winnerId={history.winnerId}
-              loserId={history.loserId}
-              winnerScore={history.winnerScore}
-              loserScore={history.loserScore}
-            />
+        {/* {history ? ( history.map((history, index) => (
+            <GameHistory key={index} winnerId={history.winnerId} loserId={history.loserId} winnerScore={history.winnerScore} loserScore={history.loserScore} />
           ))
         ) : (
           <div>Loading...</div>
-        )}
+        )} */}
+        {history.map((history, index) => (
+            <GameHistory key={index} winnerId={history.winnerId} loserId={history.loserId} winnerScore={history.winnerScore} loserScore={history.loserScore} />
+        ))}
       </div>
       {state === 2 && (
         <div className="friend-bottom-box">
           <button className="delete-friends" onClick={handleDelete}>친구삭제</button>
-          <button className="block-friend" onClick={handleBlock}>차단</button>
+          <button className="block-friend" onClick={handleBan}>차단</button>
         </div>
       )}
     </div>

@@ -166,3 +166,11 @@
 	background-color:transparent;
 	border: 1px solid black;
 }
+
+.check-email-close {
+	background-color:transparent;
+	border: none;
+	position: absolute;
+	top: 10px;
+	left: 8px;
+}

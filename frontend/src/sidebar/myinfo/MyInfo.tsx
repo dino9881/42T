@@ -3,27 +3,24 @@ import axios from 'axios';
 import MyInfoChange from "./MyInfoChange";
 import InfoScore from "../friendlist/InfoScore";
 import setAuthorizationToken from "../../setAuthorizationToken";
+import instance from "../../refreshToken";
+import CheckEmail from "../../login/CheckEmail";
 import './MyInfo.css';
 
 const MyInfo = () => {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [showChangeForm, setShowChangeForm] = useState(false);
 	const toggleImgSrc = isExpanded ? "toggle_up.svg" : "toggle_down.svg";
-	const [myData, setMyData] = useState<any>(null)
+	const [myData, setMyData] = useState<any>(null);
+	const [isEmail, setEmail] = useState(false);
 
 	useEffect(() => {
-		
-		// axios.post("http://localhost:5001/auth/refresh").then((res) => {
-		// 	console.log(res.data);
-		axios.get('http://localhost:5001/auth/me').then((response) => {
-			// console.log(response);
-				if (myData !== response.data){
-					setMyData(response.data); 
-				}
-			})
-		// });
+		instance.get('http://localhost:5001/auth/me').then((response) => {
+			if (myData !== response.data){
+				setMyData(response.data); 
+			}
+		})
 	}, []);
-
 
 	const handleToggle = () => {
 		setIsExpanded(!isExpanded);
@@ -35,6 +32,11 @@ const MyInfo = () => {
 
 	const handleCloseForm = () => {
 		setShowChangeForm(false);
+	}
+
+	const handleEmail = () => {
+		setEmail(!isEmail);
+		// console.log("onEmail", isEmail);
 	}
 
 	return (
@@ -67,7 +69,8 @@ const MyInfo = () => {
 				</div>
 			</div>
 			{/* {showChangeForm && <MyInfoChange onClose={handleCloseForm} avatar={myData && myData.avatar} nickName={myData && myData.nickName} />} */}
-			{showChangeForm && <MyInfoChange onClose={handleCloseForm} myData={myData} />}
+			{showChangeForm && <CheckEmail myData={myData} onClose={handleCloseForm} onEmail={handleEmail}/>}
+			{isEmail && <MyInfoChange myData={myData} onClose={handleEmail} />}
 		</div>
 	);
 };

@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import instance from "../../refreshToken";
 
 interface SearchFriendProps {
   intraId: string;
@@ -17,7 +18,7 @@ const IsNotFriend: React.FC<FriendInfoProps & SearchFriendProps> = ({ nickName, 
   
 	const handleAdd = () => {
 		console.log("친구 추가");
-		axios.post(`http://localhost:5001/member/friend/add/${nickName}`)
+		instance.post(`http://localhost:5001/member/friend/add/${nickName}`)
 		  .then((response) => {
 			console.log(response);
 			onClose();
@@ -30,8 +31,12 @@ const IsNotFriend: React.FC<FriendInfoProps & SearchFriendProps> = ({ nickName, 
 		  });
 	  };
 
-	const handleBlock = () => {
-		console.log("차단");
+	const handleBan = () => {
+		instance.post(`http://localhost:5001/member/ban/${nickName}`).then((res)=>{
+			// console.log(res);
+			// console.log('차단');
+			window.location.reload();
+		})
 	};
 
 	return (
@@ -50,7 +55,7 @@ const IsNotFriend: React.FC<FriendInfoProps & SearchFriendProps> = ({ nickName, 
 				<button className="dm-button" onClick={handleAdd}>
 				친구추가
 				</button>
-				<button className="vs-button" onClick={handleBlock}>
+				<button className="vs-button" onClick={handleBan}>
 				차단
 				</button>
 			</div>

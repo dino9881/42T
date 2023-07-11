@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent, KeyboardEvent } from "react";
 import axios from 'axios';
 import './MyInfo.css';
+import instance from "../../refreshToken";
 
 interface MyInfoChangeProps {
 	myData: any;
@@ -48,7 +49,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 		console.log(changeData);
 
 		if (myData.nickName !== changeData.nickName){
-			axios.patch("http://localhost:5001/member/update/nick/", 
+			instance.patch("http://localhost:5001/member/update/nick/", 
 			{
 				"intraId": changeData.intraId,
   				"nickName": changeData.nickName
@@ -62,7 +63,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 		}
 		console.log(changeData)
 		if (myData.avatar !== changeData.avatar){
-			axios.patch("http://localhost:5001/member/update/avatar/",
+			instance.patch("http://localhost:5001/member/update/avatar/",
 			{
 				"intraId": changeData.intraId,
   				"avatar": changeData.avatar
@@ -74,13 +75,10 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 				console.log(error);
 			});
 		}
-		// axios.post("http://localhost:5001/auth/refresh").then((res) => {
-			// console.log(res.data);
-			axios.get('http://localhost:5001/auth/me').then((response => {
-				// console.log(response);
-				myData = response.data; 
-			}))
-		// });
+
+		instance.get('http://localhost:5001/auth/me').then((response => {
+			myData = response.data; 
+		}))
 		onClose();
 		window.location.reload();
 	};

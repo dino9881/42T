@@ -3,6 +3,7 @@ import SearchFriend from './SearchFriend';
 import './AddFriend.css';
 import axios from 'axios';
 import { locale } from 'yargs';
+import instance from '../../refreshToken';
 
 interface IsFriendProps {
 	friendStatus: number;
@@ -11,7 +12,7 @@ interface IsFriendProps {
 
 const AddFriend = () => {
   const [text, setText] = useState<string>("");
-  const [friendStatus, setFriendStatus] = useState<number>(-1); // -1: 초기 상태, 0: IsNotFriend, 1: IsFriend
+  const [friendStatus, setFriendStatus] = useState<number>(-1); // -1: 초기 상태, 0: IsNotFriend, 1: IsFriend 2: isBan
   const [intraId, setintraId] = useState<string>("");
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -20,10 +21,13 @@ const AddFriend = () => {
 
   const onReset = () => {
     // console.log(text);
-    axios.get(`http://localhost:5001/member/search/${text}`).then((response) => {
+    instance.get(`http://localhost:5001/member/search/${text}`).then((response) => {
       console.log(response)
       if (response.data.isFriend === true){
         setFriendStatus(1);
+      }
+      else if (response.data.isBan === true){
+        setFriendStatus(2);
       }
       else {
         setFriendStatus(0);
