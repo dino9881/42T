@@ -81,7 +81,9 @@ export class GameService {
   }
 
   async exitQueue(member: MemberInfoDto) {
-    this.queue = this.queue.filter((mem) => mem.intraId != member.intraId);
+    this.queue = this.queue.filter(
+      (mem) => mem['intraId'] != member['intraId'],
+    );
     console.log(this.queue);
     return HttpStatusCode.Ok;
   }

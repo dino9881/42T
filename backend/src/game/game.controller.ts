@@ -57,14 +57,14 @@ export class GameController {
     return this.gameService.findGamesByIntraId(intraId);
   }
 
-  @ApiOperation({ summary: 'game queue에 들어가기' })
-  @ApiNotFoundResponse({ description: '멤버를 찾지 못함' })
-  @ApiConflictResponse({ description: '이미 큐에 있는 멤버' })
-  @ApiOkResponse({ description: '진입 성공' })
-  @Get('queue/join')
-  joinQueue(@GetMember() member: MemberInfoDto) {
-    return this.gameService.joinQueue(member);
-  }
+  // @ApiOperation({ summary: 'game queue에 들어가기' })
+  // @ApiNotFoundResponse({ description: '멤버를 찾지 못함' })
+  // @ApiConflictResponse({ description: '이미 큐에 있는 멤버' })
+  // @ApiOkResponse({ description: '진입 성공' })
+  // @Get('queue/join')
+  // joinQueue(@GetMember() member: MemberInfoDto) {
+  //   return this.gameService.joinQueue(member);
+  // }
 
   @ApiOperation({ summary: '게임 queue에서 나가기' })
   @ApiNotFoundResponse({ description: '멤버를 찾지 못함' })
