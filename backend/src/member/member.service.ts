@@ -341,4 +341,12 @@ export class MemberService {
     });
     return HttpStatus.OK;
   }
+
+  async getSevenRanks() {
+    const ranks: Member[] = await this.prisma.member.findMany({
+      orderBy: { rank: 'desc' },
+      take: 7,
+    });
+    return { length: ranks.length, data: ranks };
+  }
 }
