@@ -6,6 +6,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { Member, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateMemberDto } from './dto/create-member.dto';
@@ -25,15 +26,18 @@ export class MemberService {
     return code;
   }
 
-  async verifyTFACode(member: MemberInfoDto, code: number) {
-    if (member.code != null && member.code == code) {
-      if (member.codeTime.getTime() + 300 * 1000 < Date.now()) {
-        // 5분체킹
-        await this.updateCode(member.intraId, { code: null, codeTime: null });
-        return true;
-      }
-    }
-    throw new BadRequestException('Code Not Match');
+  async verifyTFACode(req: Request, code: string) {
+    if (
+      req.cookies['code'] !== undefined &&
+      code !== null &&
+      code === req.cookies['code']
+    )
+      return true;
+    else
+      throw new BadRequestException(
+        'Code Not Match',
+        code + ' ' + req.cookies['code'],
+      );
   }
 
   // 전체 유저 확인 용 메소드
