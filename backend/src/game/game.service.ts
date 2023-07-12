@@ -66,7 +66,7 @@ export class GameService {
       const p2 = this.queue.shift();
       await this.makeGame(p1, p2);
     }
-    console.log(this.queue);
+    // console.log(this.queue);
     return HttpStatusCode.Ok;
   }
 
@@ -74,13 +74,13 @@ export class GameService {
     console.log('makeGame');
     // p1.emit('game-start', p2['nickName']); // 보내줄 데이터 정해야함
     // p2.emit('game-start', p1['nickName']);
-    // p1.join('game-room' + p2['intraId']); // 방 이름 정해야함
-    this.memberService.updateStatus(p1['intraId'], 2);
+    // p1.join('game-room' + p1['intraId'] + p2['intraId']); // 방 이름 정해야함
+    this.memberService.updateStatus(p1['intraId'], 2); // 2: 게임중
     this.memberService.updateStatus(p2['intraId'], 2);
     return;
   }
 
-  async exitQueue(member: MemberInfoDto) {
+  async exitQueue(member: Socket) {
     this.queue = this.queue.filter(
       (mem) => mem['intraId'] != member['intraId'],
     );

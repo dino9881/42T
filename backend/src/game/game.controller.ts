@@ -66,11 +66,11 @@ export class GameController {
   //   return this.gameService.joinQueue(member);
   // }
 
-  @ApiOperation({ summary: '게임 queue에서 나가기' })
-  @ApiNotFoundResponse({ description: '멤버를 찾지 못함' })
-  @ApiOkResponse({ description: '큐에서 나가기 성공' })
-  @Get('queue/exit')
-  exitQueue(@GetMember() member: MemberInfoDto) {
-    return this.gameService.exitQueue(member);
-  }
+  // @ApiOperation({ summary: '게임 queue에서 나가기' })
+  // @ApiNotFoundResponse({ description: '멤버를 찾지 못함' })
+  // @ApiOkResponse({ description: '큐에서 나가기 성공' })
+  // @Get('queue/exit')
+  // exitQueue(@GetMember() member: MemberInfoDto) {
+  //   return this.gameService.exitQueue(member);
+  // }
 }
