@@ -26,17 +26,18 @@ export class AuthService {
       client_secret: this.config.get('CLIENT_SECRET'),
       redirect_uri: 'http://localhost:3000/login',
     };
-    const response: AxiosResponse = await axios.post(getTokenUrl, body);
-    if (response.data.error) {
+    try {
+      const response: AxiosResponse = await axios.post(getTokenUrl, body);
+      const access_token = response.data.access_token;
+      const { data } = await axios.get('https://api.intra.42.fr/v2/me', {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
+      return data.login;
+    } catch (error) {
       throw new UnauthorizedException('intra 인증 실패');
     }
-    const { access_token } = response.data;
-    const { data } = await axios.get('https://api.intra.42.fr/v2/me', {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    });
-    return data.login;
   }
 
   async generateAccessToken(member: Member): Promise<string> {
