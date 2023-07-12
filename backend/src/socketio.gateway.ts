@@ -19,6 +19,9 @@ interface Payload {
   nickName: string;
   message: string;
   avatar: string;
+  text: string;
+  player1: string;
+  player2: string;
 }
 
 @Injectable()
@@ -34,9 +37,10 @@ export class SocketIOGateway
   constructor(
     private readonly channelService: ChannelService,
     private readonly memberService: MemberService,
-    private readonly gameService: GameService, // private socketList: Map<string, Socket>,
+    private readonly gameService: GameService,
+    private socketList: Map<string, Socket>,
   ) {
-    // socketList = {} as Map<string, Socket>;
+    socketList = {} as Map<string, Socket>;
   }
 
   afterInit() {
@@ -60,11 +64,11 @@ export class SocketIOGateway
       this.memberService.updateStatus(socket['intraId'], 0); // 0 : offline
   }
 
-  // getSocketByintraId(intraId: string): Socket | undefined {
-  // return this.socketList.get(intraId);
-  // }
+  getSocketByintraId(intraId: string): Socket | undefined {
+    return this.socketList.get(intraId);
+  }
 
-  @SubscribeMessage('memberInfo')
+  @SubscribeMessage('member-info')
   handleMemberInfo(client: Socket, payload: Payload) {
     const { intraId, nickName } = payload;
     // if (this.socketList.has(intraId)) this.socketList.set(intraId, client);
@@ -72,7 +76,8 @@ export class SocketIOGateway
     client['nickName'] = nickName;
     this.memberService.updateStatus(intraId, 1); // 1 : online
     console.log(`${nickName}(${intraId}) 님이 접속하셨습니다.`);
-    // this.socketList.set(intraId, client);
+    this.socketList.set(intraId, client);
+    // console.log(this.socketList.size);
   }
 
   @SubscribeMessage('message')
@@ -131,5 +136,52 @@ export class SocketIOGateway
     client['intraId'] = intraId;
     client['nickName'] = nickName;
     console.log(`${nickName}(${intraId}) 님이 게임을 시작했습니다.`);
+  }
+
+  @SubscribeMessage('game-apply')
+  async handleGameApply(client: Socket, payload: Payload) {
+    const { intraId, nickName, player2 } = payload;
+    client['intraId'] = intraId;
+    client['nickName'] = nickName;
+    try {
+      const p2 = await this.memberService.getOneByNick(player2);
+      const p2socket = this.socketList.get(p2.intraId);
+      p2socket.emit('game-apply', { nickName: nickName }); // 게임 수락/거절 화면을 뜨워야함. 프론트에서 처리
+      console.log(
+        `${nickName}(${intraId}) 님이 ${player2}님과의 게임을 요청했습니다.`,
+      );
+    } catch (error) {
+      console.log(`${player2}님이 존재하지 않습니다.`);
+    }
+  }
+
+  //p2가 게임을 수락했을 때
+  @SubscribeMessage('game-accept')
+  async handleGameAccept(client: Socket, payload: Payload) {
+    const { intraId, nickName, player1 } = payload; // player1 : nickname
+    client['intraId'] = intraId;
+    client['nickName'] = nickName;
+    try {
+      const p1 = await this.memberService.getOneByNick(player1);
+      const p1socket = this.socketList.get(p1.intraId);
+      this.gameService.makeGame(client, p1socket);
+    } catch (error) {
+      console.log(`${player1}님이 존재하지 않습니다.`);
+    }
+  }
+
+  //p2가 게임을 거절했을 때
+  @SubscribeMessage('game-reject')
+  async handleGameReject(client: Socket, payload: Payload) {
+    const { intraId, nickName, player1 } = payload;
+    client['intraId'] = intraId;
+    client['nickName'] = nickName;
+    try {
+      const p1 = await this.memberService.getOneByNick(player1);
+      const p1socket = this.socketList.get(p1.intraId);
+      p1socket.emit('game-reject', { nickName: nickName });
+    } catch (error) {
+      console.log(`${player1}님이 존재하지 않습니다.`);
+    }
   }
 }

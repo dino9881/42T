@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { SocketIOGateway } from './socketio.gateway';
 import { PrismaModule } from './prisma/prisma.module';
 import { MailModule } from './mail.module';
+import { Socket } from 'socket.io';
 
 @Module({
   imports: [
@@ -21,6 +22,12 @@ import { MailModule } from './mail.module';
     }),
     MailModule,
   ],
-  providers: [SocketIOGateway],
+  providers: [
+    SocketIOGateway,
+    {
+      provide: Map,
+      useValue: new Map<string, Socket>(),
+    },
+  ],
 })
 export class AppModule {}
