@@ -1,7 +1,6 @@
 import "./App.css";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { BrowserRouter, Route, Routes, } from "react-router-dom";
-import { Link } from "react-router-dom";
 import Login from "./Login";
 import Chat from "./chat/Chat";
 import Channel from "./channel/Channel";
@@ -13,6 +12,7 @@ import Contents from "./Contents";
 import Menu from "./menu/Menu";
 import { useState } from "react";
 import ChannelAdmin from "./chat/channelAdmin/ChannelAdmin";
+import Game from "./game/Game";
 
 function App() {
     axios.defaults.withCredentials = true;
@@ -40,9 +40,11 @@ function App() {
                     <Route path="/login" element={<OAuth />}></Route>
                     <Route path="/login/nick" element={<SetNick />}></Route>
                     <Route path="/main" element={<Contents mainComponent={<Channel channelName={channelName} />} headerComponent={<Menu showBackButton={false} channelName={channelName} channelIdx={channelIdx}/>}/>}></Route>
-                    <Route path="/chat" element={<Contents mainComponent={<Chat channelName={channelName} channelInit={channelInit}/>} headerComponent={<Menu showBackButton={true} channelName={channelName} channelIdx={channelIdx}/>}/>}></Route>
+                    <Route path="/chat" element={<Contents mainComponent={<Chat channelName={channelName} channelInit={channelInit} isDM={false}/>} headerComponent={<Menu showBackButton={true} channelName={channelName} channelIdx={channelIdx}/>}/>}></Route>
+                    <Route path="/dm" element={<Contents mainComponent={<Chat channelName={channelName} channelInit={channelInit} isDM={true}/>} headerComponent={<Menu showBackButton={true} channelName={channelName} channelIdx={channelIdx}/>}/>}></Route>
                     <Route path="/admin" element={<Contents mainComponent={<ChannelAdmin channelName={channelName} channelIdx={channelIdx}/>} headerComponent={<Menu showBackButton={true} channelName={channelName} channelIdx={channelIdx}/>}/>}></Route>
                     <Route path="/rank" element={<Contents mainComponent={<Ranking/>} headerComponent={<Menu showBackButton={false} channelName={channelName} channelIdx={channelIdx}/>}/>}></Route>
+                    <Route path="/game" element={<Game/>}></Route>
                 </Routes>
             <Background />
             </BrowserRouter>

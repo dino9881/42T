@@ -68,7 +68,7 @@ z-index: 1;
     margin-top: 10px;
 }
 
-.ranking-1st, .ranking-2nd, .ranking-3rd, .ranking-4th, .ranking-5th, .ranking-6th, .ranking-7th{
+.ranking-etc_rank {
     width: 260px;
     height: 58px;
     border: black solid 2px;

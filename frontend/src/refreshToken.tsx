@@ -1,7 +1,6 @@
 import axios from "axios";
 import { response } from "express";
 import { async, reject } from "q";
-import setAuthorizationToken from "./setAuthorizationToken";
 import { useNavigate } from "react-router-dom";
 
 const instance = axios.create({
@@ -11,7 +10,8 @@ const instance = axios.create({
 instance.interceptors.request.use((config) => {
 	const token = localStorage.getItem('jwtToken');
 	config.headers.Authorization = 'Bearer ' + token;
-  
+    config.withCredentials = true;
+
 	return config;
 });
 
@@ -26,7 +26,6 @@ instance.interceptors.response.use((response) => {
 		const original = error.config;
 		if (error.response?.status === 401) {
 			// if (isTokenExpired()) await tokenRefresh();
-			console.log("111111");
 			try {
 				
 				const refresh = await axios.post("http://localhost:5001/auth/refresh");
@@ -36,7 +35,11 @@ instance.interceptors.response.use((response) => {
 					// console.log(error)
                     localStorage.setItem("jwtToken", refresh.data.access_token); // 지금은 access token인데 refresh token으로 바껴야함
 					original.headers.Authorization = `Bearer ${refresh.data.access_token}`;
-					setAuthorizationToken(refresh.data.access_token);
+					if (refresh.data.access_token) {
+						instance.defaults.headers.common['Authorization'] = `Bearer ${refresh.data.access_token}`;
+					} else {
+						delete instance.defaults.headers.common['Authorization'];
+					}
 					const response = await instance(original);
 					console.log(response);
 					return response;

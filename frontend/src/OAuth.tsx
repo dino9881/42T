@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import qs from "qs";
 import axios from "axios";
 import { response } from "express";
-import setAuthorizationToken from "./setAuthorizationToken";
+import instance from "./refreshToken";
 
 const OAuth: React.FC = () => {
     const location = useLocation();
@@ -30,7 +30,11 @@ const OAuth: React.FC = () => {
                     const token = res.data.access_token;
                     console.log(token);
                     localStorage.setItem("jwtToken", token); // 지금은 access token인데 refresh token으로 바껴야함
-                    setAuthorizationToken(token);
+                    if (token) {
+                        instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                    } else {
+                        delete instance.defaults.headers.common['Authorization'];
+                    }
                     navigate("/main");
                 })
                 .catch((error) => {

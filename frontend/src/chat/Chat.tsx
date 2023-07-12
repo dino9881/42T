@@ -4,7 +4,6 @@ import { socket } from "../socket";
 import { useLocation, useNavigate } from "react-router-dom";
 import './Chat.css';
 import instance from "../refreshToken";
-import { NavItem } from "react-bootstrap";
 
 interface MessageText {
     nickName: string;
@@ -17,7 +16,7 @@ interface MessageItem {
     avatar: string;
 }
 
-interface ChatItem {
+interface ChatItemProps {
     nickName: string;
     message: string;
     avatar: string;
@@ -27,11 +26,12 @@ interface ChatItem {
 interface ChatProps {
     channelName: string;
     channelInit: (channelName : string, channelIdx : number) => void;
+    isDM: boolean;
 }
 
 
 
-function Chat({channelName , channelInit}:ChatProps) {
+function Chat({channelName , channelInit, isDM}:ChatProps) {
     const location = useLocation();
     const [nickName, setNickname] = useState("");
     const [avatar, setAvatar] = useState("");
@@ -102,18 +102,12 @@ function Chat({channelName , channelInit}:ChatProps) {
 
 
         socket.on("send-message", (payload:any) => {
-            const {nickName, message, avatar}=payload;
+            const {nickName, text, avatar}=payload;
             console.log(payload);
-            const newMessage = {nickName: nickName, message: message};
+            const newMessage = {nickName: nickName, message: text};
             addMessage(newMessage, avatar);
         });
-    }, []);
-    
-    useEffect(() => {
-        if(channelName && nickName)
-        {  
-        }
-    }, [channelName])
+    }, [channelName, channelInit, location.state]);
 
     useEffect(() => {
         var objDiv = document.getElementById("chat-scroll");
@@ -139,6 +133,7 @@ function Chat({channelName , channelInit}:ChatProps) {
             .post(`http://localhost:5001/channel/leave/${state.chIdx}`, {memberId : nickName})
             .then((response) => {
                 console.log(response.data);
+                console.log(nickName);
                 socket.emit("leave-channel",{channelName, nickName});
             })
             .catch((error) => {
@@ -147,7 +142,8 @@ function Chat({channelName , channelInit}:ChatProps) {
             navigate('/main', {
                 state: {
                 }
-              });
+            });
+            window.location.reload();
         }
     }
 
@@ -180,7 +176,7 @@ function ChatInput({ addMyMessage, nickName, channelName, avatar }: { addMyMessa
         event.preventDefault();
         const newMessage = {nickName: "나", message: message };
         addMyMessage(newMessage);
-        socket.emit("message",{channelName, nickName, message, avatar});
+        socket.emit("message",{channelName, nickName, text:message, avatar});
         setMessage("");
     };
     return (
@@ -200,7 +196,7 @@ function ChatInput({ addMyMessage, nickName, channelName, avatar }: { addMyMessa
     );
 }
 
-function ChatItem({ nickName, message, avatar, mynickname }: ChatItem ) {
+function ChatItem({ nickName, message, avatar, mynickname }: ChatItemProps ) {
     const getItemType = (): string => {
         if (nickName === mynickname || nickName === "나") {
           return 'chat-box-mine';
