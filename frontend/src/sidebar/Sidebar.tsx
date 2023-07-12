@@ -17,13 +17,13 @@ const Sidebar = () => {
 				<div className='side-list-buttons'>
 					
 					<button
-						className={`friend-list-button ${viewList ? 'list-button' : ''}`}
+						className={`friend-list-button ${!viewList ? 'list-button' : ''}`}
 						onClick={() => setViewList(true)}
 					>
 						친구목록
 					</button>
 					<button
-						className={`dm-list ${!viewList ? 'list-button' : ''}`}
+						className={`dm-list ${viewList ? 'list-button' : ''}`}
 						onClick={() => {
 									setViewList(false);
 								}}

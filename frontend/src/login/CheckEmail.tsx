@@ -69,7 +69,7 @@ const CheckEmail: React.FC<EmailProps> = ({ myData, onClose, onEmail }) => {
 		// console.log("인증 코드 제출:", verificationCode);
 			instance.post("http://localhost:5001/member/mail/verify",
 			{ 
-				"code": Number(verificationCode)
+				"code": verificationCode
 			})
 			.then((response) => {
 				console.log(response);

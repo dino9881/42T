@@ -84,6 +84,7 @@ function AdminUserList({userList, banList} : AdminUserListProps){
 
 function Setting({setting, chIdx , userList, banList} : SettingInfo ){
     const [text, setText] = useState('');
+    const navigate = useNavigate();
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         setText(event.target.value);
     };
@@ -91,15 +92,59 @@ function Setting({setting, chIdx , userList, banList} : SettingInfo ){
         event.preventDefault();
         if (setting === "admin")
         {
-            console.log(`admin ${text}`);
+            const targetIntraId = userList.find(user => user.nickName === text);
+            if (targetIntraId)
+            {
+                instance
+                .post(`http://localhost:5001/channel/${chIdx}`, {intraId : targetIntraId, nickName: text})
+                .then((response) => {
+                    console.log(response.data);
+                })
+                .catch((error) => {
+                    console.error("API 요청 실패:", error);
+                });
+                navigate('/main');
+                alert('관리자가 변경되어 main 페이지로 이동합니다.');
+            }
+            else
+                alert("올바르지 않은 닉네임")
         }
         else if (setting === "mute")
         {
-            console.log(`mute ${text}`);
+            const targetIntraId = userList.find(user => user.nickName === text);
+            if (targetIntraId)
+            {
+                instance
+                .post(`http://localhost:5001/channel/mute/${chIdx}`, {intraId : targetIntraId, nickName: text})
+                .then((response) => {
+                    console.log(response.data);
+                })
+                .catch((error) => {
+                    console.error("API 요청 실패:", error);
+                });
+                alert('실행 완료');
+            }
+            else
+                alert("올바르지 않은 닉네임")
         }
         else if (setting === "kick")
         {
-            console.log(`kick ${text}`);
+            const targetIntraId = userList.find(user => user.nickName === text);
+            if (targetIntraId)
+            {
+                instance
+                .post(`http://localhost:5001/channel/kick/${chIdx}`, {intraId : targetIntraId, nickName: text})
+                .then((response) => {
+                    console.log(response.data);
+                })
+                .catch((error) => {
+                    console.error("API 요청 실패:", error);
+                });
+                alert('실행 완료');
+
+            }
+            else
+                alert("올바르지 않은 닉네임")
         }
         else if (setting === "ban")
         {
@@ -114,12 +159,11 @@ function Setting({setting, chIdx , userList, banList} : SettingInfo ){
                 .catch((error) => {
                     console.error("API 요청 실패:", error);
                 });
+                window.location.reload();
+                alert('실행 완료');
             }
             else
-            {
                 alert("올바르지 않은 닉네임")
-            }
-
             }
         setText("");
       };
