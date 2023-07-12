@@ -15,7 +15,7 @@ async function bootstrap() {
         credentials: true,
       },
     });
-    app.use(cookieParser());
+    app.use(cookieParser('cookieSecret'));
     app.useWebSocketAdapter(new IoAdapter(app));
     const config = new DocumentBuilder()
       .setTitle('42T')

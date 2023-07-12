@@ -27,17 +27,9 @@ export class MemberService {
   }
 
   async verifyTFACode(req: Request, code: string) {
-    if (
-      req.cookies['code'] !== undefined &&
-      code !== null &&
-      code === req.cookies['code']
-    )
-      return true;
-    else
-      throw new BadRequestException(
-        'Code Not Match',
-        code + ' ' + req.cookies['code'],
-      );
+    const answer = req.signedCookies['code'];
+    if (answer !== undefined && code !== null && code === answer) return true;
+    else throw new BadRequestException('Code Not Match', code + ' ' + answer);
   }
 
   // 전체 유저 확인 용 메소드
