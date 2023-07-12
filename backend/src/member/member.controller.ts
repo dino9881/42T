@@ -55,15 +55,15 @@ export class MemberController {
   @Get('mail/send')
   async sendMail(@GetMember() member: MemberInfoDto, @Res() res: Response) {
     const code = await this.memberService.generateTFACode();
-    expires: new Date(Date.now() + 1000 * 60 * 5),
-      res.cookie('code', code, {
-        httpOnly: true,
-        path: '/',
-        domain: 'localhost',
-        maxAge: 5 * 60 * 1000, // 5min
-      });
-    await this.mailerService.sendMail(member.intraId, code);
-    res.send();
+    this.mailerService.sendMail(member.intraId, code);
+    // console.log(code);
+    res.cookie('code', code, {
+      httpOnly: true,
+      path: '/',
+      domain: 'localhost',
+      maxAge: 5 * 60 * 1000, // 5min
+    });
+    res.end();
   }
 
   @ApiTags('Two-Factor-Autentication')

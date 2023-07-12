@@ -27,7 +27,6 @@ import {
 import { GetMember } from 'src/decorator/getMember.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { Member } from '@prisma/client';
-import exp from 'constants';
 
 @ApiTags('Auth')
 @ApiResponse({
@@ -55,7 +54,6 @@ export class AuthController {
     description: 'intra code',
   })
   recieveCode(@Body('code') code: string) {
-    console.log(code);
     return this.authService.getIntraAccessToken(code);
   }
 
