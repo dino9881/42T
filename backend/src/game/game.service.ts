@@ -57,14 +57,14 @@ export class GameService {
     if (mem == undefined) {
       this.queue.push(member);
       await this.checkQueue();
-      console.log(this.queue);
+      // console.log(this.queue);
     }
   }
 
   async checkQueue() {
     console.log('check-queue');
     while (this.queue.length >= 2) {
-      console.log('while inside');
+      // console.log('while inside');
       const p1 = this.queue.shift();
       const p2 = this.queue.shift();
       await this.makeGame(p1, p2);
