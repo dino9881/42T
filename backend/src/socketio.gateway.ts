@@ -33,8 +33,10 @@ export class SocketIOGateway
   constructor(
     private readonly channelService: ChannelService,
     private readonly memberService: MemberService,
-    private readonly gameService: GameService,
-  ) {}
+    private readonly gameService: GameService, // private socketList: Map<string, Socket>,
+  ) {
+    // socketList = {} as Map<string, Socket>;
+  }
 
   afterInit() {
     console.log('웹소켓 서버 초기화 완료');
@@ -57,13 +59,19 @@ export class SocketIOGateway
       this.memberService.updateStatus(socket['intraId'], 0); // 0 : offline
   }
 
+  // getSocketByintraId(intraId: string): Socket | undefined {
+  // return this.socketList.get(intraId);
+  // }
+
   @SubscribeMessage('memberInfo')
   handleMemberInfo(client: Socket, payload: Payload) {
     const { intraId, nickName } = payload;
+    // if (this.socketList.has(intraId)) this.socketList.set(intraId, client);
     client['intraId'] = intraId;
     client['nickName'] = nickName;
     this.memberService.updateStatus(intraId, 1); // 1 : online
     console.log(`${nickName}(${intraId}) 님이 접속하셨습니다.`);
+    // this.socketList.set(intraId, client);
   }
 
   @SubscribeMessage('message')
@@ -110,5 +118,11 @@ export class SocketIOGateway
     const { intraId, nickName } = payload;
     console.log(`${nickName}(${intraId}) 님이 게임 큐에서 나갔습니다.`);
     this.gameService.exitQueue(client);
+  }
+
+  @SubscribeMessage('game-start')
+  handleGameStart(client: Socket, payload: Payload) {
+    const { intraId, nickName } = payload;
+    console.log(`${nickName}(${intraId}) 님이 게임을 시작했습니다.`);
   }
 }
