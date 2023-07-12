@@ -103,6 +103,7 @@ export class AuthController {
       path: '/',
       domain: 'localhost',
       maxAge: 60 * 60 * 24 * 7 * 1000, // week
+      signed: true,
     });
     res.status(200).json({
       message: 'login success',
@@ -130,7 +131,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     try {
-      const refreshToken = req.cookies['refresh_token'];
+      const refreshToken = req.signedCookies['refresh_token'];
       if (refreshToken === undefined)
         throw new UnauthorizedException('Invalid refresh-token');
       const newAccessToken = await this.authService.refresh(refreshToken);
