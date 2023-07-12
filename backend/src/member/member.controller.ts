@@ -62,6 +62,7 @@ export class MemberController {
       path: '/',
       domain: 'localhost',
       maxAge: 5 * 60 * 1000, // 5min
+      signed: true,
     });
     res.end();
   }
