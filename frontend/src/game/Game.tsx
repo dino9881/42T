@@ -1,5 +1,8 @@
 import React, { useRef, useEffect, useState, createRef } from "react";
 import { socket } from "../socket";
+import { useLocation } from "react-router-dom";
+import instance from "../refreshToken";
+import "./Game.css"
 
 interface CanvasProps {
   width: number;
@@ -44,13 +47,11 @@ function gameRender({x1, y1, x2, y2, bx, by} : GameProps,canvas:HTMLCanvasElemen
 function Game(){
     const width = 1280;
     const height = 720;
+    const { state } = useLocation();
+    const {player1, player2} = state || {player1 :"player1", player2 :"player2"};
     const canvasRef = useRef<HTMLCanvasElement>(null);
     let context: CanvasRenderingContext2D | null = null;
     const [currentPlayer, setCurrentPlayer] = useState<Player>('player1');
-
-    const handlePlayerChange = () => {
-      setCurrentPlayer(currentPlayer === 'player1' ? 'player2' : 'player1');
-    };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -58,12 +59,20 @@ function Game(){
       canvas.width = width;
       canvas.height = height;
 
-      socket.emit("game-start",);
       socket.on("game-render", (payload : any) => {
         const {x1, y1, x2, y2, bx, by}= payload;
         gameRender(payload, canvas);
       })
     }
+
+    instance.get("http://localhost:5001/auth/me")
+			.then((response) => {
+        setCurrentPlayer(player1 === response.data.nickName ? 'player1' : 'player2');
+        socket.emit("game-start", {intraId:response.data.intraId, nickName:response.data.nickName});
+			})
+			.catch((error) => {
+				console.log(error);
+			});
   }, []);
 
 
@@ -96,7 +105,8 @@ function Game(){
 
   return (
     <div>
-    <button onClick={handlePlayerChange}>{currentPlayer}</button>
+      <div> {player1}</div>
+      <div> {player2}</div>
     <canvas className="game-canvas"
     ref={canvasRef}
     onKeyDown={move}
