@@ -9,4 +9,8 @@ export class ChannelUserDto {
     @IsString()
     @ApiProperty({ description: '멤버 닉네임', example: 'jjun' })
     nickName: string;
+
+    @IsString()
+    @ApiProperty({ description: '멤버 아바타', example: 'img/avatar.jpeg' })
+    avatar: string;
 }

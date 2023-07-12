@@ -14,23 +14,24 @@ import { ChannelUserDto } from './dto/channel-user.dto';
 import * as bcrypt from 'bcrypt';
 import { MemberInfoDto } from 'src/member/dto/member-info.dto';
 
-// 전체 exception 확인
-
 @Injectable()
 export class ChannelService {
-  private channelUsers: Record<number, { intraId: string; nickName: string }[]>;
-  private banUsers: Record<number, { intraId: string; nickName: string }[]>;
-  private messageList: Record<number, { nickName: string; message: string }[]>;
+
+  private channelUsers: Record<number, { intraId: string, avatar: string, nickName: string }[]>;
+  private banUsers: Record<number, { intraId: string, avatar: string, nickName: string }[]>;
+  private messageList: Record<number, { nickName: string, message: string, avatar:string }[]>;
   private mutedUsers: Record<
     number,
     { intraId: string; nickName: string; timeoutId: NodeJS.Timeout }[]
   >;
+  private pair: Record<number, { user1: string, user2: string }>;
 
   constructor(private prisma: PrismaService) {
     this.channelUsers = {};
     this.banUsers = {};
     this.messageList = {};
     this.mutedUsers = {};
+    this.pair = {};
   }
 
   async hashPassword(channel: CreateChannelDto) {
@@ -56,7 +57,7 @@ export class ChannelService {
       });
 
       this.channelUsers[createData.chIdx] = [
-        { intraId: member.intraId, nickName: member.nickName },
+        { intraId: member.intraId, avatar: member.avatar, nickName: member.nickName },
       ];
       this.banUsers[createData.chIdx] = [];
       this.messageList[createData.chIdx] = [];
@@ -173,7 +174,7 @@ export class ChannelService {
   // channel users
 
   async enter(idx: number, member: MemberInfoDto) {
-    const { intraId, nickName } = member;
+    const { intraId, avatar, nickName } = member;
     const channel = await this.findOneById(idx);
 
     // user check
@@ -194,7 +195,7 @@ export class ChannelService {
         chUserCnt: { increment: 1 },
       },
     });
-    this.channelUsers[idx].push({ intraId, nickName });
+    this.channelUsers[idx].push({ intraId, avatar, nickName });
   }
 
   async leave(idx: number, memberId: string) {
@@ -228,9 +229,11 @@ export class ChannelService {
     );
   }
 
-  async getChannelUsers(idx: number) {
+  async getChannelUsers(idx: number, member: MemberInfoDto) {
     await this.findOneById(idx);
-    return this.channelUsers[idx];
+    const chanUsers = this.channelUsers[idx].filter( 
+      user => user.intraId !== member.intraId);
+    return chanUsers;
   }
 
   async isChanUsers(chanName: string, nickName: string) {
@@ -256,29 +259,12 @@ export class ChannelService {
     return channels;
   }
 
-  async getDMChannels(intraId: string) {
-    let channels = [];
-    const allChannel = await this.findDMAll();
-    console.log('get all DMChannel');
-    const chIdxList = allChannel.map((channel) => channel.chIdx);
-
-    for (const idx of chIdxList) {
-      const channel = await this.findOneById(idx);
-      const users = this.channelUsers[idx];
-      for (const data of users) {
-        if (data.intraId === intraId) {
-          channels.push(channel);
-        }
-      }
-    }
-    return channels;
-  }
-
-  // ban id 랑 nick 둘다 넘겨줘야함
+  // ban 
+  // 상대 id, avatar, nick 다 넘겨줄 수 있는지
   async saveBanUser(idx: number, channelUserDto: ChannelUserDto) {
-    const { intraId, nickName } = channelUserDto;
+    const { intraId, avatar, nickName } = channelUserDto;
     await this.findOneById(idx);
-    this.banUsers[idx].push({ intraId, nickName });
+    this.banUsers[idx].push({ intraId, avatar, nickName });
   }
 
   async deleteBanUser(idx: number, channelUserDto: ChannelUserDto) {
@@ -296,9 +282,9 @@ export class ChannelService {
 
   // message
 
-  async sendMessage(chanName: string, nickName: string, message: string) {
+  async sendMessage(chanName: string, nickName: string, message: string, avatar: string) {
     const channel = await this.findOneByName(chanName);
-    this.messageList[channel.chIdx].push({ nickName, message });
+    this.messageList[channel.chIdx].push({ nickName, message, avatar });
   }
 
   async getMessageList(idx: number, intraId: string) {
@@ -345,6 +331,66 @@ export class ChannelService {
       (user) => user.nickName === nickName,
     );
     if (ismuted && ismuted !== undefined) return true;
+    return false;
+  }
+
+  // DM
+  async createDM(member: MemberInfoDto, channelUserDto: ChannelUserDto) {
+;
+    let user1: string, user2: string;
+    if (member.intraId < channelUserDto.intraId) {
+      user1 = member.intraId;
+      user2 = channelUserDto.intraId;
+    } else {
+      user1 = channelUserDto.intraId;
+      user2 = member.intraId;
+    }
+    console.log(this.isAlreadyDM(user1, user2));
+    if (this.isAlreadyDM(user1, user2)) {
+      return ;
+    }
+    const chName = "#" + user1 + user2;
+    const createData = await this.prisma.channel.create({
+      data: {
+        chName,
+        chUserCnt: 2,
+        isDM: true,
+      },
+    });
+
+    this.pair[createData.chIdx] = { user1, user2 };
+    this.channelUsers[createData.chIdx] = [
+      { intraId: user1, avatar: '', nickName: '' },
+      { intraId: user2, avatar: '', nickName: '' },
+    ];
+    this.banUsers[createData.chIdx] = [];
+    this.messageList[createData.chIdx] = [];
+    this.mutedUsers[createData.chIdx] = [];
+  }
+  
+  async getMyDMChannels(intraId: string) {
+    let channels = [];
+    const allChannel = await this.findDMAll();
+    console.log('get all DMChannel');
+    const chIdxList = allChannel.map((channel) => channel.chIdx);
+
+    for (const idx of chIdxList) {
+      const channel = await this.findOneById(idx);
+      const users = this.channelUsers[idx];
+      for (const data of users) {
+        if (data.intraId === intraId) {
+          channels.push(channel);
+        }
+      }
+    }
+    return channels;
+  }
+  
+  isAlreadyDM(user1: string, user2: string) {
+    for (const idx in this.pair) {
+      if (this.pair[idx].user1 === user1 && this.pair[idx].user2 === user2)
+        return true;
+    }
     return false;
   }
 }
