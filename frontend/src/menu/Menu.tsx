@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import './Menu.css';
 import ChannelNew from "../channel/ChannelNew"
 import axios from "axios";
 import MyChannelList from "./MyChannelList";
 import instance from "../refreshToken";
+import { socket } from "../socket";
 
 type MenuProps = {
 	showBackButton: boolean;
@@ -37,7 +38,7 @@ interface Channel {
 	function getChannel() {
 		instance.get("http://localhost:5001/channel/all")
 			.then((response) => {
-				console.log(response.data);
+				// console.log(response.data);
 				setChannels(response.data);
 			})
 			.catch((error) => {
@@ -47,6 +48,14 @@ interface Channel {
 
 	const handleStartClick = () => {
 		setShowWaiting(true);
+		instance.get("http://localhost:5001/auth/me")
+			.then((response) => {
+				// console.log(response.data);
+				socket.emit("game-queue-join", {intraId:response.data.intraId, nickName:response.data.nickName});
+			})
+			.catch((error) => {
+				console.log(error);
+			});
 		setShowCancel(true);
 	};
 
@@ -89,6 +98,14 @@ interface Channel {
               });
 		
 	}
+
+	useEffect(() => {
+		socket.on("game-ready", (data) => {
+			const {player1, player2} = data;
+			navigate('/game', {state: {player1, player2}})
+        });
+
+	},[]);
 	
 
 	return (
