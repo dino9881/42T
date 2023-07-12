@@ -51,6 +51,9 @@ export class GameService {
 
   async joinQueue(member: Socket) {
     const mem = this.queue.find((mem) => mem['intraId'] == member['intraId']);
+    console.log('join-queue');
+    // console.log(mem);
+    // console.log(this.queue);
     if (mem == undefined) {
       this.queue.push(member);
       await this.checkQueue();
@@ -59,7 +62,9 @@ export class GameService {
   }
 
   async checkQueue() {
+    console.log('check-queue');
     while (this.queue.length >= 2) {
+      console.log('while inside');
       const p1 = this.queue.shift();
       const p2 = this.queue.shift();
       await this.makeGame(p1, p2);

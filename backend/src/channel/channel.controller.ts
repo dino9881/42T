@@ -208,13 +208,13 @@ export class ChannelController {
 
   // DM
 
-  @Post('/create/dm')
+  @Post('/enter/dm')
   @ApiOperation({ summary: 'DM 채널 생성', description: 'Create Channel API' })
   @ApiResponse({ status: 400, description: '잘못된 요청'})
   @ApiCreatedResponse({ type: CreateChannelDto })
   @ApiBody({ type: ChannelUserDto })
-  createDM(@GetMember() member: MemberInfoDto, @Body() channelUserDto: ChannelUserDto) {
-    return this.channelService.createDM(member, channelUserDto);
+  enterDM(@GetMember() member: MemberInfoDto, @Body() channelUserDto: ChannelUserDto) {
+    return this.channelService.enterDM(member, channelUserDto);
   }
 
   @Get('/my/dm')
