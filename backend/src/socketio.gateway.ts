@@ -17,7 +17,8 @@ interface Payload {
   channelName: string;
   intraId: string;
   nickName: string;
-  text: string;
+  message: string;
+  avatar: string;
 }
 
 @Injectable()
@@ -76,13 +77,13 @@ export class SocketIOGateway
 
   @SubscribeMessage('message')
   async handleMessage(client: Socket, payload: Payload): Promise<string> {
-    const { channelName, nickName, text } = payload;
+    const { channelName, nickName, message, avatar } = payload;
     // mute check
     const ismuted = await this.channelService.ismuted(channelName, nickName);
     if (ismuted)
       return 'Message received! But you are muted. You cannot send message.';
-    client.to(channelName).emit('send-message', { nickName, text });
-    this.channelService.sendMessage(channelName, nickName, text);
+    client.to(channelName).emit('send-message', { nickName, message, avatar });
+    this.channelService.sendMessage(channelName, nickName, message, avatar);
     return 'Message received!';
   }
 
@@ -101,9 +102,9 @@ export class SocketIOGateway
 
   @SubscribeMessage('leave-channel')
   async handleChannelLeave(client: any, payload: any) {
-    const { channelName, nickname } = payload;
+    const { channelName, nickName } = payload;
     client.leave(channelName);
-    console.log(`${nickname} leave channel : ${channelName}`);
+    console.log(`${nickName} leave channel : ${channelName}`);
   }
 
   @SubscribeMessage('game-queue-join')
