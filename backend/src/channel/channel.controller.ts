@@ -44,6 +44,7 @@ export class ChannelController {
   @ApiCreatedResponse({ type: CreateChannelDto })
   @ApiBody({ type: CreateChannelDto })
   create(@GetMember() member: MemberInfoDto, @Body() createChannelDto: CreateChannelDto) {
+    console.log(member);
     return this.channelService.create(member, createChannelDto);
   }
 
@@ -156,8 +157,8 @@ export class ChannelController {
   @Get('/users/:idx')
   @ApiOperation({ summary: 'idx 채널 유저들 가져오기', description: 'Channel Users By Idx' })
   @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx'})
-  getChannelUsers(@Param('idx') idx: string) {
-    return this.channelService.getChannelUsers(+idx);
+  getChannelUsers(@Param('idx') idx: string, @GetMember() member: MemberInfoDto) {
+    return this.channelService.getChannelUsers(+idx, member);
   }
 
   @Get('/my/all')
@@ -166,12 +167,6 @@ export class ChannelController {
     return this.channelService.getChannels(member.intraId);
   }
 
-  @Get('/my/dm')
-  @ApiOperation({ summary: '나의 모든 DM 채널 가져오기', description: 'Get my all DM channel' })
-  getDMChannels(@GetMember() member: MemberInfoDto) {
-    return this.channelService.getDMChannels(member.intraId);
-  }
-  
   // ban
 
   @Post('/ban/save/:idx')
@@ -211,10 +206,21 @@ export class ChannelController {
     this.channelService.muteUser(+idx, channelUserDto);
   }
 
-  // @Get('/ismute/:idx')
-  // @ApiOperation({ summary: 'idx 채널에서 뮤트 당했는지', description: 'Is mute' })
-  // isMuted(@Param('idx') idx: string, @GetMember() channelUserDto: ChannelUserDto) {
-  //   return this.channelService.ismuted(+idx, channelUserDto.intraId);
-  // }
+  // DM
+
+  @Post('/create/dm')
+  @ApiOperation({ summary: 'DM 채널 생성', description: 'Create Channel API' })
+  @ApiResponse({ status: 400, description: '잘못된 요청'})
+  @ApiCreatedResponse({ type: CreateChannelDto })
+  @ApiBody({ type: ChannelUserDto })
+  createDM(@GetMember() member: MemberInfoDto, @Body() channelUserDto: ChannelUserDto) {
+    return this.channelService.createDM(member, channelUserDto);
+  }
+
+  @Get('/my/dm')
+  @ApiOperation({ summary: '나의 모든 DM 채널 가져오기', description: 'Get my all DM channel' })
+  getMyDMChannels(@GetMember() member: MemberInfoDto) {
+    return this.channelService.getMyDMChannels(member.intraId);
+  }
 
 }
