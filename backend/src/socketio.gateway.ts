@@ -98,10 +98,17 @@ export class SocketIOGateway
     console.log(`${nickname} leave channel : ${channelName}`);
   }
 
-  @SubscribeMessage('game-queue')
-  handleGameQueue(client: Socket, payload: Payload) {
+  @SubscribeMessage('game-queue-join')
+  handleGameQueueJoin(client: Socket, payload: Payload) {
     const { intraId, nickName } = payload;
     console.log(`${nickName}(${intraId}) 님이 게임 큐에 들어왔습니다.`);
     this.gameService.joinQueue(client);
+  }
+
+  @SubscribeMessage('game-queue-exit')
+  handleGameQueueExit(client: Socket, payload: Payload) {
+    const { intraId, nickName } = payload;
+    console.log(`${nickName}(${intraId}) 님이 게임 큐에서 나갔습니다.`);
+    this.gameService.exitQueue(client);
   }
 }
