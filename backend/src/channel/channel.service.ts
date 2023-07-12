@@ -260,7 +260,6 @@ export class ChannelService {
   }
 
   // ban 
-  // 상대 id, avatar, nick 다 넘겨줄 수 있는지
   async saveBanUser(idx: number, channelUserDto: ChannelUserDto) {
     const { intraId, avatar, nickName } = channelUserDto;
     await this.findOneById(idx);
@@ -335,7 +334,7 @@ export class ChannelService {
   }
 
   // DM
-  async createDM(member: MemberInfoDto, channelUserDto: ChannelUserDto) {
+  async enterDM(member: MemberInfoDto, channelUserDto: ChannelUserDto) {
 ;
     let user1: string, user2: string;
     if (member.intraId < channelUserDto.intraId) {
@@ -345,11 +344,13 @@ export class ChannelService {
       user1 = channelUserDto.intraId;
       user2 = member.intraId;
     }
-    console.log(this.isAlreadyDM(user1, user2));
-    if (this.isAlreadyDM(user1, user2)) {
-      return ;
-    }
     const chName = "#" + user1 + user2;
+    if (this.isAlreadyDM(user1, user2)) {
+      const data = await this.prisma.channel.findUnique({
+        where: { chName: chName }
+      });
+      return data;
+    }
     const createData = await this.prisma.channel.create({
       data: {
         chName,
@@ -366,6 +367,7 @@ export class ChannelService {
     this.banUsers[createData.chIdx] = [];
     this.messageList[createData.chIdx] = [];
     this.mutedUsers[createData.chIdx] = [];
+    return createData;
   }
   
   async getMyDMChannels(intraId: string) {
