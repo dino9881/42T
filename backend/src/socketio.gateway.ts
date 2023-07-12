@@ -109,6 +109,8 @@ export class SocketIOGateway
   @SubscribeMessage('game-queue-join')
   handleGameQueueJoin(client: Socket, payload: Payload) {
     const { intraId, nickName } = payload;
+    client['intraId'] = intraId;
+    client['nickName'] = nickName;
     console.log(`${nickName}(${intraId}) 님이 게임 큐에 들어왔습니다.`);
     this.gameService.joinQueue(client);
   }
@@ -116,6 +118,8 @@ export class SocketIOGateway
   @SubscribeMessage('game-queue-exit')
   handleGameQueueExit(client: Socket, payload: Payload) {
     const { intraId, nickName } = payload;
+    client['intraId'] = intraId;
+    client['nickName'] = nickName;
     console.log(`${nickName}(${intraId}) 님이 게임 큐에서 나갔습니다.`);
     this.gameService.exitQueue(client);
   }
@@ -123,6 +127,8 @@ export class SocketIOGateway
   @SubscribeMessage('game-start')
   handleGameStart(client: Socket, payload: Payload) {
     const { intraId, nickName } = payload;
+    client['intraId'] = intraId;
+    client['nickName'] = nickName;
     console.log(`${nickName}(${intraId}) 님이 게임을 시작했습니다.`);
   }
 }
