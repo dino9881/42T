@@ -27,6 +27,18 @@
 	top: 5px;
 }
 
+.state-circle-state0 {
+	background-color: #A4ABB6;
+}
+
+.state-circle-state1 {
+	background-color: #56F000;
+}
+
+.state-circle-state2 {
+	background-color: #2DCCFF;
+}
+
 .my-info-avatar {
 	margin-left: 2%;
 	border: 1px solid;

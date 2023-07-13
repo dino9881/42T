@@ -67,7 +67,7 @@
 .menu-start-button {
 	position: absolute;
 	right: 14%;
-	top: 50%;
+	bottom: 0;
 }
 
 .menu-lank-button {
@@ -76,7 +76,7 @@
 
 .menu-custom-button {
 	position: absolute;
-	top: 50%;
+	bottom: 0;
 }
 
 .menu-drop-down-channel-list {

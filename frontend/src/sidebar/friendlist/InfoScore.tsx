@@ -37,35 +37,42 @@ const InfoScore: React.FC<InfoScoreProps> = ({ intraId, nickName, rank, state })
   const handleDelete = () => {
     instance.delete(`http://localhost:5001/member/friend/delete/${nickName}`).then((res)=>{
       // console.log(res);
-			window.location.reload();
+		window.location.reload();
     })
   };
 
   const handleBan = () => {
     instance.post(`http://localhost:5001/member/ban/${nickName}`).then((res)=>{
-      // console.log(res);
-      // console.log('차단');
-			window.location.reload();
+		window.location.reload();
     })
   };
 
+  const handleAdd = () => {
+    instance.post(`http://localhost:5001/member/friend/add/${nickName}`)
+		.then((response) => {
+			window.location.reload();
+		})
+		.catch((error) => {
+			console.log(error);
+		});
+  }
+
   return (
-    <div className={state === 1 ? "my-score-box" : "friend-info-full"}>
+    <div className={state === 3 ? "my-score-box" : "friend-info-full"}>
       <div className="rank">랭킹 {rank}</div>
-      <div className={state === 1 ? "my-score-table" : "score-table"}>
-        {/* {history ? ( history.map((history, index) => (
-            <GameHistory key={index} winnerId={history.winnerId} loserId={history.loserId} winnerScore={history.winnerScore} loserScore={history.loserScore} />
-          ))
-        ) : (
-          <div>Loading...</div>
-        )} */}
+      <div className={state === 3 ? "my-score-table" : "score-table"}>
         {history.map((history, index) => (
             <GameHistory key={index} winnerId={history.winnerId} loserId={history.loserId} winnerScore={history.winnerScore} loserScore={history.loserScore} />
         ))}
       </div>
-      {state === 2 && (
+      {state !== 3 && (
         <div className="friend-bottom-box">
-          <button className="delete-friends" onClick={handleDelete}>친구삭제</button>
+          {state === 1 && (
+            <button className="delete-friends" onClick={handleDelete}>친구삭제</button>
+          )}
+          {state === 0 && (
+            <button className="delete-friends" onClick={handleAdd}>친추</button>
+          )}
           <button className="block-friend" onClick={handleBan}>차단</button>
         </div>
       )}

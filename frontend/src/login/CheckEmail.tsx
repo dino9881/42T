@@ -12,7 +12,7 @@ interface EmailProps {
 }
 
 const CheckEmail: React.FC<EmailProps> = ({ myData, onClose, onEmail }) => {
-	const MINUTES_IN_MS = 1 * 60 * 1000;
+	const MINUTES_IN_MS = 5 * 60 * 1000;
 	const INTERVAL = 1000;
 	const [timeLeft, setTimeLeft] = useState<number>(MINUTES_IN_MS);
 	const [isTimerRunning, setIsTimerRunning] = useState<boolean>(true);
@@ -45,7 +45,7 @@ const CheckEmail: React.FC<EmailProps> = ({ myData, onClose, onEmail }) => {
 
 	useEffect(() => {
 		instance.get("http://localhost:5001/member/mail/send").then((response) => {
-			console.log(response);
+			// console.log(response);
 		})
 	}, []);
 
@@ -54,7 +54,7 @@ const CheckEmail: React.FC<EmailProps> = ({ myData, onClose, onEmail }) => {
 		setIsTimerEnded(false);
 		setIsTimerRunning(true);
 		instance.get("http://localhost:5001/member/mail/send").then((response) => {
-			console.log(response);
+			// console.log(response);
 		})
 	};
 	
@@ -72,7 +72,7 @@ const CheckEmail: React.FC<EmailProps> = ({ myData, onClose, onEmail }) => {
 				"code": verificationCode
 			})
 			.then((response) => {
-				console.log(response);
+				// console.log(response);
 				if (response === undefined) {
 					alert("인증번호가 틀립니다.")
 					onClose();
@@ -113,6 +113,8 @@ const CheckEmail: React.FC<EmailProps> = ({ myData, onClose, onEmail }) => {
 							<div className='check-email-input-box'>
 								<input className='check-email-input'
 									type="text"
+									onInput={(e: any) =>
+									 (e.target.value = e.target.value.replace(/[^0-9]/g, ""))}
 									value={verificationCode}
 									onChange={handleVerificationCodeChange}
 									onKeyDown={handleKeyDown}

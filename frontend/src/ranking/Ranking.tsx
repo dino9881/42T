@@ -11,8 +11,22 @@ const Ranking = () => {
 	);
 };
 
+interface RankData{
+	intraId: string,
+	  nickName: string,
+	  avatar: string,
+	  rank: number,
+	  // winCnt: number,
+	  // loseCnt: number,
+	  // currentRefreshToken: string,
+	  // currentRefreshTokenExp: string,
+	  // isFriend: boolean,
+	  // isBan: boolean,
+	  // code: number,
+  }
+
 const RankingComponent = () => {
-	const [ranking, setRanking] = useState<any[]>([]);
+	const [ranking, setRanking] = useState<RankData[]>([]);
 	useEffect(() => {
 		instance
 			.get("http://localhost:5001/member/rank")
@@ -32,34 +46,36 @@ const RankingComponent = () => {
 			});
 	}, []);
 		return (
-
 			<div className="ranking">
-			<div className="ranking-123rk">
-				<div className="ranking-2rk">
-					{ranking && ranking[1] && ( <>
-					<img src={ranking[1].avatar} alt="2위 사진"/>
-					<div className="ranking-2rk_user">{ranking[1].intraId}</div>
-					<div className="ranking-2rk_box">2위</div>	
-					</>)}
+				<RankList ranking={ranking && ranking.slice(0, 7)}></RankList>
+					<div className="ranking-123rk">
+						<div className="ranking-2rk">
+							{ranking.length > 1 && ranking[1]?.rank > 100 && ( <>
+							<img src={ranking[1].avatar} alt="2위 사진"/>
+							<div className="ranking-2rk_user">닉넴: {ranking[1].nickName}</div>
+							<div className="ranking-2rk_box">순위: 2위</div>	
+							</>)}
+						</div>
+						<div className="ranking-1rk">
+							{ranking && ranking[0]?.rank > 100 && ( <>
+							<img src={ranking[0].avatar} alt="1위 사진"/>
+							<div className="ranking-1rk_user">닉넴: {ranking[0].nickName}</div>
+							<div className="ranking-1rk_box">순위: 1위</div>
+							</>)}
+						</div>
+						<div className="ranking-3rk">
+							{ranking.length > 2 && ranking[2]?.rank > 100 && ( <>
+							<img src={ranking[2].avatar} alt="3위 사진"/>
+							<div className="ranking-3rk_namerankbox">
+								<div className="ranking-3rk_user">닉넴: {ranking[2].nickName}</div>
+								<div className="ranking-3rk_box">순위: 3위</div>
+							</div>
+							</>)}
+						</div>
+					</div>
 				</div>
-				<div className="ranking-1rk">
-					{ranking && ranking[0] && ( <>
-					<img src={ranking[0].avatar} alt="1위 사진"/>
-					<div className="ranking-1rk_user">{ranking[0].intraId}</div>
-					<div className="ranking-1rk_box">1위</div>
-					</>)}
-				</div>
-				<div className="ranking-3rk">
-					{ranking && ranking[2] && ( <>
-					<img src={ranking[2].avatar} alt="3위 사진"/>
-					<div className="ranking-3rk_user">{ranking[2].intraId}</div>
-					<div className="ranking-3rk_box">3위</div>
-					</>)}
-				</div>
-			<RankList ranking={ranking && ranking.slice(0, 7)}></RankList>
-			</div>
-		</div>
-	)
-}
+			)
+		}
+
 
 export default Ranking

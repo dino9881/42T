@@ -17,13 +17,9 @@ interface FriendInfoProps {
 const IsNotFriend: React.FC<FriendInfoProps & SearchFriendProps> = ({ nickName, rank, avatar, onClose, intraId, friendStatus }) => {
   
 	const handleAdd = () => {
-		console.log("친구 추가");
 		instance.post(`http://localhost:5001/member/friend/add/${nickName}`)
 		  .then((response) => {
-			console.log(response);
 			onClose();
-			// alert("친구 추가가 완료되었습니다.");
-			// location.reload();
 			window.location.reload();
 		  })
 		  .catch((error) => {
@@ -33,8 +29,6 @@ const IsNotFriend: React.FC<FriendInfoProps & SearchFriendProps> = ({ nickName, 
 
 	const handleBan = () => {
 		instance.post(`http://localhost:5001/member/ban/${nickName}`).then((res)=>{
-			// console.log(res);
-			// console.log('차단');
 			window.location.reload();
 		})
 	};

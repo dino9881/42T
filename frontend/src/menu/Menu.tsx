@@ -102,7 +102,12 @@ interface Channel {
 	useEffect(() => {
 		socket.on("game-ready", (data) => {
 			const {player1, player2} = data;
+			console.log(data);
 			navigate('/game', {state: {player1, player2}})
+        });
+
+		socket.on("game-apply", (data) => {
+			alert(`게임 신청 ${data}`);
         });
 
 	},[]);
@@ -133,7 +138,6 @@ interface Channel {
 			<button className="menu-channel-new-box" onClick={handleMakeNew}>new</button>
 		)}
 
-
 		<button className="menu-grin-button menu-start-button" onClick={handleStartClick}>
 			{showWaiting ? "Waiting" : "START"}
 		</button>
@@ -142,7 +146,7 @@ interface Channel {
 			Cancel
 			</button>
 		)}
-		<Link to="/ranking"> <button className="menu-grin-button menu-lank-button">Rank</button> </Link>
+		<Link to="/rank"> <button className="menu-grin-button menu-lank-button">Rank</button> </Link>
 		<button className="menu-grin-button menu-custom-button">custom</button>
 		{showNewChat && <ChannelNew/>}
 		</div>
