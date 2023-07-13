@@ -7,7 +7,7 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
-import { Socket, Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { ChannelService } from './channel/channel.service';
 import { Injectable } from '@nestjs/common';
 import { MemberService } from './member/member.service';
@@ -27,7 +27,8 @@ interface Payload {
 @Injectable()
 @WebSocketGateway({
   cors: {
-    origin: ['http://localhost:3000'],
+    origin: 'http://localhost:3000',
+    credentials: true,
   },
 })
 export class SocketIOGateway
@@ -40,7 +41,7 @@ export class SocketIOGateway
     private readonly gameService: GameService,
     private socketList: Map<string, Socket>,
   ) {
-    socketList = {} as Map<string, Socket>;
+    this.socketList = new Map<string, Socket>();
   }
 
   afterInit() {
@@ -146,12 +147,16 @@ export class SocketIOGateway
     try {
       const p2 = await this.memberService.getOneByNick(player2);
       const p2socket = this.socketList.get(p2.intraId);
+      if (p2socket === undefined) {
+        this.playerNotFoundEmitError(client, player2);
+        return;
+      }
       p2socket.emit('game-apply', { nickName: nickName }); // 게임 수락/거절 화면을 뜨워야함. 프론트에서 처리
       console.log(
         `${nickName}(${intraId}) 님이 ${player2}님과의 게임을 요청했습니다.`,
       );
     } catch (error) {
-      console.log(`${player2}님이 존재하지 않습니다.`);
+      this.playerNotFoundEmitError(client, player2);
     }
   }
 
@@ -164,9 +169,13 @@ export class SocketIOGateway
     try {
       const p1 = await this.memberService.getOneByNick(player1);
       const p1socket = this.socketList.get(p1.intraId);
+      if (p1socket === undefined) {
+        this.playerNotFoundEmitError(client, player1);
+        return;
+      }
       this.gameService.makeGame(client, p1socket);
     } catch (error) {
-      console.log(`${player1}님이 존재하지 않습니다.`);
+      this.playerNotFoundEmitError(client, player1);
     }
   }
 
@@ -179,9 +188,18 @@ export class SocketIOGateway
     try {
       const p1 = await this.memberService.getOneByNick(player1);
       const p1socket = this.socketList.get(p1.intraId);
+      if (p1socket === undefined) {
+        this.playerNotFoundEmitError(client, player1);
+        return;
+      }
       p1socket.emit('game-reject', { nickName: nickName });
     } catch (error) {
-      console.log(`${player1}님이 존재하지 않습니다.`);
+      this.playerNotFoundEmitError(client, player1);
     }
+  }
+
+  playerNotFoundEmitError(client: Socket, nickName: string) {
+    console.log(`${nickName}님이 존재하지 않습니다.`);
+    client.emit('game-oppo-not-found', { nickName: nickName });
   }
 }
