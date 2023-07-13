@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { MemberModule } from './member/member.module';
 import { GameModule } from './game/game.module';
 import { ChannelModule } from './channel/channel.module';
@@ -8,6 +8,7 @@ import { SocketIOGateway } from './socketio.gateway';
 import { PrismaModule } from './prisma/prisma.module';
 import { MailModule } from './mail.module';
 import { Socket } from 'socket.io';
+import { MemberService } from './member/member.service';
 
 @Module({
   imports: [
@@ -30,4 +31,10 @@ import { Socket } from 'socket.io';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  constructor(private readonly memberService: MemberService) {}
+
+  async onModuleInit(): Promise<void> {
+    await this.memberService.createAdminMember();
+  }
+}
