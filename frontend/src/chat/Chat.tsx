@@ -149,8 +149,10 @@ function Chat({channelName , channelInit, isDM}:ChatProps) {
 
     return (  
         <div className="chat">
-            <span>{channelName}</span>
-            <button onClick={exitChannel}>채널 나가기</button>
+            <div className="chat-header-box">
+                <img className="out_of_channel_button" src="out_of_channel.svg" alt="out_of_channel" onClick={exitChannel} style={{ cursor: 'pointer' }} />
+                <span>{channelName}</span>
+            </div>
             <div className="chat-scroll" id="chat-scroll">
                 {msgList.map((message, index) => (
                     <ChatItem
@@ -174,25 +176,28 @@ function ChatInput({ addMyMessage, nickName, channelName, avatar }: { addMyMessa
     };
     const onSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        if (message.trim() === "") {
+            return;
+        }
         const newMessage = {nickName: "나", message: message };
         addMyMessage(newMessage);
         socket.emit("message",{channelName, nickName, text:message, avatar});
         setMessage("");
     };
     return (
-        <div className="chat-inputbox">
-            <form onSubmit={onSubmit}>
-                <input
-                    type="text"
-                    onChange={onChange}
-                    value={message}
-                    name="chat-input"
-                    className="chat-input"
-                    autoComplete="off"
-                />
-                <button className="chat-input-button">제출</button>
-            </form>
-        </div>
+        <form onSubmit={onSubmit} className="chat-inputbox">
+            <input
+                type="text"
+                onChange={onChange}
+                value={message}
+                name="chat-input"
+                className="chat-input"
+                autoComplete="off"
+            />
+            <button type="submit" className="chat-input-button">
+                <img src="send_button.svg" alt="send_button" className="chat-input-img"/>
+            </button>
+        </form>
     );
 }
 
@@ -214,13 +219,28 @@ function ChatItem({ nickName, message, avatar, mynickname }: ChatItemProps ) {
       };
     return (
         <div className={`${getItemType()}`}>
-            <div className="chat-userimg-box" >
-                <img className="chat-userimg" src={avatar} alt=""  />
-            </div>
-            <div className="chat-userinfo">
-                <span className="chat-username">{getSender()}</span>
-                <span className="chat-userchat">{message}</span>
-            </div>
+            {getItemType() === 'chat-box-mine' && (
+                <>
+                    <span className="chat-userchat">{message}</span>
+                </>
+            )}
+            {getItemType() === 'chat-box' && (
+                <>
+                <img className="chat-userimg-box" src={avatar} alt="" />
+                <div className="chat-userinfo">
+                    <span className="chat-username">{getSender()}</span>
+                    <span className="chat-userchat">{message}</span>
+                </div>
+                </>
+            )}
+        </div>
+    );
+}
+
+function ChatBoxMine({ message, avatar }: ChatItemProps) {
+    return (
+        <div className="chat-box-mine">
+
         </div>
     );
 }

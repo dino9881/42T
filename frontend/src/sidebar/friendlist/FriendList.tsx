@@ -13,6 +13,7 @@ interface Friend {
 	avatar: string;
 	winCnt: number;
 	loseCnt: number;
+	status: number;
 }
 
 interface Ban {
@@ -58,7 +59,7 @@ const FriendList = () => {
 	return (
 	  <div className="list-scroll">
 		{friends && friends.map((friend, index) => (
-        	<FriendInfo key={index} intraId={friend.intraId} nickName={friend.nickName} rank={friend.rank} avatar={friend.avatar} winCnt={friend.winCnt} loseCnt={friend.loseCnt}/>
+        	<FriendInfo key={index} intraId={friend.intraId} nickName={friend.nickName} rank={friend.rank} avatar={friend.avatar} winCnt={friend.winCnt} loseCnt={friend.loseCnt} state={1} currstate={friend.status}/>
      	 ))}
 		<div className="friend-list-text"> - 차단목록</div>
 		{bans && bans.map((ban, index) => (
@@ -69,3 +70,7 @@ const FriendList = () => {
 };
 
 export default FriendList;
+
+// soket emit 내가받은 멤버 데이터를 member-info에 보내주면 됨
+
+// soket emit('member-info') (memberdata)

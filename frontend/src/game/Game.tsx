@@ -9,6 +9,11 @@ interface CanvasProps {
   height: number;
 }
 
+interface HeaderProps {
+  player1 : string;
+  player2 : string;
+}
+
 type Player = 'player1' | 'player2';
 
 interface GameProps {
@@ -46,7 +51,7 @@ function gameRender({x1, y1, x2, y2, bx, by} : GameProps,canvas:HTMLCanvasElemen
 
 function Game(){
     const width = 1280;
-    const height = 720;
+    const height = 600;
     const { state } = useLocation();
     const {player1, player2} = state || {player1 :"player1", player2 :"player2"};
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -59,6 +64,7 @@ function Game(){
       canvas.width = width;
       canvas.height = height;
 
+      gameRender({x1: 10,y1: 300,x2: 1270,y2: 300,bx: 640,by: 300}, canvas);
       socket.on("game-render", (payload : any) => {
         const {x1, y1, x2, y2, bx, by}= payload;
         gameRender(payload, canvas);
@@ -73,6 +79,8 @@ function Game(){
 			.catch((error) => {
 				console.log(error);
 			});
+
+      
   }, []);
 
 
@@ -104,9 +112,8 @@ function Game(){
   };
 
   return (
-    <div>
-      <div> {player1}</div>
-      <div> {player2}</div>
+    <div className="game">
+      <GameHeader player1={player1} player2={player2}/>
     <canvas className="game-canvas"
     ref={canvasRef}
     onKeyDown={move}
@@ -115,5 +122,45 @@ function Game(){
     </div>
   );
 };
+
+function GameHeader({player1, player2} : HeaderProps) {
+
+  const [player1Avatar, setPlayer1Avatar] = useState("");
+  const [player2Avatar, setPlayer2Avatar] = useState("");
+
+
+  instance.get(`http://localhost:5001/member/search/${player1}`)
+			.then((response) => {
+        const player1Avatar = response.data.avatar;
+        setPlayer1Avatar(player1Avatar);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+      instance.get(`http://localhost:5001/member/search/${player2}`)
+			.then((response) => {
+        const player2Avatar = response.data.avatar;
+        setPlayer2Avatar(player2Avatar);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+
+  return (
+  <div className="game-header">
+    <div className="game-header-p1"> 
+      {player1}
+      <img className="game-player1-avatar" src={player1Avatar}></img>
+    </div>
+    <div className="game-vs">VS</div>
+    <div className="game-header-p2">
+      {player2}
+      <img className="game-player2-avatar" src={player2Avatar}></img>
+    </div>
+</div>
+)
+
+
+}
 
 export default Game;

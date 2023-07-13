@@ -39,7 +39,7 @@ function App() {
                     <Route path="/" element={<Login />}></Route>
                     <Route path="/login" element={<OAuth />}></Route>
                     <Route path="/login/nick" element={<SetNick />}></Route>
-                    <Route path="/main" element={<Contents mainComponent={<Channel channelName={channelName} />} headerComponent={<Menu showBackButton={false} channelName={channelName} channelIdx={channelIdx}/>}/>}></Route>
+                    <Route path="/main" element={<Contents mainComponent={<Channel channelName={channelName} channelInit={channelInit} />} headerComponent={<Menu showBackButton={false} channelName={channelName} channelIdx={channelIdx}/>}/>}></Route>
                     <Route path="/chat" element={<Contents mainComponent={<Chat channelName={channelName} channelInit={channelInit} isDM={false}/>} headerComponent={<Menu showBackButton={true} channelName={channelName} channelIdx={channelIdx}/>}/>}></Route>
                     <Route path="/dm" element={<Contents mainComponent={<Chat channelName={channelName} channelInit={channelInit} isDM={true}/>} headerComponent={<Menu showBackButton={true} channelName={channelName} channelIdx={channelIdx}/>}/>}></Route>
                     <Route path="/admin" element={<Contents mainComponent={<ChannelAdmin channelName={channelName} channelIdx={channelIdx}/>} headerComponent={<Menu showBackButton={true} channelName={channelName} channelIdx={channelIdx}/>}/>}></Route>

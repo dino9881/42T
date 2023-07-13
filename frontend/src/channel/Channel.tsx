@@ -5,13 +5,19 @@ import instance from "../refreshToken";
 
 interface ChannelProps{
   channelName:string
+  channelInit: (channelName : string , channelIdx : number) => void;
 }
 
-function Channel({channelName} : ChannelProps) {
+function Channel({channelName, channelInit} : ChannelProps) {
   const [channelData, setChannelData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
+    // main 페이지에 오면 접속 채널 초기화
+    channelInit("undefined", 0);
+    localStorage.setItem('chName', "undefined");
+    localStorage.setItem('chIdx', "0");
+
     // API 요청
     instance
       .get("http://localhost:5001/channel/all")

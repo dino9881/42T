@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import './FriendInfo.css';
 import '../myinfo/MyInfo.css';
+import instance from "../../refreshToken";
+import { socket } from "../../socket";
 
 interface FriendInfoProps {
 	nickName: string;
@@ -9,12 +11,21 @@ interface FriendInfoProps {
 	avatar: string;
 	loseCnt: number;
 	winCnt: number;
+	currstate: number;
 }
 
-const FriendInfoSimple: React.FC<FriendInfoProps> = ({ nickName, rank, avatar, winCnt, loseCnt }) => {
+const FriendInfoSimple: React.FC<FriendInfoProps> = ({ nickName, rank, avatar, winCnt, loseCnt, currstate }) => {
+
+	function handleVsClick(){
+		instance.get('http://localhost:5001/auth/me').then((response) => {
+			console.log({intraId : response.data.intraId, nickName : response.data.nickName  , player2: nickName });
+            socket.emit("game-apply", {intraId : response.data.intraId, nickName : response.data.nickName  , player2: nickName });
+		});
+	}
 	return (
 		<div className='friend-info-simple'>
 			<div className='state-circle'></div>
+			<div  className={`state-circle ${currstate === 0 ? "state-circle-state0" : currstate === 1 ? "state-circle-state1" : "state-circle-state2"}`}></div>
 			<div
 				className='friend-info-avatar'
 				style={{ backgroundImage: `url(${avatar})` }}
@@ -26,8 +37,10 @@ const FriendInfoSimple: React.FC<FriendInfoProps> = ({ nickName, rank, avatar, w
 				</div>
 				<div className='friend-info-button'>
 					<div className="friend-button">
-						<Link to="/chat"> <button className='dm-button'>메세지</button> </Link>
-						<button className='vs-button'>1vs1</button>
+						{currstate !== 0 ? (<Link to="/chat"> <button className="dm-button">dm</button> </Link>)
+						:( <button className="dm-button" disabled>dm</button> )}
+						{/* <Link to="/chat"> <button className='dm-button'>dm</button> </Link> */}
+						<button onClick={handleVsClick} className='vs-button'>1vs1</button>
 						
 					</div>
 					<div className='small-square'>

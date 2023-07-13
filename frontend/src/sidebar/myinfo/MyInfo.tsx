@@ -42,7 +42,7 @@ const MyInfo = () => {
 	return (
 		<div className='my-info'>
 			<div className='my-info-line'>
-				<div className='state-circle'></div>
+				<div  className={`state-circle ${myData && myData.status === 0 ? "state-circle-state0" : myData && myData.status === 1 ? "state-circle-state1" : "state-circle-state2"}`}></div>
 				{myData && (
 				<div
 					className='my-info-avatar'
@@ -51,7 +51,7 @@ const MyInfo = () => {
 				)}
 				<div className='my-info-info'>
 				{isExpanded && myData && (
-					<InfoScore intraId={myData.intraId} nickName={myData.nickName} rank={myData.rank} state={1} />
+					<InfoScore intraId={myData.intraId} nickName={myData.nickName} rank={myData.rank} state={3} />
 				)}
 				<div className='my-info-text'>
 					<div className='small-square'>{myData && myData.nickName}</div>
