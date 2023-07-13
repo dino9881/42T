@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
-  IsDate,
   IsDateString,
   IsNumber,
   IsOptional,
@@ -87,22 +86,6 @@ export class MemberInfoDto {
   @IsOptional()
   @IsBoolean()
   isBan?: boolean;
-
-  @ApiProperty({
-    type: 'number',
-    description: '이차인증 코드',
-  })
-  @IsOptional()
-  @IsNumber()
-  code?: number;
-
-  @ApiProperty({
-    type: 'Date',
-    description: '이차인증 코드 생성시간',
-  })
-  @IsOptional()
-  @IsDate()
-  codeTime?: Date;
 
   @ApiProperty({
     type: 'Number',

@@ -196,7 +196,7 @@ export class ChannelController {
   @Get('/message/:idx')
   @ApiOperation({ summary: 'idx 채널의 메세지 리스트', description: 'Get message list' })
   getMessageList(@Param('idx') idx: string, @GetMember() member:MemberInfoDto) {
-    return this.channelService.getMessageList(+idx, member.intraId);
+    return this.channelService.getMessageList(+idx, member);
   }
 
   // mute
@@ -208,7 +208,7 @@ export class ChannelController {
 
   // DM
 
-  @Post('/enter/dm')
+  @Post('/enter/dm/chan')
   @ApiOperation({ summary: 'DM 채널 생성', description: 'Create Channel API' })
   @ApiResponse({ status: 400, description: '잘못된 요청'})
   @ApiCreatedResponse({ type: CreateChannelDto })
