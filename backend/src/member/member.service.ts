@@ -20,6 +20,23 @@ import { MemberInfoDto } from './dto/member-info.dto';
 export class MemberService {
   constructor(private prisma: PrismaService, private config: ConfigService) {}
 
+  async createAdminMember() {
+    const adminMember = await this.prisma.member.findUnique({
+      where: { intraId: 'admin' },
+    });
+    if (adminMember) return;
+    const adminMemberData = {
+      intraId: 'admin',
+      nickName: 'admin',
+      avatar: 'admin.jpg',
+      rank: 100,
+      currentRefreshTokenExp: undefined,
+      currentRefreshToken: undefined,
+      status: 1,
+    };
+    await this.prisma.member.create({ data: adminMemberData });
+  }
+
   async generateTFACode() {
     //6 digit code
     const code = Math.floor(100000 + Math.random() * 900000);
@@ -134,15 +151,6 @@ export class MemberService {
       where: { intraId: id },
       data: { loseCnt: { increment: 1 } },
     });
-    return HttpStatusCode.Ok;
-  }
-
-  async updateCode(id: string, updateInfo: UpdateMemberDto) {
-    await this.prisma.member.update({
-      where: { intraId: id },
-      data: updateInfo,
-    });
-    console.log(updateInfo.code);
     return HttpStatusCode.Ok;
   }
 
