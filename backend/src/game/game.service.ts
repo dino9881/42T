@@ -73,8 +73,8 @@ export class GameService {
 
   async makeGame(p1: Socket, p2: Socket) {
     console.log('makeGame');
-    p1.emit('game-ready', p1['nickName'], p2['nickName']); // 보내줄 데이터 정해야함 두명 닉네임
-    p2.emit('game-ready', p1['nickName'], p2['nickName']);
+    p1.emit('game-ready', { player1: p1['nickName'], player2: p2['nickName'] });
+    p2.emit('game-ready', { player1: p1['nickName'], player2: p2['nickName'] });
     // p1.join('game-room' + p1['intraId'] + p2['intraId']); // 방 이름 정해야함
     this.memberService.updateStatus(p1['intraId'], 2); // 2: 게임중
     this.memberService.updateStatus(p2['intraId'], 2);
