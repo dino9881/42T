@@ -303,10 +303,11 @@ export class MemberService {
     const isBan = await this.prisma.member.findMany({
       where: { intraId: member },
       select: {
-        bannedOf: { where: { intraId: member } },
+        bannedOf: { where: { intraId: banMember } },
         banned: { where: { intraId: banMember } },
       },
     });
+    console.log(isBan[0]);
     return isBan[0]?.bannedOf.length > 0 || isBan[0]?.banned.length > 0;
   }
 
