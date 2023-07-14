@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   ConflictException,
-  HttpStatus,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -10,7 +9,6 @@ import { Request } from 'express';
 import { Member, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateMemberDto } from './dto/create-member.dto';
-import { HttpStatusCode } from 'axios';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
@@ -45,7 +43,7 @@ export class MemberService {
 
   async verifyTFACode(req: Request, code: string) {
     const answer = req.signedCookies['code'];
-    if (answer !== undefined && code !== null && code === answer) return true;
+    if (answer !== undefined && code !== null && code === answer) return;
     else throw new BadRequestException('Code Not Match', code + ' ' + answer);
   }
 
@@ -110,7 +108,7 @@ export class MemberService {
         status: 1,
       },
     });
-    return HttpStatus.CREATED;
+    return;
   }
 
   async updateNick(member: MemberInfoDto, updateDto: UpdateMemberDto) {
@@ -119,7 +117,7 @@ export class MemberService {
       where: { intraId: member.intraId },
       data: updateDto,
     });
-    return HttpStatusCode.Ok;
+    return;
   }
 
   async updateAvatar(member: MemberInfoDto, updateInfo: UpdateMemberDto) {
@@ -127,7 +125,7 @@ export class MemberService {
       where: { intraId: member.intraId },
       data: updateInfo,
     });
-    return HttpStatusCode.Ok;
+    return;
   }
 
   async updateRank(id: string, modifyRank: number) {
@@ -135,7 +133,7 @@ export class MemberService {
       where: { intraId: id },
       data: { rank: { increment: modifyRank } },
     });
-    return HttpStatusCode.Ok;
+    return;
   }
 
   async updateWinCnt(id: string) {
@@ -143,7 +141,7 @@ export class MemberService {
       where: { intraId: id },
       data: { winCnt: { increment: 1 } },
     });
-    return HttpStatusCode.Ok;
+    return;
   }
 
   async updateLoseCnt(id: string) {
@@ -151,7 +149,7 @@ export class MemberService {
       where: { intraId: id },
       data: { loseCnt: { increment: 1 } },
     });
-    return HttpStatusCode.Ok;
+    return;
   }
 
   async updateStatus(id: string, status: number) {
@@ -160,7 +158,7 @@ export class MemberService {
       data: { status: status },
     });
     console.log(status);
-    return HttpStatusCode.Ok;
+    return;
   }
 
   async delete(id: string) {
@@ -171,7 +169,7 @@ export class MemberService {
     await this.prisma.member.delete({
       where: { intraId: id },
     });
-    return HttpStatus.OK;
+    return;
   }
 
   async isFriend(member: MemberInfoDto, friend: Member) {
@@ -187,7 +185,10 @@ export class MemberService {
     else return false;
   }
 
-  async searchMember(member: MemberInfoDto, nickName: string) {
+  async searchMember(
+    member: MemberInfoDto,
+    nickName: string,
+  ): Promise<MemberInfoDto> {
     const friend = await this.getOneByNick(nickName);
     const isFriend = await this.isFriend(member, friend);
     const isBan = await this.isBan(member, friend);
@@ -202,7 +203,7 @@ export class MemberService {
     return currentRefreshToken;
   }
 
-  async getCurrentRefreshTokenExp(): Promise<Date> {
+  async getCurrentRefreshTokenExp() {
     const currentDate = new Date();
     // Date 형식으로 데이터베이스에 저장하기 위해 문자열을 숫자 타입으로 변환 (paresInt)
     const currentRefreshTokenExp = new Date(
@@ -258,7 +259,7 @@ export class MemberService {
       where: { intraId: member.intraId },
       data: { friend: { connect: { intraId: friend.intraId } } },
     });
-    return HttpStatus.OK;
+    return;
   }
 
   async deleteFriend(member: MemberInfoDto, friendNick: string) {
@@ -274,7 +275,7 @@ export class MemberService {
       where: { intraId: member.intraId },
       data: { friend: { disconnect: { intraId: friend.intraId } } },
     });
-    return HttpStatus.OK;
+    return;
   }
 
   async getFriendList(member: MemberInfoDto) {
@@ -323,7 +324,7 @@ export class MemberService {
       where: { intraId: member.intraId },
       data: { banned: { connect: { intraId: banMember.intraId } } },
     });
-    return HttpStatus.OK;
+    return;
   }
 
   async unbanMember(member: MemberInfoDto, nickName: string) {
@@ -339,7 +340,7 @@ export class MemberService {
       where: { intraId: member.intraId },
       data: { banned: { disconnect: { intraId: unbanMember.intraId } } },
     });
-    return HttpStatus.OK;
+    return;
   }
 
   async getSevenRanks() {

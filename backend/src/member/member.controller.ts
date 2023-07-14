@@ -56,7 +56,6 @@ export class MemberController {
   async sendMail(@GetMember() member: MemberInfoDto, @Res() res: Response) {
     const code = await this.memberService.generateTFACode();
     this.mailerService.sendMail(member.intraId, code);
-    // console.log(code);
     res.cookie('code', code, {
       httpOnly: true,
       path: '/',
@@ -230,7 +229,7 @@ export class MemberController {
     required: true,
     description: '친구로 등록할 멤버 닉네임',
   })
-  @ApiOkResponse({ description: '친구 추가 성공' })
+  @ApiCreatedResponse({ description: '친구 추가 성공' })
   @ApiConflictResponse({ description: '이미 친구로 등록된 멤버' })
   @ApiNotFoundResponse({ description: '친구로 등록할 멤버를 찾지 못함' })
   @Post('friend/add/:nickName')
@@ -262,7 +261,11 @@ export class MemberController {
 
   @ApiTags('Ban')
   @ApiOperation({ summary: '차단 멤버 목록' })
-  @ApiOkResponse({ description: '성공', type: MemberInfoDto, isArray: true })
+  @ApiCreatedResponse({
+    description: '차단 성공',
+    type: MemberInfoDto,
+    isArray: true,
+  })
   @Get('ban/list')
   getBanList(@GetMember() member: MemberInfoDto) {
     return this.memberService.getBanList(member);

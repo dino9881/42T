@@ -105,11 +105,11 @@ export class AuthController {
       maxAge: 60 * 60 * 24 * 7 * 1000, // week
       signed: true,
     });
-    res.status(200).json({
+    return {
       message: 'login success',
       access_token: access_token,
       refresh_token: refresh_token,
-    });
+    };
   }
 
   @ApiOperation({ summary: 'refresh token으로 access token재발급' })
@@ -130,18 +130,18 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
+    const refreshToken = req.signedCookies['refresh_token'];
+    if (refreshToken === undefined)
+      throw new UnauthorizedException('Invalid refresh-token');
     try {
-      const refreshToken = req.signedCookies['refresh_token'];
-      if (refreshToken === undefined)
-        throw new UnauthorizedException('Invalid refresh-token');
       const newAccessToken = await this.authService.refresh(refreshToken);
       res.setHeader('Authorization', 'Bearer' + newAccessToken);
-      res.status(200).json({
+      return {
         message: 'refresh success',
         access_token: newAccessToken,
-      });
+      };
     } catch (err) {
-      throw new UnauthorizedException('Invalid refresh-token');
+      throw new UnauthorizedException('Invalid refresh-token', err.message);
     }
   }
 
@@ -153,7 +153,6 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
   getMyInfo(@GetMember() member: Member) {
-    // console.log(member);
     return member;
   }
 }

@@ -7,7 +7,7 @@ import { MemberService } from '../member/member.service';
 import { JwtService } from '@nestjs/jwt';
 import { Member } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +17,7 @@ export class AuthService {
     public readonly config: ConfigService,
   ) {}
 
-  public async getIntraAccessToken(code) {
+  public async getIntraAccessToken(code: string): Promise<string> {
     const getTokenUrl = 'https://api.intra.42.fr/oauth/token';
     const body = {
       grant_type: 'authorization_code',
@@ -27,8 +27,8 @@ export class AuthService {
       redirect_uri: 'http://localhost:3000/login',
     };
     try {
-      const response: AxiosResponse = await axios.post(getTokenUrl, body);
-      const access_token = response.data.access_token;
+      const response = await axios.post(getTokenUrl, body);
+      const access_token: string = response.data.access_token;
       const { data } = await axios.get('https://api.intra.42.fr/v2/me', {
         headers: {
           Authorization: `Bearer ${access_token}`,
@@ -40,7 +40,7 @@ export class AuthService {
     }
   }
 
-  async generateAccessToken(member: Member): Promise<string> {
+  async generateAccessToken(member: Member) {
     return await this.jwtService.signAsync(
       { intraId: member.intraId },
       {
@@ -50,7 +50,7 @@ export class AuthService {
     );
   }
 
-  async generateRefreshToken(member: Member): Promise<string> {
+  async generateRefreshToken(member: Member) {
     return await this.jwtService.signAsync(
       { intraId: member.intraId },
       {

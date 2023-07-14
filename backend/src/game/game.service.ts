@@ -2,8 +2,6 @@ import { ConflictException, HttpException, Injectable } from '@nestjs/common';
 import { CreateGameDto } from './dto/create-game.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MemberService } from 'src/member/member.service';
-import { MemberInfoDto } from 'src/member/dto/member-info.dto';
-import { HttpStatusCode } from 'axios';
 import { Socket } from 'socket.io';
 
 @Injectable()
@@ -52,19 +50,15 @@ export class GameService {
   async joinQueue(member: Socket) {
     const mem = this.queue.find((mem) => mem['intraId'] == member['intraId']);
     console.log('join-queue');
-    // console.log(mem);
-    // console.log(this.queue);
     if (mem == undefined) {
       this.queue.push(member);
       await this.checkQueue();
-      // console.log(this.queue);
     }
   }
 
   async checkQueue() {
     console.log('check-queue');
     while (this.queue.length >= 2) {
-      // console.log('while inside');
       const p1 = this.queue.shift();
       const p2 = this.queue.shift();
       await this.makeGame(p1, p2);
@@ -75,15 +69,14 @@ export class GameService {
     console.log('makeGame');
     p1.emit('game-ready', { player1: p1['nickName'], player2: p2['nickName'] });
     p2.emit('game-ready', { player1: p1['nickName'], player2: p2['nickName'] });
-    // p1.join('game-room' + p1['intraId'] + p2['intraId']); // 방 이름 정해야함
     this.memberService.updateStatus(p1['intraId'], 2); // 2: 게임중
     this.memberService.updateStatus(p2['intraId'], 2);
   }
 
   async exitQueue(member: Socket) {
+    console.log('exit-queue');
     this.queue = this.queue.filter(
       (mem) => mem['intraId'] != member['intraId'],
     );
-    console.log(this.queue);
   }
 }
