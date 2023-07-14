@@ -11,7 +11,7 @@ export class CreateChannelDto {
 
   @IsString()
   @ApiProperty({ description: '방장 인트라 Id', example: 'heeskim' })
-  operatorId?: string;
+  ownerId?: string;
 
   @IsNumber()
   @IsOptional()
