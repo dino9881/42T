@@ -20,8 +20,9 @@ import { MemberService } from 'src/member/member.service';
 export class ChannelService {
 
   private channelUsers: Record<number, { intraId: string, avatar: string, nickName: string }[]>;
-  private banUsers: Record<number, { intraId: string, avatar: string, nickName: string }[]>;
   private messageList: Record<number, { nickName: string, message: string, avatar:string }[]>;
+  private administrators: Record<number, { intraId: string }[]>;
+  private banUsers: Record<number, { intraId: string }[]>;
   private mutedUsers: Record<
     number,
     { intraId: string; nickName: string; timeoutId: NodeJS.Timeout }[]
@@ -30,6 +31,7 @@ export class ChannelService {
 
   constructor(private prisma: PrismaService, private memberService: MemberService) {
     
+    this.administrators = {};
     this.channelUsers = {};
     this.banUsers = {};
     this.messageList = {};
@@ -67,7 +69,7 @@ export class ChannelService {
           chUserCnt: 1,
           chPwd,
           isDM: isDM === undefined ? false : isDM,
-          operator: { connect: { intraId: member.intraId } },
+          owner: { connect: { intraId: member.intraId } },
         },
       });
     } catch (error) {
@@ -85,6 +87,7 @@ export class ChannelService {
         throw new InternalServerErrorException('Internal Server Error');
       }
       
+      this.administrators[createData.chIdx] = [];
       this.channelUsers[createData.chIdx] = [
         { intraId: member.intraId, avatar: member.avatar, nickName: member.nickName },
       ];
@@ -100,16 +103,17 @@ export class ChannelService {
     channel.chPwd = await bcrypt.hash(channel.chPwd, salt);
   }
 
-  async update(idx: number, updateChannelDto: UpdateChannelDto) {
-    const { chPwd, operatorId } = updateChannelDto;
-    if (chPwd !== undefined) {
+  // 삭제도 되는지 확인
+  async updatePwd(idx: number, intraId: string, updateChannelDto: UpdateChannelDto) {
+    const { chPwd } = updateChannelDto;
+    if (!this.isOperator(idx, intraId))
+      throw new ForbiddenException("no permissions");
+    if (chPwd !== undefined && chPwd !== "") {
       await this.hashPasswordModify(updateChannelDto);
-      console.log(updateChannelDto.chPwd);
     }
-
     const updateData = await this.prisma.channel.update({
       where: { chIdx: idx },
-      data: { chPwd, operator: { connect: { intraId: operatorId } }},
+      data: { chPwd: updateChannelDto.chPwd },
     });
     if (updateData === null) throw new NotFoundException('channel not found');
     return updateData;
@@ -126,6 +130,7 @@ export class ChannelService {
   async delete(idx: number) {
     await this.findOneById(idx);
     await this.prisma.channel.delete({ where: { chIdx: idx } });
+    this.administrators[idx] = [];
     this.channelUsers[idx] = [];
     this.banUsers[idx] = [];
     this.messageList[idx] = [];
@@ -174,9 +179,27 @@ export class ChannelService {
 
   async isOperator(idx: number, intraId: string) {
     const channel = await this.findOneById(idx);
-    const { operatorId } = channel;
-    if (operatorId === intraId) return true;
+    const { ownerId } = channel;
+    if (ownerId === intraId) return true;
     return false;
+  }
+
+  async isAdmin(idx: number, intraId: string) { 
+    await this.findOneById(idx);
+    if (this.administrators[idx].find(user => user.intraId === intraId))
+      return true;
+    return false;
+  }
+
+  async setAdmin(idx: number, intraId: string, channelUserDto: ChannelUserDto) {
+    await this.findOneById(idx);
+    if (!this.isOperator(idx, intraId))
+      throw new ForbiddenException("no permissions");
+    if (!this.isChanUsersById(idx, channelUserDto.intraId))
+      throw new NotFoundException('user not found');
+    if (this.administrators[idx].find(user => user.intraId === channelUserDto.intraId))
+      return;
+    this.administrators[idx].push({ intraId: channelUserDto.intraId });
   }
 
   async isDM(idx: number) {
@@ -222,17 +245,31 @@ export class ChannelService {
       },
     });
     this.channelUsers[idx] = this.channelUsers[idx].filter(
-      (item) => item.intraId !== memberId,
+      (user) => user.intraId !== memberId,
     );
+    this.administrators[idx] = this.administrators[idx].filter(
+      (user) => user.intraId !== memberId
+    );
+    
     // 아무도 안 남을 경우 채널 삭제
     if (updatedChannel.chUserCnt <= 0) this.delete(idx);
     // oper 가 나갔을 때 다음 사람 oper 설정
-    else if (memberId === updatedChannel.operatorId)
-      this.update(idx, { operatorId: this.channelUsers[idx][0].intraId });
+    else if (memberId === updatedChannel.ownerId) {
+      await this.prisma.channel.update({
+        where: { chIdx: idx },
+        data: { ownerId: null },
+      });
+    }
   }
 
-  async kick(idx: number, memberDto: ChannelUserDto) {
+  async kick(idx: number, intraId: string, channelUserDto: ChannelUserDto) {
     await this.findOneById(idx);
+    if (this.isOperator(idx, channelUserDto.intraId))
+      throw new ForbiddenException('no permissions');
+    if (!this.isOperator(idx, intraId) && !this.isAdmin(idx, intraId))
+      throw new ForbiddenException('no permissions');
+    if (this.isChanUsersById(idx, channelUserDto.intraId))
+      throw new NotFoundException('user not found');
     const updatedChannel = await this.prisma.channel.update({
       where: { chIdx: idx },
       data: {
@@ -240,7 +277,7 @@ export class ChannelService {
       },
     });
     this.channelUsers[idx] = this.channelUsers[idx].filter(
-      (item) => item.intraId !== memberDto.intraId,
+      (item) => item.intraId !== channelUserDto.intraId,
     );
   }
 
@@ -255,6 +292,13 @@ export class ChannelService {
     const channel = await this.findOneByName(chanName);
     const users = this.channelUsers[channel.chIdx];
     if (users.find((user) => user.nickName === nickName)) return true;
+    return false;
+  }
+
+  async isChanUsersById(idx: number, intraId: string) {
+    await this.findOneById(idx);
+    if (this.channelUsers[idx].find(user => user.intraId === intraId))
+      return true;
     return false;
   }
 
@@ -276,11 +320,17 @@ export class ChannelService {
 
   // ban 
   async saveBanUser(idx: number, channelUserDto: ChannelUserDto) {
-    const { intraId, avatar, nickName } = channelUserDto;
+    const { intraId } = channelUserDto;
     await this.findOneById(idx);
+    if (this.isOperator(idx, channelUserDto.intraId))
+      throw new ForbiddenException('no permissions');
+    if (!this.isOperator(idx, intraId) && !this.isAdmin(idx, intraId))
+      throw new ForbiddenException('no permissions');
+    if (this.isChanUsersById(idx, channelUserDto.intraId))
+      throw new NotFoundException('user not found');
     if (this.banUsers[idx].find(user => user.intraId === intraId))
       return ;
-    this.banUsers[idx].push({ intraId, avatar, nickName });
+    this.banUsers[idx].push({ intraId });
   }
 
   async deleteBanUser(idx: number, channelUserDto: ChannelUserDto) {
@@ -307,6 +357,10 @@ export class ChannelService {
     // ban check
     const channel = await this.findOneById(idx);
     if (this.banUsers[idx].find((user) => user.intraId === member.intraId)) return;
+    if (this.isDM(idx)) {
+      // if (this.memberService.isDMBan(this.pair[idx].user1, this.pair[idx].user2))
+          // return ;
+    }
     return this.messageList[idx];
   }
 
@@ -314,10 +368,16 @@ export class ChannelService {
   async muteUser(idx: number, channelUserDto: ChannelUserDto) {
     const { intraId, nickName } = channelUserDto;
     await this.findOneById(idx);
+    if (this.isOperator(idx, channelUserDto.intraId))
+      throw new ForbiddenException('no permissions');
+    if (!this.isOperator(idx, intraId) && !this.isAdmin(idx, intraId))
+      throw new ForbiddenException('no permissions');
+    if (this.isChanUsersById(idx, channelUserDto.intraId))
+      throw new NotFoundException('user not found');
+
     const foundUser = this.mutedUsers[idx].find(
       (user) => user.intraId === intraId,
     );
-
     // reset
     if (foundUser) {
       clearTimeout(foundUser.timeoutId);
@@ -325,7 +385,6 @@ export class ChannelService {
         (user) => user.intraId !== intraId,
       );
     }
-
     const timeoutId = setTimeout(() => {
       this.unmuteUser(idx, intraId);
     }, 1 * 60 * 1000);
@@ -383,7 +442,7 @@ export class ChannelService {
         chName,
         chUserCnt: 2,
         isDM: true,
-        operator: { connect: { intraId: "admin" } }
+        owner: { connect: { intraId: "admin" } }
       },
     });
 
