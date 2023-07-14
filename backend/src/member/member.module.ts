@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MemberService } from './member.service';
 import { MemberController } from './member.controller';
-import { MailService } from 'src/mail.service';
+import { MailService } from '../util/mail/mail.service';
 
 @Module({
   imports: [],

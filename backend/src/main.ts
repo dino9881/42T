@@ -18,6 +18,7 @@ async function bootstrap() {
     });
     app.use(cookieParser('cookieSecret'));
     app.useWebSocketAdapter(new IoAdapter(app));
+
     const config = new DocumentBuilder()
       .setTitle('42T')
       .setDescription('The 42seoul Transcendence API description')

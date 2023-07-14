@@ -1,8 +1,8 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { SocketIOGateway } from './socketio.gateway';
-import { MemberModule } from './member/member.module';
-import { ChannelModule } from './channel/channel.module';
-import { GameModule } from './game/game.module';
+import { MemberModule } from '../member/member.module';
+import { ChannelModule } from '../channel/channel.module';
+import { GameModule } from '../game/game.module';
 
 @Module({
   imports: [
