@@ -61,8 +61,10 @@ export class SocketIOGateway
         socket.leave(room);
       }
     });
-    if (socket['intraId'])
+    if (socket['intraId']) {
       this.memberService.updateStatus(socket['intraId'], 0); // 0 : offline
+      this.socketList.delete(socket['intraId']);
+    }
   }
 
   getSocketByintraId(intraId: string): Socket | undefined {
@@ -78,7 +80,6 @@ export class SocketIOGateway
     this.memberService.updateStatus(intraId, 1); // 1 : online
     console.log(`${nickName}(${intraId}) 님이 접속하셨습니다.`);
     this.socketList.set(intraId, client);
-    // console.log(this.socketList.size);
   }
 
   @SubscribeMessage('message')

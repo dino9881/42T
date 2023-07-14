@@ -1,4 +1,4 @@
-import { Module, OnModuleInit } from '@nestjs/common';
+import { Module, OnModuleInit, ValidationPipe } from '@nestjs/common';
 import { MemberModule } from './member/member.module';
 import { GameModule } from './game/game.module';
 import { ChannelModule } from './channel/channel.module';
@@ -8,6 +8,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { MailModule } from './mail.module';
 import { MemberService } from './member/member.service';
 import { SocketIOModule } from './socketio.module';
+import { APP_PIPE } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -23,7 +24,12 @@ import { SocketIOModule } from './socketio.module';
     }),
     MailModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_PIPE,
+      useClass: ValidationPipe,
+    },
+  ],
 })
 export class AppModule implements OnModuleInit {
   constructor(private readonly memberService: MemberService) {}
