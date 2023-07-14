@@ -37,7 +37,7 @@ import { MemberInfoDto } from './dto/member-info.dto';
 import { Public } from 'src/util/decorator/public.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { HttpStatusCode } from 'axios';
-import { MailService } from '../mail.service';
+import { MailService } from '../util/mail/mail.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as Multer from 'multer';
 import { multerOptions } from 'src/util/multer.options.factory';
