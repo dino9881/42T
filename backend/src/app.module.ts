@@ -9,6 +9,8 @@ import { MailModule } from './mail.module';
 import { MemberService } from './member/member.service';
 import { SocketIOModule } from './socketio.module';
 import { APP_PIPE } from '@nestjs/core';
+import { MulterModule } from '@nestjs/platform-express';
+import { multerOptions } from './multer.options.factory';
 
 @Module({
   imports: [
@@ -23,6 +25,9 @@ import { APP_PIPE } from '@nestjs/core';
       envFilePath: '../.env',
     }),
     MailModule,
+    MulterModule.registerAsync({
+      useFactory: multerOptions,
+    }),
   ],
   providers: [
     {

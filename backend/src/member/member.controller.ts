@@ -40,6 +40,7 @@ import { HttpStatusCode } from 'axios';
 import { MailService } from '../mail.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as Multer from 'multer';
+import { multerOptions } from 'src/multer.options.factory';
 
 @ApiResponse({
   status: 500,
@@ -218,17 +219,15 @@ export class MemberController {
   })
   @ApiCreatedResponse({ description: '성공' })
   @Post('upload/avatar')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', multerOptions()))
   uploadMemberAvatar(
     @GetMember() member: MemberInfoDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    console.log(file);
     if (!file) {
       throw new BadRequestException("file doesn't exist");
     }
     return this.memberService.updateAvatar(member, { avatar: file.path });
-    // 파일 정보를 데이터베이스에 저장하거나 다른 로직을 수행할 수 있습니다.
   }
 
   @ApiTags('Member')
