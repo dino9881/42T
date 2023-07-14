@@ -9,6 +9,9 @@ import {
   UseGuards,
   Res,
   Req,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
 import { MemberService } from './member.service';
 import { Response, Request } from 'express';
@@ -19,6 +22,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiConflictResponse,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -34,6 +38,8 @@ import { Public } from 'src/decorator/public.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { HttpStatusCode } from 'axios';
 import { MailService } from '../mail.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as Multer from 'multer';
 
 @ApiResponse({
   status: 500,
@@ -197,6 +203,35 @@ export class MemberController {
   }
 
   @ApiTags('Member')
+  @ApiOperation({ summary: '멤버 아바타 업로드' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiCreatedResponse({ description: '성공' })
+  @Post('upload/avatar')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadMemberAvatar(
+    @GetMember() member: MemberInfoDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    console.log(file);
+    if (!file) {
+      throw new BadRequestException("file doesn't exist");
+    }
+    return this.memberService.updateAvatar(member, { avatar: file.path });
+    // 파일 정보를 데이터베이스에 저장하거나 다른 로직을 수행할 수 있습니다.
+  }
+
+  @ApiTags('Member')
   @ApiOperation({ summary: '멤버 검색' })
   @ApiParam({
     name: 'nickName',
@@ -269,6 +304,17 @@ export class MemberController {
   @Get('ban/list')
   getBanList(@GetMember() member: MemberInfoDto) {
     return this.memberService.getBanList(member);
+  }
+
+  @ApiTags('Ban')
+  @ApiOperation({ summary: 'test' })
+  @ApiParam({ name: 'intraId' })
+  @Post('ban/:intraId')
+  dmBanMember(
+    @GetMember() member: MemberInfoDto,
+    @Param('intraId') intraId: string,
+  ) {
+    return this.memberService.isDMBan(member.intraId, intraId);
   }
 
   @ApiTags('Ban')
