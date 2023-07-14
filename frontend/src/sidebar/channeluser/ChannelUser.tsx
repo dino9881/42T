@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from "react";
-import instance from "../../refreshToken";
 import { useLocation } from "react-router";
+import instance from "../../refreshToken";
 import ChannelUserForm from "./ChannelUserForm";
-import { error } from "console";
 
 interface User {
 	intraId: string;
 	nickName: string;
-}
-  
-interface UserListProps {
-	Users: User[];
 }
 
 const ChannelUser = () => {
@@ -32,7 +27,7 @@ const ChannelUser = () => {
 		<div className="list-scroll">
 			{usersList && usersList.map((usersList, index) => (
 				<ChannelUserForm key={index} nickName={usersList.nickName}/>
-     	 	))}
+		))}
 		</div>
 	);
 };

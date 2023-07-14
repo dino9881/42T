@@ -19,14 +19,14 @@ const FriendInfo: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, avatar
 	const [toggleImgSrc, setToggleImgSrc] = useState("toggle_down.svg");
 
 	const handleToggle = () => {
-	  setIsExpanded(!isExpanded);
-	  setToggleImgSrc(isExpanded ? "toggle_down.svg" : "toggle_up.svg");
+		setIsExpanded(!isExpanded);
+		setToggleImgSrc(isExpanded ? "toggle_down.svg" : "toggle_up.svg");
 	};
 
 	return (
 		<div>
 			<div className={isExpanded ? 'friend-info-line-big' : 'friend-info-line-small'}>
-				<FriendInfoSimple nickName={nickName} rank={rank} avatar={avatar} winCnt={winCnt} loseCnt={loseCnt} currstate={currstate}/>
+				<FriendInfoSimple intraId={intraId} nickName={nickName} rank={rank} avatar={avatar} winCnt={winCnt} loseCnt={loseCnt} currstate={currstate}/>
 				<img src={toggleImgSrc} alt="toggle" className="friend-toggle-down" onClick={handleToggle} style={{ cursor: 'pointer' }}></img>
 				{isExpanded && <InfoScore intraId={intraId} nickName={nickName} rank={rank} state={state} />}
 			</div>

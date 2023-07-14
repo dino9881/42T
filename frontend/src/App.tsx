@@ -13,6 +13,7 @@ import Menu from "./menu/Menu";
 import { useState } from "react";
 import ChannelAdmin from "./chat/channelAdmin/ChannelAdmin";
 import Game from "./game/Game";
+import React from 'react'
 
 function App() {
     axios.defaults.withCredentials = true;

@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
-import './FriendInfo.css';
 import instance from "../../refreshToken";
+import './FriendInfo.css';
 
 interface History {
   winnerId: string;
   loserId: string;
   winnerScore: number;
   loserScore: number;
-}
-
-interface HistoryProps {
-  history: History[];
 }
 
 interface InfoScoreProps {
@@ -35,21 +30,21 @@ const InfoScore: React.FC<InfoScoreProps> = ({ intraId, nickName, rank, state })
   }, []);
 
   const handleDelete = () => {
-    instance.delete(`http://localhost:5001/member/friend/delete/${nickName}`).then((res)=>{
+    instance.delete(`http://localhost:5001/member/friend/delete/${nickName}`).then(()=>{
       // console.log(res);
 		window.location.reload();
     })
   };
 
   const handleBan = () => {
-    instance.post(`http://localhost:5001/member/ban/${nickName}`).then((res)=>{
+    instance.post(`http://localhost:5001/member/ban/${nickName}`).then(()=>{
 		window.location.reload();
     })
   };
 
   const handleAdd = () => {
     instance.post(`http://localhost:5001/member/friend/add/${nickName}`)
-		.then((response) => {
+		.then(() => {
 			window.location.reload();
 		})
 		.catch((error) => {

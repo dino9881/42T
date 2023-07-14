@@ -1,11 +1,12 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { socket } from "../../socket";
+import { useNavigate } from "react-router-dom";
+import instance from "../../refreshToken";
 import './FriendInfo.css';
 import '../myinfo/MyInfo.css';
-import instance from "../../refreshToken";
-import { socket } from "../../socket";
 
 interface FriendInfoProps {
+	intraId: string;
 	nickName: string;
 	rank: number;
 	avatar: string;
@@ -14,7 +15,30 @@ interface FriendInfoProps {
 	currstate: number;
 }
 
-const FriendInfoSimple: React.FC<FriendInfoProps> = ({ nickName, rank, avatar, winCnt, loseCnt, currstate }) => {
+const FriendInfoSimple: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, avatar, winCnt, loseCnt, currstate }) => {
+    const navigate = useNavigate();
+
+	const handleButtonClick = () => {
+		instance
+            .post('http://localhost:5001/channel/enter/dm/chan',{
+				"intraId": intraId,
+				"nickName": nickName,
+				"avatar": avatar
+			})
+			.then((response) => {
+			console.log(response)
+				//   .post(`http://localhost:5001/dm/enter/${chIdx}`)
+                navigate("/dm", { state: { chIdx:response.data.chIdx } });
+            })
+            .catch((error) => {
+                // 요청이 실패하면 에러 처리
+                console.error("API 요청 실패:", error);
+                //   403 밴 유저
+                //   404 없는 채널 번호
+                //   500 서버 에러
+
+			})
+	}
 
 	function handleVsClick(){
 		instance.get('http://localhost:5001/auth/me').then((response) => {
@@ -37,7 +61,8 @@ const FriendInfoSimple: React.FC<FriendInfoProps> = ({ nickName, rank, avatar, w
 				</div>
 				<div className='friend-info-button'>
 					<div className="friend-button">
-						{currstate !== 0 ? (<Link to="/chat"> <button className="dm-button">dm</button> </Link>)
+						{/* {currstate !== 0 ? (<button className="dm-button">dm</button>) */}
+						{currstate !== 0 ? (<button className="dm-button" onClick={handleButtonClick}>dm</button>)
 						:( <button className="dm-button" disabled>dm</button> )}
 						{/* <Link to="/chat"> <button className='dm-button'>dm</button> </Link> */}
 						<button onClick={handleVsClick} className='vs-button'>1vs1</button>

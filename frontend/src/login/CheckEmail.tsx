@@ -1,8 +1,6 @@
-import React, { useState, useEffect, ChangeEvent, KeyboardEvent } from 'react';
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
 import instance from '../refreshToken';
 import './CheckEmail.css'
-import MyInfoChange from '../sidebar/myinfo/MyInfoChange';
 
 interface EmailProps {
 	// intraId: string;
@@ -44,7 +42,7 @@ const CheckEmail: React.FC<EmailProps> = ({ myData, onClose, onEmail }) => {
 	}, [isTimerRunning, timeLeft]);
 
 	useEffect(() => {
-		instance.get("http://localhost:5001/member/mail/send").then((response) => {
+		instance.get("http://localhost:5001/member/mail/send").then(() => {
 			// console.log(response);
 		})
 	}, []);
@@ -53,7 +51,7 @@ const CheckEmail: React.FC<EmailProps> = ({ myData, onClose, onEmail }) => {
 		setTimeLeft(MINUTES_IN_MS);
 		setIsTimerEnded(false);
 		setIsTimerRunning(true);
-		instance.get("http://localhost:5001/member/mail/send").then((response) => {
+		instance.get("http://localhost:5001/member/mail/send").then(() => {
 			// console.log(response);
 		})
 	};
@@ -114,7 +112,7 @@ const CheckEmail: React.FC<EmailProps> = ({ myData, onClose, onEmail }) => {
 								<input className='check-email-input'
 									type="text"
 									onInput={(e: any) =>
-									 (e.target.value = e.target.value.replace(/[^0-9]/g, ""))}
+									(e.target.value = e.target.value.replace(/[^0-9]/g, ""))}
 									value={verificationCode}
 									onChange={handleVerificationCodeChange}
 									onKeyDown={handleKeyDown}

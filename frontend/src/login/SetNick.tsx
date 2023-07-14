@@ -9,14 +9,14 @@ const SetNick = () => {
 	const [text, setText] = useState<string>("");
 
 	const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-	  setText(e.target.value);
+		setText(e.target.value);
 	};
 
 	const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === 'Enter') {
-		  onClick();
+		onClick();
 		}
-	  };
+	};
 	
 	const location = useLocation();
 	const navigate = useNavigate();

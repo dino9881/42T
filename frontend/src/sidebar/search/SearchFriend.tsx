@@ -1,21 +1,14 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import FriendInfoSimple from "../friendlist/FriendInfoSimple";
 import IsNotFriend from "./IsNotFriend";
-import "./AddFriend.css";
 import instance from "../../refreshToken";
 import IsBan from "./IsBan";
+import "./AddFriend.css";
 
 interface SearchFriendProps {
 intraId: string;
 friendStatus: number;
 onClose: () => void;
-}
-
-interface FriendInfoProps {
-nickName: string;
-rank: number;
-avatar: string;
 }
 
 const SearchFriend: React.FC<SearchFriendProps> = ({ intraId, friendStatus, onClose, }) => {
@@ -52,6 +45,7 @@ const SearchFriend: React.FC<SearchFriendProps> = ({ intraId, friendStatus, onCl
 			)}
 			{userData && friendStatus === 1 && (
 			<FriendInfoSimple
+				intraId={userData.intraId}
 				nickName={userData.nickName}
 				rank={userData.rank}
 				avatar={userData.avatar}

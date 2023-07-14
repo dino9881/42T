@@ -1,13 +1,8 @@
-import React, { useRef, useEffect, useState, createRef } from "react";
+import React, { useRef, useEffect, useState} from "react";
 import { socket } from "../socket";
 import { useLocation } from "react-router-dom";
 import instance from "../refreshToken";
 import "./Game.css"
-
-interface CanvasProps {
-  width: number;
-  height: number;
-}
 
 interface HeaderProps {
   player1 : string;
@@ -65,8 +60,7 @@ function Game(){
       canvas.height = height;
 
       gameRender({x1: 10,y1: 300,x2: 1270,y2: 300,bx: 640,by: 300}, canvas);
-      socket.on("game-render", (payload : any) => {
-        const {x1, y1, x2, y2, bx, by}= payload;
+      socket.on("game-render", (payload : GameProps) => {
         gameRender(payload, canvas);
       })
     }
@@ -121,7 +115,7 @@ function Game(){
     ></canvas>
     </div>
   );
-};
+}
 
 function GameHeader({player1, player2} : HeaderProps) {
 

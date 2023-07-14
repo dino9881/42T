@@ -1,4 +1,3 @@
-import axios from 'axios';
 import instance from './refreshToken';
 
 export default function setAuthorizationToken(token: string | undefined) {
