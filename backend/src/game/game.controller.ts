@@ -14,8 +14,6 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { GetMember } from 'src/decorator/getMember.decorator';
-import { MemberInfoDto } from 'src/member/dto/member-info.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @ApiTags('Game')
@@ -56,21 +54,4 @@ export class GameController {
   findGamesByIntraId(@Param('intraId') intraId: string) {
     return this.gameService.findGamesByIntraId(intraId);
   }
-
-  // @ApiOperation({ summary: 'game queue에 들어가기' })
-  // @ApiNotFoundResponse({ description: '멤버를 찾지 못함' })
-  // @ApiConflictResponse({ description: '이미 큐에 있는 멤버' })
-  // @ApiOkResponse({ description: '진입 성공' })
-  // @Get('queue/join')
-  // joinQueue(@GetMember() member: MemberInfoDto) {
-  //   return this.gameService.joinQueue(member);
-  // }
-
-  // @ApiOperation({ summary: '게임 queue에서 나가기' })
-  // @ApiNotFoundResponse({ description: '멤버를 찾지 못함' })
-  // @ApiOkResponse({ description: '큐에서 나가기 성공' })
-  // @Get('queue/exit')
-  // exitQueue(@GetMember() member: MemberInfoDto) {
-  //   return this.gameService.exitQueue(member);
-  // }
 }
