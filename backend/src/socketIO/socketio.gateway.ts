@@ -9,9 +9,10 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChannelService } from './channel/channel.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UseGuards } from '@nestjs/common';
 import { MemberService } from './member/member.service';
 import { GameService } from './game/game.service';
+import { WsGuard } from './auth/ws.guard';
 
 interface Payload {
   channelName: string;
@@ -71,6 +72,7 @@ export class SocketIOGateway
     return this.socketList.get(intraId);
   }
 
+  // @UseGuards(WsGuard)
   @SubscribeMessage('member-info')
   handleMemberInfo(client: Socket, payload: Payload) {
     const { intraId, nickName } = payload;

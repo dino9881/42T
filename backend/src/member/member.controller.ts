@@ -32,15 +32,15 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { GetMember } from 'src/decorator/getMember.decorator';
+import { GetMember } from 'src/util/decorator/getMember.decorator';
 import { MemberInfoDto } from './dto/member-info.dto';
-import { Public } from 'src/decorator/public.decorator';
+import { Public } from 'src/util/decorator/public.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { HttpStatusCode } from 'axios';
 import { MailService } from '../mail.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as Multer from 'multer';
-import { multerOptions } from 'src/multer.options.factory';
+import { multerOptions } from 'src/util/multer.options.factory';
 
 @ApiResponse({
   status: 500,

@@ -5,12 +5,12 @@ import { ChannelModule } from './channel/channel.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { MailModule } from './mail.module';
+import { MailModule } from './util/mail/mail.module';
 import { MemberService } from './member/member.service';
 import { SocketIOModule } from './socketio.module';
 import { APP_PIPE } from '@nestjs/core';
 import { MulterModule } from '@nestjs/platform-express';
-import { multerOptions } from './multer.options.factory';
+import { multerOptions } from './util/multer.options.factory';
 
 @Module({
   imports: [
