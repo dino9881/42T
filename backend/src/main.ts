@@ -5,6 +5,7 @@ import { Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import { IoAdapter } from '@nestjs/platform-socket.io';
+import { ValidationPipe } from '@nestjs/common';
 
 const logger = new Logger('App');
 async function bootstrap() {
@@ -44,6 +45,7 @@ async function bootstrap() {
     });
 
     await app.listen(5001);
+    app.useGlobalPipes(new ValidationPipe());
 
     const prismaService = app.get(PrismaService);
     await prismaService.enableShutdownHooks(app);
