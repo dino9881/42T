@@ -8,11 +8,11 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { ChannelService } from './channel/channel.service';
+import { ChannelService } from '../channel/channel.service';
 import { Injectable, UseGuards } from '@nestjs/common';
-import { MemberService } from './member/member.service';
-import { GameService } from './game/game.service';
-import { WsGuard } from './auth/ws.guard';
+import { MemberService } from '../member/member.service';
+import { GameService } from '../game/game.service';
+import { WsGuard } from '../auth/ws.guard';
 
 interface Payload {
   channelName: string;
