@@ -1,8 +1,4 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import setAuthorizationToken from "./setAuthorizationToken";
-import Timer from "./login/Timer";
 
 function Login() {
     const url =

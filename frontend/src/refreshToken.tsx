@@ -1,7 +1,4 @@
 import axios from "axios";
-import { response } from "express";
-import { async, reject } from "q";
-import { useNavigate } from "react-router-dom";
 
 const instance = axios.create({
 	baseURL: "http://localhost:5001",
@@ -18,9 +15,9 @@ instance.interceptors.request.use((config) => {
 instance.interceptors.response.use((response) => {
 	if (response.status === 404) {
 		console.log('404 페이지로 넘어가야 함!');
-	  }
+	}
   
-	  return response;
+	return response;
 	},
 	async(error) => {
 		const original = error.config;
@@ -29,7 +26,7 @@ instance.interceptors.response.use((response) => {
 			try {
 				
 				const refresh = await axios.post("http://localhost:5001/auth/refresh");
-				console.log(refresh);
+				// console.log(refresh);
 				if (refresh.data?.access_token){
 					// console.log(response.data.access_token)
 					// console.log(error)
@@ -41,12 +38,12 @@ instance.interceptors.response.use((response) => {
 						delete instance.defaults.headers.common['Authorization'];
 					}
 					const response = await instance(original);
-					console.log(response);
+					// console.log(response);
 					return response;
 				}
 			}catch(error){
 				window.location.href = "http://localhost:3000";
-				console.log("333")
+				// console.log("333")
 				return error;
 			}
 		}

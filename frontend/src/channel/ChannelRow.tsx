@@ -1,5 +1,5 @@
 import ChannelRoom from "./ChannelRoom";
-
+import React from "react";
 interface ChannelData {
     chIdx: number;
     chName: string;

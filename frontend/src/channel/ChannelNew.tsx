@@ -63,8 +63,6 @@ function ChannelNew() {
                         alert("같은 제목의 방이 이미 있습니다.");
                     else if (error.response.status === 400)
                         alert("입력정보가 잘못되었습니다(bad request).");
-                    else if (error.response.status === 400)
-                        alert("입력정보가 잘못되었습니다(bad request).");
                     else if(error.response.status === 404)
                         alert("멤버가 아님...;;");    
                     else if(error.response.status === 500)

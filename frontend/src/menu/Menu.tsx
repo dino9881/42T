@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import './Menu.css';
+import { socket } from "../socket";
 import ChannelNew from "../channel/ChannelNew"
-import axios from "axios";
 import MyChannelList from "./MyChannelList";
 import instance from "../refreshToken";
-import { socket } from "../socket";
+import MyDmList from "./MyDmList";
+import './Menu.css';
 
 type MenuProps = {
 	showBackButton: boolean;
@@ -24,6 +24,15 @@ interface Channel {
     operatorId: string;
 }
 
+interface Dm {
+	chIdx: number;
+    chName: string;
+    chPwd: number | null;
+    chUserCnt: number;
+    isDM: boolean;
+    operatorId: string;
+}
+
 // const Menu = ({ showBackButton}: MenuProps) => {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [toggleImgSrc, setToggleImgSrc] = useState("toggle_down.svg");
@@ -34,12 +43,24 @@ interface Channel {
 	const navigate = useNavigate();
 	
 	const [channels, setChannels] = useState<Channel[]>([]);
+	const [dms, setDms] = useState<Dm[]>([]);
 
 	function getChannel() {
-		instance.get("http://localhost:5001/channel/all")
+		instance.get("http://localhost:5001/channel/my/all")
 			.then((response) => {
 				// console.log(response.data);
 				setChannels(response.data);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}
+
+	function getDm() {
+		instance.get("http://localhost:5001/channel/my/dm")
+			.then((response) => {
+				// console.log(response.data);
+				setDms(response.data);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -68,6 +89,7 @@ interface Channel {
 		setIsExpanded(!isExpanded);
 		if (!isExpanded) {
 			getChannel()
+			getDm()
 		}
 		setToggleImgSrc(isExpanded ? "toggle_down.svg" : "toggle_up.svg");
 		setShowDropDownBox(!showDropDownBox);
@@ -80,7 +102,7 @@ interface Channel {
 	const handleSettingButton = () => {
 		instance.post(`http://localhost:5001/channel/oper/${channelIdx}`)
               .then((response) => {
-                console.log(response.data)
+                // console.log(response.data)
                 if (response.data!==true)
                 {
                     alert("관리자만 접속할 수 있습니다!");
@@ -89,9 +111,9 @@ interface Channel {
                 else
 				{navigate('/admin', {
 					state: {
-					  channelName : channelName
+					channelName : channelName
 					}
-				  })};
+				})}
               })
               .catch((error) => {
                 console.error("API 요청 실패:", error);
@@ -124,9 +146,13 @@ interface Channel {
 				{channels && <div className="menu-drop-down-channel-list-text">{'< '}channel{' >'}</div>}
 				{channels && channels.map((channel, index) => (
 					<div className="menu-drop-down-channel">
-						<MyChannelList key={index} chIdx={channel.chIdx} chName={channel.chName} chUserCnt={channel.chUserCnt} operatorId={channel.operatorId} setShowDropDownBox={setShowDropDownBox}
-/>
-						{/* <MyChannelList key={index} chIdx={channel.chIdx} chName={channel.chName} chUserCnt={channel.chUserCnt} operatorId={channel.operatorId}/> */}
+						<MyChannelList key={index} chIdx={channel.chIdx} chName={channel.chName} chUserCnt={channel.chUserCnt} setShowDropDownBox={setShowDropDownBox}/>
+					</div>
+				))}
+				{dms && <div className="menu-drop-down-channel-list-text">{'< '}dm{' >'}</div>}
+				{dms && dms.map((dm, index) => (
+					<div className="menu-drop-down-channel">
+						<MyDmList key={index} chIdx={dm.chIdx} chName={dm.chName} chUserCnt={dm.chUserCnt} setShowDropDownBox={setShowDropDownBox}/>
 					</div>
 				))}
 			</div>

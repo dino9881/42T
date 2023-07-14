@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
 import MyInfoChange from "./MyInfoChange";
 import InfoScore from "../friendlist/InfoScore";
-import setAuthorizationToken from "../../setAuthorizationToken";
 import instance from "../../refreshToken";
 import CheckEmail from "../../login/CheckEmail";
 import './MyInfo.css';

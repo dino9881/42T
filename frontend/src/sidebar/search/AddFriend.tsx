@@ -1,15 +1,7 @@
 import React, { useState, ChangeEvent, KeyboardEvent } from 'react';
 import SearchFriend from './SearchFriend';
-import './AddFriend.css';
-import axios from 'axios';
-import { locale } from 'yargs';
 import instance from '../../refreshToken';
-import { error } from 'console';
-
-interface IsFriendProps {
-	friendStatus: number;
-	onClose: () => void;
-}
+import './AddFriend.css';
 
 const AddFriend = () => {
 	const [text, setText] = useState<string>("");
@@ -35,8 +27,8 @@ const AddFriend = () => {
 			}
 			setintraId(response.data.intraId);
 		})
-		.catch((error) => {
-			alert("whswo gkwl dksgsms slrspdla입니다.")
+		.catch(() => {
+			alert("존재하지 않는 닉네임입니다.")
 		})
 		setText("");
 	};

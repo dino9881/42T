@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import instance from "../../refreshToken";
 
 interface BanProps {
@@ -9,7 +8,7 @@ interface BanProps {
 
 const BanList: React.FC<BanProps> = ({nickName, avatar}) => {
 	function getBanList() {
-		instance.delete(`http://localhost:5001/member/unban/${nickName}`).then((response) => {
+		instance.delete(`http://localhost:5001/member/unban/${nickName}`).then(() => {
 			window.location.reload();
 			console.log("차단해제")
 		});

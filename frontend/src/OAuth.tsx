@@ -2,9 +2,7 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import qs from "qs";
 import axios from "axios";
-import { response } from "express";
 import instance from "./refreshToken";
-import { error } from "console";
 
 const OAuth: React.FC = () => {
 	const location = useLocation();

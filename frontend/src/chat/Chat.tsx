@@ -31,7 +31,7 @@ interface ChatProps {
 
 
 
-function Chat({channelName , channelInit, isDM}:ChatProps) {
+function Chat({channelName , channelInit}:ChatProps) {
     const location = useLocation();
     const [nickName, setNickname] = useState("");
     const [avatar, setAvatar] = useState("");
@@ -51,6 +51,7 @@ function Chat({channelName , channelInit, isDM}:ChatProps) {
             socket.emit("enter-channel", {channelName: channelName,nickName: response.data.nickName});
                     });
         const state = location.state as { chIdx : number };
+        console.log(state)
         if (state && state.chIdx) {
             instance
             .get(`http://localhost:5001/channel/name/${state.chIdx}`)
@@ -101,10 +102,10 @@ function Chat({channelName , channelInit, isDM}:ChatProps) {
         });
 
 
-        socket.on("send-message", (payload:any) => {
-            const {nickName, text, avatar}=payload;
+        socket.on("send-message", (payload:MessageItem) => {
+            const {nickName, message, avatar}=payload;
             console.log(payload);
-            const newMessage = {nickName: nickName, message: text};
+            const newMessage = {nickName: nickName, message: message};
             addMessage(newMessage, avatar);
         });
     }, [channelName, channelInit, location.state]);
@@ -181,7 +182,7 @@ function ChatInput({ addMyMessage, nickName, channelName, avatar }: { addMyMessa
         }
         const newMessage = {nickName: "나", message: message };
         addMyMessage(newMessage);
-        socket.emit("message",{channelName, nickName, text:message, avatar});
+        socket.emit("message",{channelName, nickName, message : message, avatar});
         setMessage("");
     };
     return (
@@ -233,14 +234,6 @@ function ChatItem({ nickName, message, avatar, mynickname }: ChatItemProps ) {
                 </div>
                 </>
             )}
-        </div>
-    );
-}
-
-function ChatBoxMine({ message, avatar }: ChatItemProps) {
-    return (
-        <div className="chat-box-mine">
-
         </div>
     );
 }

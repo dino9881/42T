@@ -1,7 +1,6 @@
 import React, { useState, ChangeEvent, KeyboardEvent } from "react";
-import axios from 'axios';
-import './MyInfo.css';
 import instance from "../../refreshToken";
+import './MyInfo.css';
 
 interface MyInfoChangeProps {
 	myData: any;
@@ -10,7 +9,6 @@ interface MyInfoChangeProps {
 
 const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 	const [avatarUrl, setAvatarUrl] = useState(myData.avatar);
-	const [newNickName, setNewNickName] = useState(myData.nickName);
 	const [text, setText] = useState<string>("");
 
 	const [changeData, setChangeData] = useState({
@@ -52,7 +50,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 			instance.patch("http://localhost:5001/member/update/nick/", 
 			{
 				"intraId": changeData.intraId,
-  				"nickName": changeData.nickName
+				"nickName": changeData.nickName
 			})
 			.then(function (response) {
 				console.log(response);
@@ -66,7 +64,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 			instance.patch("http://localhost:5001/member/update/avatar/",
 			{
 				"intraId": changeData.intraId,
-  				"avatar": changeData.avatar
+				"avatar": changeData.avatar
 			})
 			.then(function (response) {
 				console.log(response);

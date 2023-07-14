@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import instance from "../../refreshToken";
 
 interface SearchFriendProps {
@@ -14,21 +13,21 @@ interface FriendInfoProps {
   avatar: string;
 }
 
-const IsNotFriend: React.FC<FriendInfoProps & SearchFriendProps> = ({ nickName, rank, avatar, onClose, intraId, friendStatus }) => {
+const IsNotFriend: React.FC<FriendInfoProps & SearchFriendProps> = ({ nickName, rank, avatar, onClose }) => {
   
 	const handleAdd = () => {
 		instance.post(`http://localhost:5001/member/friend/add/${nickName}`)
-		  .then((response) => {
+		.then(() => {
 			onClose();
 			window.location.reload();
-		  })
-		  .catch((error) => {
+		})
+		.catch((error) => {
 			console.log(error);
-		  });
-	  };
+		});
+	};
 
 	const handleBan = () => {
-		instance.post(`http://localhost:5001/member/ban/${nickName}`).then((res)=>{
+		instance.post(`http://localhost:5001/member/ban/${nickName}`).then(()=>{
 			window.location.reload();
 		})
 	};

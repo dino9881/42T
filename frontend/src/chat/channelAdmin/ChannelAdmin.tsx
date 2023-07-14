@@ -28,8 +28,8 @@ interface AdminUserListProps{
 function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
         const [banList, setBanList] = useState<UserInfos[]>(() => initialData());
         const [userList, setUserList] = useState<UserInfos[]>(() => initialData());
-        const [chName, setChName] = useState(channelName);
-        const [chIdx, setChIdx] = useState(channelIdx);
+        const chName = channelName;
+        const chIdx = channelIdx;
 
         function initialData(): UserInfos[]  {
             return [];
@@ -82,7 +82,7 @@ function AdminUserList({userList, banList} : AdminUserListProps){
     </div>
 }
 
-function Setting({setting, chIdx , userList, banList} : SettingInfo ){
+function Setting({setting, chIdx , userList} : SettingInfo ){
     const [text, setText] = useState('');
     const navigate = useNavigate();
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
