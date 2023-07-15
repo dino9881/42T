@@ -9,10 +9,11 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChannelService } from '../channel/channel.service';
-import { Injectable, UseGuards } from '@nestjs/common';
+import { Injectable, UseFilters, UseGuards } from '@nestjs/common';
 import { MemberService } from '../member/member.service';
 import { GameService } from '../game/game.service';
 import { WsGuard } from '../auth/ws.guard';
+import { ConflictExceptionFilter } from './ConflictExceptionFilter';
 
 interface Payload {
   channelName: string;
@@ -23,6 +24,8 @@ interface Payload {
   text: string;
   player1: string;
   player2: string;
+  password: string;
+  chIdx: number;
 }
 
 @Injectable()
@@ -77,10 +80,11 @@ export class SocketIOGateway
   // @UseGuards(WsGuard)
   @SubscribeMessage('member-info')
   handleMemberInfo(client: Socket, payload: Payload) {
-    const { intraId, nickName } = payload;
+    const { intraId, nickName, avatar } = payload;
     // if (this.socketList.has(intraId)) this.socketList.set(intraId, client);
     client['intraId'] = intraId;
     client['nickName'] = nickName;
+    client['avatar'] = avatar;
     this.memberService.updateStatus(intraId, 1); // 1 : online
     console.log(`${nickName}(${intraId}) 님이 접속하셨습니다.`);
     this.socketList.set(intraId, client);
@@ -90,11 +94,15 @@ export class SocketIOGateway
   async handleMessage(client: Socket, payload: Payload): Promise<string> {
     const { channelName, nickName, message, avatar } = payload;
     // mute check
-    const ismuted = await this.channelService.ismuted(channelName, nickName);
-    if (ismuted)
+    if (await this.channelService.ismuted(channelName, nickName)) {
+      this.getSocketByintraId(client['intraId'])?.emit("mute");
       return 'Message received! But you are muted. You cannot send message.';
-    const isDMBan = await this.channelService.isDMBan(channelName, nickName);
-    if (isDMBan) return 'Message received! But you are banned.';
+    }
+    if (await this.channelService.isBan(channelName, client['intraId'])) 
+      return 'Message received! But you are banned.';
+    const user = await this.channelService.isFirstMessage(channelName, client['intraId']);
+    if (user !== "")
+      this.getSocketByintraId(user)?.emit('send-dm', client['intraId']);
     client.to(channelName).emit('send-message', { nickName, message, avatar });
     this.channelService.sendMessage(channelName, nickName, message, avatar);
     return 'Message received!';
@@ -103,11 +111,11 @@ export class SocketIOGateway
   @SubscribeMessage('enter-channel')
   async handleChannelEnter(client: Socket, payload: Payload) {
     const { channelName, nickName } = payload;
-    const isChanUsers = await this.channelService.isChanUsers(
-      channelName,
-      nickName,
-    );
-    if (!isChanUsers) client.to(channelName).emit('welcome', nickName);
+    // const isChanUsers = await this.channelService.isChanUsers(
+    //   channelName,
+    //   nickName,
+    // );
+    // if (!isChanUsers) client.to(channelName).emit('welcome', nickName);
     client.join(channelName);
     client['nickName'] = nickName;
     console.log(`${nickName} enter channel : ${channelName}`);
@@ -209,4 +217,85 @@ export class SocketIOGateway
     console.log(`${nickName}님이 존재하지 않습니다.`);
     client.emit('game-oppo-not-found', { nickName: nickName });
   }
+
+
+  // channel
+
+  @UseFilters(ConflictExceptionFilter)
+  @SubscribeMessage('create-channel')
+  async handleChannelCreate(client: Socket, payload: Payload) {
+    const { channelName, password } = payload;
+    try {
+      const channel = await this.channelService.create(
+        {intraId: client['intraId'], nickName: client['nickName'], avatar: client['avatar']}, 
+        {chName: channelName, chPwd: password}
+        );
+        client.emit("new-channel", { chIdx: channel.chIdx });
+    } catch (error) {
+      if (error.response.statusCode === 409)
+        client.emit("duplicate-chanName");
+      else if (error.response.statusCode === 500)
+        client.emit("server-error");
+    }
+    const members = await this.memberService.getAll();
+    members.map(users => {
+      if (users.intraId !== "admin")
+        this.getSocketByintraId(users.intraId)?.emit("reload");
+    });
+  }
+
+  @UseFilters(ConflictExceptionFilter)
+  @SubscribeMessage('channel-kick')
+  async handleChannelKick(client: Socket, payload: Payload) {
+    const { chIdx, intraId, } = payload;
+    try {
+      await this.channelService.kick(chIdx, client['intraId'], { intraId: intraId, nickName: "", avatar: "" });
+      this.getSocketByintraId(intraId)?.emit("kick");
+    } catch (error) {
+      if (error.response && error.response.statusCode === 403)
+        client.emit("no-permissions");
+    }
+  }
+
+  @UseFilters(ConflictExceptionFilter)
+  @SubscribeMessage('channel-ban')
+  async handleChannelBan(client: Socket, payload: Payload) {
+    const { chIdx, intraId, } = payload;
+    try {
+      await this.channelService.saveBanUser(chIdx, client['intraId'], { intraId: intraId,  nickName: "", avatar: "" });
+      this.getSocketByintraId(intraId)?.emit("ban");
+    } catch (error) {
+      if (error.response && error.response.statusCode === 403)
+        client.emit("no-permissions");
+    }
+  }
+
+  @UseFilters(ConflictExceptionFilter)
+  @SubscribeMessage('channel-mute')
+  async handleChannelMute(client: Socket, payload: Payload) {
+    const { chIdx, intraId, nickName } = payload;
+    try {
+      await this.channelService.muteUser(chIdx, client['intraId'], { intraId: intraId,  nickName: nickName, avatar: "" });
+      this.getSocketByintraId(intraId)?.emit("mute");
+    } catch (error) {
+      if (error.response && error.response.statusCode === 403)
+        client.emit("no-permissions");
+    }
+  }
+
+  @UseFilters(ConflictExceptionFilter)
+  @SubscribeMessage('channel-admin')
+  async handleChannelAdmin(client: Socket, payload: Payload) {
+    const { chIdx, intraId } = payload;
+    try {
+      await this.channelService.setAdmin(chIdx, client['intraId'], { intraId: intraId,  nickName: "", avatar: "" });
+      this.getSocketByintraId(intraId)?.emit("admin");
+    } catch (error) {
+      if (error.response && error.response.statusCode === 403)
+        client.emit("no-permissions");
+    }
+  }
+
+
+
 }
