@@ -97,17 +97,18 @@ function Chat({channelName , channelInit}:ChatProps) {
 
         socket.on("welcome", (nickName) => {
             const newMessage = {nickName: "System", message: `${nickName} : 이 입장했습니다.` };
-            console.log("enter");
             addMessage(newMessage, "");
         });
 
-
         socket.on("send-message", (payload:MessageItem) => {
             const {nickName, message, avatar}=payload;
-            console.log(payload);
             const newMessage = {nickName: nickName, message: message};
             addMessage(newMessage, avatar);
         });
+        return () => {
+            socket.off("send-message");
+            socket.off("welcome");
+          };
     }, [channelName, channelInit, location.state]);
 
     useEffect(() => {
@@ -152,7 +153,7 @@ function Chat({channelName , channelInit}:ChatProps) {
         <div className="chat">
             <div className="chat-header-box">
                 <img className="out_of_channel_button" src="out_of_channel.svg" alt="out_of_channel" onClick={exitChannel} style={{ cursor: 'pointer' }} />
-                <span>{channelName}</span>
+                <span>채널 나가기</span>
             </div>
             <div className="chat-scroll" id="chat-scroll">
                 {msgList.map((message, index) => (
@@ -183,6 +184,7 @@ function ChatInput({ addMyMessage, nickName, channelName, avatar }: { addMyMessa
         const newMessage = {nickName: "나", message: message };
         addMyMessage(newMessage);
         socket.emit("message",{channelName, nickName, message : message, avatar});
+        console.log("emit message");
         setMessage("");
     };
     return (

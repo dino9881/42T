@@ -46,7 +46,7 @@ function PwInput({ chIdx, chPwd, chUserCnt } : PwInputProps) {
         if(!chPwd)
         {    instance
             .post(`http://localhost:5001/channel/enter/${chIdx}`)
-            .then(() => {
+            .then((response) => {
                 navigate("/chat", { state: { chIdx } });
             })
             .catch((error) => {
@@ -70,7 +70,7 @@ function PwInput({ chIdx, chPwd, chUserCnt } : PwInputProps) {
                 if (data) {
                   instance
                     .post(`http://localhost:5001/channel/enter/${chIdx}`)
-                    .then(() => {
+                    .then((response) => {
                         navigate("/chat", { state: { chIdx } });
                     })
                     .catch((error) => {

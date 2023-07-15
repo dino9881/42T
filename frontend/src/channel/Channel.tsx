@@ -8,7 +8,7 @@ interface ChannelProps{
   channelInit: (channelName : string , channelIdx : number) => void;
 }
 
-function Channel({channelInit} : ChannelProps) {
+function Channel({channelName, channelInit} : ChannelProps) {
   const [channelData, setChannelData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
 
