@@ -1,9 +1,7 @@
 import {
   Injectable,
   ConflictException,
-  InternalServerErrorException,
   NotFoundException,
-  BadRequestException,
   ForbiddenException,
 } from '@nestjs/common';
 import { CreateChannelDto } from './dto/create-channel.dto';
@@ -14,7 +12,6 @@ import { ChannelUserDto } from './dto/channel-user.dto';
 import * as bcrypt from 'bcrypt';
 import { MemberInfoDto } from 'src/member/dto/member-info.dto';
 import { MemberService } from 'src/member/member.service';
-
 
 @Injectable()
 export class ChannelService {
@@ -53,15 +50,14 @@ export class ChannelService {
   }
 
   async create(member: MemberInfoDto, createChannelDto: CreateChannelDto) {
-    let createData ;
-
-    console.log("비밀번호" + createChannelDto.chPwd);
     if (createChannelDto.chPwd !== undefined) {
       createChannelDto = await this.hashPassword(createChannelDto);
     }
     const { chName, chPwd, isDM } = createChannelDto;
 
-    // operator 수 체크
+    // member check
+    await this.memberService.getOne(member.intraId);
+    // operator check
     const oper = await this.prisma.member.findUnique({
       where: { intraId: member.intraId },
       include: { channel: true },
@@ -70,41 +66,24 @@ export class ChannelService {
       throw new ForbiddenException('Already oper on 3 channel');
     }
     // duplicate check
-    await this.memberService.getOne(member.intraId);
-    try {
-      createData = await this.prisma.channel.create({
-        data: {
-          chName,
-          chUserCnt: 1,
-          chPwd,
-          isDM: isDM === undefined ? false : isDM,
-          owner: { connect: { intraId: member.intraId } },
-        },
-      });
-    } catch (error) {
-      console.log(error);
-      if (error.code === 'P2002' && error.meta?.target?.includes('chName')) {
-        throw new ConflictException('Duplicate chName');
-      } else if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === 'P2025'
-        ) {
-          throw new NotFoundException(`intraId does not exist.`);
-        } else if (error instanceof Prisma.PrismaClientValidationError) {
-          throw new BadRequestException('Check request form');
-        }
-        throw new InternalServerErrorException('Internal Server Error');
-      }
-      
-      this.administrators[createData.chIdx] = [];
-      this.channelUsers[createData.chIdx] = [
-        { intraId: member.intraId, avatar: member.avatar, nickName: member.nickName },
-      ];
-      this.banUsers[createData.chIdx] = [];
-      this.messageList[createData.chIdx] = [];
-      this.mutedUsers[createData.chIdx] = [];
-
-      return createData;
+    if (await this.isDuplicateName(chName))
+      throw new ConflictException('Duplicate chName');
+    const createData = await this.prisma.channel.create({
+      data: {
+        chName,
+        chUserCnt: 1,
+        chPwd,
+        isDM: isDM === undefined ? false : isDM,
+        owner: { connect: { intraId: member.intraId } },
+      },
+    });
+    this.administrators[createData.chIdx] = [];
+    this.channelUsers[createData.chIdx] = [
+      { intraId: member.intraId, avatar: member.avatar, nickName: member.nickName },];
+    this.banUsers[createData.chIdx] = [];
+    this.messageList[createData.chIdx] = [];
+    this.mutedUsers[createData.chIdx] = [];
+    return createData;
   }
 
   async hashPasswordModify(channel: UpdateChannelDto) {
@@ -158,6 +137,7 @@ export class ChannelService {
     const findData = await this.prisma.channel.findUnique({
       where: { chName: name },
     });
+    console.log("findOneByName : " + findData);
     if (findData === null) throw new NotFoundException('channel not found');
     return findData;
   }
@@ -213,9 +193,7 @@ export class ChannelService {
 
   async isDM(idx: number) {
     const channel = await this.findOneById(idx);
-    const { isDM } = channel;
-    if (isDM === true) return true;
-    return false;
+    return channel.isDM;
   }
 
   // channel users
@@ -366,7 +344,7 @@ export class ChannelService {
     // ban check
     const channel = await this.findOneById(idx);
     if (this.banUsers[idx].find((user) => user.intraId === member.intraId)) return {};
-    if (this.isDM(idx)) {
+    if (await this.isDM(idx)) {
       if (await this.memberService.isDMBan(this.pair[idx].user1, this.pair[idx].user2))
           return null;
     }
@@ -487,10 +465,12 @@ export class ChannelService {
 
   async isDMBan(chName: string, nickName: string) {
     const channel = await this.findOneByName(chName);
-    const isDMBan = await this.memberService.isDMBan(this.pair[channel.chIdx].user1, this.pair[channel.chIdx].user2);
-    console.log(isDMBan);
-    if (isDMBan)
-      return true;
+    if (await this.isDM(channel.chIdx)){
+      const isDMBan = await this.memberService.isDMBan(this.pair[channel.chIdx].user1, this.pair[channel.chIdx].user2);
+      console.log(isDMBan);
+      if (isDMBan)
+        return true;
+    }
     return false;
   }
 }
