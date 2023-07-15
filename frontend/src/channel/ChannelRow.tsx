@@ -1,11 +1,11 @@
 import ChannelRoom from "./ChannelRoom";
-import React from "react";
+
 interface ChannelData {
     chIdx: number;
     chName: string;
     chPwd: string;
     chUserCnt: number;
-    operatorId: string;
+    ownerId: string;
 }
 
 function ChannelRow({

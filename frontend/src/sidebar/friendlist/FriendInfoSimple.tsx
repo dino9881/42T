@@ -13,9 +13,10 @@ interface FriendInfoProps {
 	loseCnt: number;
 	winCnt: number;
 	currstate: number;
+	state: number;
 }
 
-const FriendInfoSimple: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, avatar, winCnt, loseCnt, currstate }) => {
+const FriendInfoSimple: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, avatar, winCnt, loseCnt, currstate, state }) => {
     const navigate = useNavigate();
 
 	const handleButtonClick = () => {
@@ -26,7 +27,7 @@ const FriendInfoSimple: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, 
 				"avatar": avatar
 			})
 			.then((response) => {
-			console.log(response)
+			console.log(`dm respose = ${response.data}`)
 				//   .post(`http://localhost:5001/dm/enter/${chIdx}`)
                 navigate("/dm", { state: { chIdx:response.data.chIdx } });
             })
@@ -46,10 +47,12 @@ const FriendInfoSimple: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, 
             socket.emit("game-apply", {intraId : response.data.intraId, nickName : response.data.nickName  , player2: nickName });
 		});
 	}
+
 	return (
 		<div className='friend-info-simple'>
-			<div className='state-circle'></div>
-			<div  className={`state-circle ${currstate === 0 ? "state-circle-state0" : currstate === 1 ? "state-circle-state1" : "state-circle-state2"}`}></div>
+			{state === 1 && (
+				<div  className={`state-circle ${currstate === 0 ? "state-circle-state0" : currstate === 1 ? "state-circle-state1" : "state-circle-state2"}`}></div>
+			)}
 			<div
 				className='friend-info-avatar'
 				style={{ backgroundImage: `url(${avatar})` }}

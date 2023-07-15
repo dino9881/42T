@@ -40,7 +40,6 @@ const MyInfo = () => {
 	return (
 		<div className='my-info'>
 			<div className='my-info-line'>
-				<div  className={`state-circle ${myData && myData.status === 0 ? "state-circle-state0" : myData && myData.status === 1 ? "state-circle-state1" : "state-circle-state2"}`}></div>
 				{myData && (
 				<div
 					className='my-info-avatar'
@@ -67,8 +66,9 @@ const MyInfo = () => {
 				</div>
 			</div>
 			{/* {showChangeForm && <MyInfoChange onClose={handleCloseForm} avatar={myData && myData.avatar} nickName={myData && myData.nickName} />} */}
-			{showChangeForm && <CheckEmail myData={myData} onClose={handleCloseForm} onEmail={handleEmail}/>}
-			{isEmail && <MyInfoChange myData={myData} onClose={handleEmail} />}
+			{/* {showChangeForm && <CheckEmail myData={myData} onClose={handleCloseForm} onEmail={handleEmail}/>} */}
+			{/* {isEmail && <MyInfoChange myData={myData} onClose={handleEmail} />} */}
+			{showChangeForm && <MyInfoChange myData={myData} onClose={handleEmail} />}
 		</div>
 	);
 };

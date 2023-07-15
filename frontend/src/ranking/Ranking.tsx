@@ -6,23 +6,23 @@ import RankList from "./RankList";
 const Ranking = () => {
 	return (
 		<div>
-        <RankingComponent></RankingComponent>
-    </div>
+        	<RankingComponent></RankingComponent>
+    	</div>
 	);
 };
 
 interface RankData{
 	intraId: string,
-	nickName: string,
-	avatar: string,
-	rank: number,
-	// winCnt: number,
-	// loseCnt: number,
-	// currentRefreshToken: string,
-	// currentRefreshTokenExp: string,
-	// isFriend: boolean,
-	// isBan: boolean,
-	// code: number,
+	  nickName: string,
+	  avatar: string,
+	  rank: number,
+	  // winCnt: number,
+	  // loseCnt: number,
+	  // currentRefreshToken: string,
+	  // currentRefreshTokenExp: string,
+	  // isFriend: boolean,
+	  // isBan: boolean,
+	  // code: number,
   }
 
 const RankingComponent = () => {
