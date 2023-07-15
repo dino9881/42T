@@ -26,7 +26,7 @@ const FriendInfo: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, avatar
 	return (
 		<div>
 			<div className={isExpanded ? 'friend-info-line-big' : 'friend-info-line-small'}>
-				<FriendInfoSimple intraId={intraId} nickName={nickName} rank={rank} avatar={avatar} winCnt={winCnt} loseCnt={loseCnt} currstate={currstate}/>
+				<FriendInfoSimple intraId={intraId} nickName={nickName} rank={rank} avatar={avatar} winCnt={winCnt} loseCnt={loseCnt} currstate={currstate} state={state}/>
 				<img src={toggleImgSrc} alt="toggle" className="friend-toggle-down" onClick={handleToggle} style={{ cursor: 'pointer' }}></img>
 				{isExpanded && <InfoScore intraId={intraId} nickName={nickName} rank={rank} state={state} />}
 			</div>

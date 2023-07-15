@@ -15,6 +15,7 @@ const ChannelUserForm: React.FC<ChannelUserFormProps> = ({ nickName }) => {
 	useEffect(() => {
 		instance.get(`http://localhost:5001/member/search/${nickName}`)
 		.then((response) => {
+			console.log(response.data)
 			if (response.data.isFriend === true) {
 				setUserState(1);
 			}
@@ -30,7 +31,7 @@ const ChannelUserForm: React.FC<ChannelUserFormProps> = ({ nickName }) => {
 	return (
 		<div>
 			{userState !== 2 && (
-				<FriendInfo intraId={userData && userData.intraId} nickName={userData && userData.nickName} rank={userData && userData.rank} avatar={userData && userData.avatar} winCnt={userData && userData.winCnt} loseCnt={userData && userData.loseCnt} state={userState} currstate={userData && userData.state}/>
+				<FriendInfo intraId={userData && userData.intraId} nickName={userData && userData.nickName} rank={userData && userData.rank} avatar={userData && userData.avatar} winCnt={userData && userData.winCnt} loseCnt={userData && userData.loseCnt} state={userState} currstate={userData && userData.status}/>
 			)}
 			{userState === 2 && (
 				<BanList nickName={userData.nickName} avatar={userData.avatar}/>

@@ -36,14 +36,18 @@ interface Dm {
 // const Menu = ({ showBackButton}: MenuProps) => {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [toggleImgSrc, setToggleImgSrc] = useState("toggle_down.svg");
+	const [intraId, setIntraId] = useState("");
+	const [nickName, setNickName] = useState("");
+	const [chName, setChName] = useState(channelName);
 	const [showWaiting, setShowWaiting] = useState(false);
 	const [showCancel, setShowCancel] = useState(false);
 	const [showDropDownBox, setShowDropDownBox] = useState(false); // 추가된 상태 값
 	const [showNewChat, setShowNewChat] = useState(false);
 	const navigate = useNavigate();
-	
 	const [channels, setChannels] = useState<Channel[]>([]);
 	const [dms, setDms] = useState<Dm[]>([]);
+
+
 
 	function getChannel() {
 		instance.get("http://localhost:5001/channel/my/all")
@@ -67,16 +71,10 @@ interface Dm {
 			});
 	}
 
+
 	const handleStartClick = () => {
 		setShowWaiting(true);
-		instance.get("http://localhost:5001/auth/me")
-			.then((response) => {
-				// console.log(response.data);
-				socket.emit("game-queue-join", {intraId:response.data.intraId, nickName:response.data.nickName});
-			})
-			.catch((error) => {
-				console.log(error);
-			});
+		socket.emit("game-queue-join", {intraId:intraId, nickName: nickName});
 		setShowCancel(true);
 	};
 
@@ -131,6 +129,22 @@ interface Dm {
 		socket.on("game-apply", (data) => {
 			alert(`게임 신청 ${data}`);
         });
+		instance.get("http://localhost:5001/auth/me")
+		.then((response) => {
+			setIntraId(response.data.intraId);
+			setNickName(response.data.nickName);
+			if (chName[0] === "#")
+			instance.get(`http://localhost:5001/member/${chName.replace(response.data.intraId,"").replace("#","")}`)
+			.then((response) => {
+				setChName(response.data.nickName + " 와의 DM ");
+			})
+			.catch(() => {
+				return ("error");
+			});
+		})
+		.catch((error) => {
+			console.log(error);
+		});
 
 	},[]);
 	
@@ -138,7 +152,7 @@ interface Dm {
 	return (
 		<div className="menu-box">
 		<div className="menu-channel-drop-box" >
-			{showBackButton ? channelName : "Home"}
+			{showBackButton ? chName : "Home"}
 			<img src={toggleImgSrc} alt="toggle" className="menu-channel-drop-down-button" onClick={handleDropDownBoxToggle} style={{ cursor: 'pointer' }}/>
 			{showDropDownBox && (
 			<div className="menu-drop-down-channel-list">

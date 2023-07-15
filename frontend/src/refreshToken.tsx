@@ -47,6 +47,9 @@ instance.interceptors.response.use((response) => {
 				return error;
 			}
 		}
+		else{
+			return Promise.reject(error);
+		}
 	}
 
 	// async (error) => {

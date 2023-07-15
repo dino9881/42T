@@ -9,7 +9,7 @@
 
 .ranking-123rk{
     max-height: 100%;
-    max-width: 100%;
+    max-width: 60%;
     border: green solid 2px;
     display: flex;
     justify-content: center; /* 가운데 정렬 추가 */
@@ -84,18 +84,18 @@
 }
 
 .ranking-etc{
-border:solid 2px black;
+border:solid 1px black;
 display: flex;
 justify-content: flex-start;
 align-items: center;
 /* position: fixed; */
 position: relative; /* 변경된 부분 */
 height: 100%;
-width: 260px;
+width: 40%;
 transform: translate(-50, -50%);
 /* background: url("../public/img/bg.jpg") no-repeat center center; */
 flex-direction: column;
-z-index: 1;
+/* z-index: 1; */
 }
 
 .ranking-etc_titlebox{
@@ -117,6 +117,8 @@ z-index: 1;
     border: black solid 2px;
     display: flex;
     flex-direction: row;
+    position: relative; /* 부모 요소를 기준으로 자식 요소의 위치를 조정하기 위해 position을 설정합니다. */
+
 }
 
 .ranking-etc_rank img{
@@ -129,4 +131,11 @@ z-index: 1;
     width: 100%;
     height: 58px;
     border: black solid 2px;
+}
+
+.ranking-etc_namebox{
+    border: solid purple 2px;
+    display: flex;
+    flex-direction: column;
+    margin-left: 50px;
 }

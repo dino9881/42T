@@ -7,7 +7,7 @@ interface ChannelData {
     chName: string;
     chPwd: string;
     chUserCnt: number;
-    operatorId: string;
+    ownerId: string;
 }
 
 interface ChannelRoomProps {
@@ -22,7 +22,7 @@ interface MemberData {
 }
 
 function ChannelRoom({ channelData }: ChannelRoomProps) {
-    const { chIdx, chName, chPwd, chUserCnt, operatorId } = channelData;
+    const { chIdx, chName, chPwd, chUserCnt, ownerId } = channelData;
     // const [ memberData, setMemberData] = useState([]);
     const [memberData, setMemberData] = useState<MemberData>({ // MemberData 타입으로 선언
         intraId: "",
@@ -36,7 +36,7 @@ function ChannelRoom({ channelData }: ChannelRoomProps) {
     // memberData 업데이트 
     useEffect(() => { // API 요청
     instance
-      .get(`http://localhost:5001/member/${operatorId}`)
+      .get(`http://localhost:5001/member/${ownerId}`)
       .then((response) => {
         // 요청이 성공하면 데이터를 상태로 설정
         setMemberData(response.data);
@@ -47,7 +47,7 @@ function ChannelRoom({ channelData }: ChannelRoomProps) {
       });
     }, []);
 
-    // axios 를 통해서 operatorid로 사진과 닉네임 가져오기
+    // axios 를 통해서 ownerId로 사진과 닉네임 가져오기
     return (
         <div className="chan-room">
             <div className="chan-lockcheck">
