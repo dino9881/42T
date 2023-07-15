@@ -26,12 +26,14 @@ interface Payload {
 }
 
 @Injectable()
-@WebSocketGateway({
-  cors: {
-    origin: 'http://localhost:3000',
-    credentials: true,
+@WebSocketGateway(
+  // 5002,
+  {
+    cors: {
+      origin: 'http://localhost:3000',
+    },
   },
-})
+)
 export class SocketIOGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -92,8 +94,7 @@ export class SocketIOGateway
     if (ismuted)
       return 'Message received! But you are muted. You cannot send message.';
     const isDMBan = await this.channelService.isDMBan(channelName, nickName);
-    if (isDMBan)
-      return 'Message received! But you are banned.';
+    if (isDMBan) return 'Message received! But you are banned.';
     client.to(channelName).emit('send-message', { nickName, message, avatar });
     this.channelService.sendMessage(channelName, nickName, message, avatar);
     return 'Message received!';
