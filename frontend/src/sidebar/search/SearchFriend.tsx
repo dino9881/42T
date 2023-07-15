@@ -52,6 +52,7 @@ const SearchFriend: React.FC<SearchFriendProps> = ({ intraId, friendStatus, onCl
 				winCnt={userData.winCnt}
 				loseCnt={userData.loseCnt}
 				currstate={userData.state}
+				state={friendStatus}
 			/>
 			)}
 			{userData && friendStatus === 2 &&

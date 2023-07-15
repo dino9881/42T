@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent, KeyboardEvent } from "react";
 import instance from "../../refreshToken";
 import './MyInfo.css';
+import { error } from "console";
 
 interface MyInfoChangeProps {
 	myData: any;
@@ -34,7 +35,6 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 			...prevData,
 			nickName: text
 		}));
-		// setText("");
 	};
 
 	const onKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -81,6 +81,30 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 		window.location.reload();
 	};
 
+	const handleUpload = (e: ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files && e.target.files[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = () => {
+				const base64Image = reader.result as string;
+				setAvatarUrl(base64Image);
+				// setChangeData(prevData => ({
+				// 	...prevData,
+				// 	avatar: base64Image
+				// }));
+				instance.post("http://localhost:5001/member/upload/avatar/", base64Image)
+				.then((response) => {
+					console.log(response);
+				})
+				.catch((error) => {
+					
+				})
+			};
+			reader.readAsDataURL(file);
+
+		}
+	};
+
 	return (
 		<div className="my-info-change">
 			<img className="my-info-change-close" src="close_button.svg" alt="Close" onClick={onClose} width={28} height={28} style={{ cursor: 'pointer' }}/>
@@ -89,16 +113,22 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 				src={avatarUrl}
 				alt="User Avatar"
 			/>
-			<div className="my-info-change-avatar-buttons">
-				<button className="my-info-change-avatar-button" onClick={() => handleAvatarButtonClick("avatar/haaland.jpeg")}>
-					기본1
-				</button>
-				<button className="my-info-change-avatar-button" onClick={() => handleAvatarButtonClick("avatar/son.jpeg")}>
-					기본2
-				</button>
-				<button className="my-info-change-avatar-button" onClick={() => handleAvatarButtonClick("avatar/yyoo.jpeg")}>
-					기본3
-				</button>
+			<div className="my-info-change-avatar-box">
+				<div className="my-info-change-avatar-buttons">
+					<button className="my-info-change-avatar-button" onClick={() => handleAvatarButtonClick("avatar/haaland.jpeg")}>
+						기본1
+					</button>
+					<button className="my-info-change-avatar-button" onClick={() => handleAvatarButtonClick("avatar/son.jpeg")}>
+						기본2
+					</button>
+					<button className="my-info-change-avatar-button" onClick={() => handleAvatarButtonClick("avatar/phil-foden.jpeg")}>
+						기본3
+					</button>
+					<button className="my-info-change-avatar-button" onClick={() => handleAvatarButtonClick(`${myData.avatar}`)}>
+						내사진
+					</button>
+				</div>
+				<input type="file" accept="image/*" onChange={handleUpload} />
 			</div>
 			<div className="my-info-change-nick-box">
 				<div>닉네임</div>

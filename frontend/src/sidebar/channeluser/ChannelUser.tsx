@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router";
 import instance from "../../refreshToken";
 import ChannelUserForm from "./ChannelUserForm";
+import { error } from "console";
 
 interface User {
 	intraId: string;
@@ -14,12 +15,20 @@ const ChannelUser = () => {
 
 	useEffect(() => {
 		const idx = localStorage.getItem('chIdx');
-		instance.get(`http://localhost:5001/channel/users/${idx}`)
+		instance.get(`http://localhost:5001/channel/${idx}`)
 		.then((response) => {
-			setUsersList(response.data);
+			if(response.data.isDM === false) {
+				instance.get(`http://localhost:5001/channel/users/${idx}`)
+				.then((response) => {
+					setUsersList(response.data);
+				})
+				.catch((error) => {
+					console.log(error)
+				})
+			}
 		})
 		.catch((error) => {
-			console.log(error)
+			
 		})
 	}, [pathname]);
 
