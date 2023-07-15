@@ -49,7 +49,8 @@ function Chat({channelName , channelInit}:ChatProps) {
             setNickname(response.data.nickName);
             setAvatar(response.data.avatar);
             socket.emit("enter-channel", {channelName: channelName,nickName: response.data.nickName});
-                    });
+        });
+            
         const state = location.state as { chIdx : number };
         console.log(state)
         if (state && state.chIdx) {
@@ -93,7 +94,6 @@ function Chat({channelName , channelInit}:ChatProps) {
         } else {
             channelInit("error", 0);
         }
-        
 
         socket.on("welcome", (nickName) => {
             const newMessage = {nickName: "System", message: `${nickName} : 이 입장했습니다.` };
@@ -105,9 +105,27 @@ function Chat({channelName , channelInit}:ChatProps) {
             const newMessage = {nickName: nickName, message: message};
             addMessage(newMessage, avatar);
         });
+
+        socket.on("kick", () => {
+            alert("너 퇴장당함");
+        });
+        socket.on("ban", () => {
+            alert("너 밴당함");
+        });
+        socket.on("mute", () => {
+            alert("너 뮤트당함");
+        });
+        socket.on("admin", () => {
+            alert("너 관리자됨");
+        });
+
         return () => {
             socket.off("send-message");
             socket.off("welcome");
+            socket.off("kick");
+            socket.off("mute");
+            socket.off("ban");
+            socket.off("admin");
           };
     }, [channelName, channelInit, location.state]);
 
@@ -145,6 +163,10 @@ function Chat({channelName , channelInit}:ChatProps) {
                 state: {
                 }
             });
+            navigate('/main', {
+                    state: {
+                    }
+                });
             window.location.reload();
         }
     }
@@ -156,7 +178,7 @@ function Chat({channelName , channelInit}:ChatProps) {
                 <span>채널 나가기</span>
             </div>
             <div className="chat-scroll" id="chat-scroll">
-                {msgList.map((message, index) => (
+                {msgList && msgList.map((message, index) => (
                     <ChatItem
                         key={index}
                         nickName={message.nickName}

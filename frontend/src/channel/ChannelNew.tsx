@@ -1,6 +1,12 @@
 import React, { useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import instance from "../refreshToken";
+import { socket } from "../socket"
+import { platform } from "os";
+
+interface ChannelData {
+    chIdx: number;
+}
 
 function ChannelNew() {
     
@@ -49,51 +55,77 @@ function ChannelNew() {
             chPwd: isChecked ? password : undefined,
         };
 
-        if(password) {
-            return instance
-                .post("http://localhost:5001/channel/create" , requestData)
-                .then((response) => {
-                    console.log(response.data.chIdx)
-                    navigate("/chat", { state: { chIdx:response.data.chIdx } });
-                    closeNewMake();
-                })
-                .catch((error) => {
-                    console.log(error.response.status);
-                    if(error.response.status === 409)
-                        alert("같은 제목의 방이 이미 있습니다.");
-                    else if (error.response.status === 400)
-                        alert("입력정보가 잘못되었습니다(bad request).");
-                    else if (error.response.status === 400)
-                        alert("입력정보가 잘못되었습니다(bad request).");
-                    else if(error.response.status === 404)
-                        alert("멤버가 아님...;;");    
-                    else if(error.response.status === 500)
-                        alert("서버에러 (뺵 잘못)");
-                });
-            } else {
-                return instance
-                .post("http://localhost:5001/channel/create" ,{ 
-                    chName: title,
-                })
-                .then((response) => {
-                    console.log(response.data.chIdx)
-                    navigate("/chat", { state: { chIdx:response.data.chIdx } });
-                    closeNewMake();
-                })
-                .catch((error) => {
-                    console.log(error.response.status);
-                    if(error.response.status === 409)
-                        alert("같은 제목의 방이 이미 있습니다.");
-                    else if (error.response.status === 400)
-                        alert("입력정보가 잘못되었습니다(bad request).");
-                    else if(error.response.status === 404)
-                        alert("멤버가 아님...;;");    
-                    else if(error.response.status === 500)
-                        alert("서버에러 (뺵 잘못)");
-                    // 요청이 실패하면 에러 처리
-                    // console.error("API 요청 실패:", error);
-                });
-            } 
+        socket.emit("create-channel", {
+            channelName: title,
+            password: password,
+        });
+
+        socket.on("new-channel", (payload: ChannelData) => {
+            closeNewMake();
+            return navigate("/chat", { state: { chIdx:payload.chIdx } });
+        });
+        
+        socket.on("duplicate-chanName", () => {
+            alert("같은 제목의 방이 이미 있습니다.");
+        });
+
+        socket.on("server-error", () => {
+            alert("server error");
+        });
+
+        return () => {
+            socket.off("new-channel");
+            socket.off("duplicate-chanName");
+            socket.off("server-error");
+        };
+
+        // return navigate("/chat", { state: { chIdx:response.data.chIdx } });
+        //         closeNewMake();
+        // if(password) {
+        //     return instance
+        //         .post("http://localhost:5001/channel/create" , requestData)
+        //         .then((response) => {
+        //             console.log(response.data.chIdx)
+        //             navigate("/chat", { state: { chIdx:response.data.chIdx } });
+        //             closeNewMake();
+        //         })
+        //         .catch((error) => {
+        //             console.log(error.response.status);
+        //             if(error.response.status === 409)
+        //                 alert("같은 제목의 방이 이미 있습니다.");
+        //             else if (error.response.status === 400)
+        //                 alert("입력정보가 잘못되었습니다(bad request).");
+        //             else if (error.response.status === 400)
+        //                 alert("입력정보가 잘못되었습니다(bad request).");
+        //             else if(error.response.status === 404)
+        //                 alert("멤버가 아님...;;");    
+        //             else if(error.response.status === 500)
+        //                 alert("서버에러 (뺵 잘못)");
+        //         });
+        // } else {
+        //     return instance
+        //     .post("http://localhost:5001/channel/create" ,{ 
+        //         chName: title,
+        //     })
+        //     .then((response) => {
+        //         console.log(response.data.chIdx)
+        //         navigate("/chat", { state: { chIdx:response.data.chIdx } });
+        //         closeNewMake();
+        //     })
+        //     .catch((error) => {
+        //         console.log(error.response.status);
+        //         if(error.response.status === 409)
+        //             alert("같은 제목의 방이 이미 있습니다.");
+        //         else if (error.response.status === 400)
+        //             alert("입력정보가 잘못되었습니다(bad request).");
+        //         else if(error.response.status === 404)
+        //             alert("멤버가 아님...;;");    
+        //         else if(error.response.status === 500)
+        //             alert("서버에러 (뺵 잘못)");
+        //         // 요청이 실패하면 에러 처리
+        //         // console.error("API 요청 실패:", error);
+        //     });
+        // } 
     };
 
 return (

@@ -98,7 +98,7 @@ interface Dm {
 	}
 	
 	const handleSettingButton = () => {
-		instance.post(`http://localhost:5001/channel/oper/${channelIdx}`)
+		instance.post(`http://localhost:5001/channel/author/${channelIdx}`)
               .then((response) => {
                 // console.log(response.data)
                 if (response.data!==true)
