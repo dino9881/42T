@@ -91,6 +91,9 @@ export class SocketIOGateway
     const ismuted = await this.channelService.ismuted(channelName, nickName);
     if (ismuted)
       return 'Message received! But you are muted. You cannot send message.';
+    const isDMBan = await this.channelService.isDMBan(channelName, nickName);
+    if (isDMBan)
+      return 'Message received! But you are banned.';
     client.to(channelName).emit('send-message', { nickName, message, avatar });
     this.channelService.sendMessage(channelName, nickName, message, avatar);
     return 'Message received!';
