@@ -306,27 +306,16 @@ export class MemberController {
   }
 
   @ApiTags('Ban')
-  @ApiOperation({ summary: 'test' })
-  @ApiParam({ name: 'intraId' })
-  @Post('ban/:intraId')
-  dmBanMember(
-    @GetMember() member: MemberInfoDto,
-    @Param('intraId') intraId: string,
-  ) {
-    return this.memberService.isDMBan(member.intraId, intraId);
-  }
-
-  @ApiTags('Ban')
   @ApiOperation({ summary: '멤버 차단' })
   @ApiParam({
     name: 'nickName',
     required: true,
     description: '차단할 멤버 닉네임',
   })
-  @ApiOkResponse({ description: '차단 성공' })
+  @ApiCreatedResponse({ description: '차단 성공' })
   @ApiConflictResponse({ description: '이미 차단된 멤버' })
   @ApiNotFoundResponse({ description: '차단할 멤버를 찾지 못함' })
-  @Post('ban/:nickName')
+  @Post('ban/add/:nickName')
   banMember(
     @GetMember() member: MemberInfoDto,
     @Param('nickName') nickName: string,
@@ -345,7 +334,7 @@ export class MemberController {
     description: '차단해제할 멤버를 찾지 못함 혹은 차단되어 있지 않음',
   })
   @ApiOkResponse({ description: '차단 해제 성공' })
-  @Delete('unban/:nickName')
+  @Delete('ban/delete/:nickName')
   unbanMember(
     @GetMember() member: MemberInfoDto,
     @Param('nickName') nickName: string,
