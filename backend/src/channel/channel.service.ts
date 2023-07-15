@@ -49,8 +49,8 @@ export class ChannelService {
     return false;
   }
 
-  async create(member: MemberInfoDto, createChannelDto: CreateChannelDto) {
-    if (createChannelDto.chPwd !== undefined) {
+  async create(member: ChannelUserDto, createChannelDto: CreateChannelDto) {
+    if (createChannelDto.chPwd !== "") {
       createChannelDto = await this.hashPassword(createChannelDto);
     }
     const { chName, chPwd, isDM } = createChannelDto;
@@ -137,7 +137,6 @@ export class ChannelService {
     const findData = await this.prisma.channel.findUnique({
       where: { chName: name },
     });
-    console.log("findOneByName : " + findData);
     if (findData === null) throw new NotFoundException('channel not found');
     return findData;
   }
@@ -166,6 +165,12 @@ export class ChannelService {
     return isMatch;
   }
 
+  async isAuthor(idx: number, intraId: string) {
+    if (await this.isOperator(idx, intraId) || await this.isAdmin(idx, intraId))
+      return true;
+    return false;
+  }
+
   async isOperator(idx: number, intraId: string) {
     const channel = await this.findOneById(idx);
     const { ownerId } = channel;
@@ -182,9 +187,11 @@ export class ChannelService {
 
   async setAdmin(idx: number, intraId: string, channelUserDto: ChannelUserDto) {
     await this.findOneById(idx);
-    if (!this.isOperator(idx, intraId))
+    if (!await this.isOperator(idx, intraId))
       throw new ForbiddenException("no permissions");
-    if (!this.isChanUsersById(idx, channelUserDto.intraId))
+    if (await this.isOperator(idx, channelUserDto.intraId))
+      throw new ForbiddenException("no permissions");
+    if (!await this.isChanUsersById(idx, channelUserDto.intraId))
       throw new NotFoundException('user not found');
     if (this.administrators[idx].find(user => user.intraId === channelUserDto.intraId))
       return;
@@ -204,7 +211,7 @@ export class ChannelService {
 
     // user check
     if (this.channelUsers[idx].find((user) => user.intraId === member.intraId))
-      return;
+      return channel;
     // ban check
     this.banUsers[idx].map((data) => {
       if (data.intraId === member.intraId) {
@@ -221,6 +228,7 @@ export class ChannelService {
       },
     });
     this.channelUsers[idx].push({ intraId, avatar, nickName });
+    return updatedChannel;
   }
 
   async leave(idx: number, memberId: string) {
@@ -238,9 +246,8 @@ export class ChannelService {
       (user) => user.intraId !== memberId
     );
     
-    // 아무도 안 남을 경우 채널 삭제
+    // 아무도 안 남을 경우 채널 삭제?
     if (updatedChannel.chUserCnt <= 0) this.delete(idx);
-    // oper 가 나갔을 때 다음 사람 oper 설정
     else if (memberId === updatedChannel.ownerId) {
       await this.prisma.channel.update({
         where: { chIdx: idx },
@@ -249,15 +256,15 @@ export class ChannelService {
     }
   }
 
-  async kick(idx: number, intraId: string, channelUserDto: ChannelUserDto) {
+  async kick(idx: number, operId: string, channelUserDto: ChannelUserDto) {
     await this.findOneById(idx);
-    if (this.isOperator(idx, channelUserDto.intraId))
+    if (!await this.isOperator(idx, operId) && !await this.isAdmin(idx, operId))
       throw new ForbiddenException('no permissions');
-    if (!this.isOperator(idx, intraId) && !this.isAdmin(idx, intraId))
+    if (await this.isOperator(idx, channelUserDto.intraId))
       throw new ForbiddenException('no permissions');
-    if (this.isChanUsersById(idx, channelUserDto.intraId))
+    if (!await this.isChanUsersById(idx, channelUserDto.intraId))
       throw new NotFoundException('user not found');
-    const updatedChannel = await this.prisma.channel.update({
+    await this.prisma.channel.update({
       where: { chIdx: idx },
       data: {
         chUserCnt: { decrement: 1 },
@@ -305,18 +312,20 @@ export class ChannelService {
     return channels;
   }
 
-  // ban 
-  async saveBanUser(idx: number, channelUserDto: ChannelUserDto) {
+  // ban
+
+  async saveBanUser(idx: number, operId: string, channelUserDto: ChannelUserDto) {
     const { intraId } = channelUserDto;
     await this.findOneById(idx);
-    if (this.isOperator(idx, channelUserDto.intraId))
+    if (!await this.isOperator(idx, operId) && !await this.isAdmin(idx, operId))
       throw new ForbiddenException('no permissions');
-    if (!this.isOperator(idx, intraId) && !this.isAdmin(idx, intraId))
+    if (await this.isOperator(idx, channelUserDto.intraId))
       throw new ForbiddenException('no permissions');
-    if (this.isChanUsersById(idx, channelUserDto.intraId))
+    if (!await this.isChanUsersById(idx, channelUserDto.intraId))
       throw new NotFoundException('user not found');
     if (this.banUsers[idx].find(user => user.intraId === intraId))
       return ;
+    await this.kick(idx, operId, channelUserDto);
     this.banUsers[idx].push({ intraId });
   }
 
@@ -343,23 +352,20 @@ export class ChannelService {
   async getMessageList(idx: number, member: MemberInfoDto) {
     // ban check
     const channel = await this.findOneById(idx);
-    if (this.banUsers[idx].find((user) => user.intraId === member.intraId)) return {};
-    if (await this.isDM(idx)) {
-      if (await this.memberService.isDMBan(this.pair[idx].user1, this.pair[idx].user2))
-          return null;
-    }
+    if (await this.isBan(channel.chName, member.intraId))
+      return null;
     return this.messageList[idx];
   }
 
   // mute
-  async muteUser(idx: number, channelUserDto: ChannelUserDto) {
+  async muteUser(idx: number, operId: string, channelUserDto: ChannelUserDto) {
     const { intraId, nickName } = channelUserDto;
     await this.findOneById(idx);
-    if (this.isOperator(idx, channelUserDto.intraId))
+    if (!await this.isOperator(idx, operId) && !await this.isAdmin(idx, operId))
       throw new ForbiddenException('no permissions');
-    if (!this.isOperator(idx, intraId) && !this.isAdmin(idx, intraId))
+    if (await this.isOperator(idx, channelUserDto.intraId))
       throw new ForbiddenException('no permissions');
-    if (this.isChanUsersById(idx, channelUserDto.intraId))
+    if (!await this.isChanUsersById(idx, channelUserDto.intraId))
       throw new NotFoundException('user not found');
 
     const foundUser = this.mutedUsers[idx].find(
@@ -463,12 +469,25 @@ export class ChannelService {
     return false;
   }
 
-  async isDMBan(chName: string, nickName: string) {
+  async isFirstMessage(chanName: string, intraId: string) {
+    const channel = await this.findOneByName(chanName);
+    if (!await this.isDM(channel.chIdx) || this.messageList[channel.chIdx].length > 0)
+      return "";
+    if (this.pair[channel.chIdx].user1 === intraId)
+      return this.pair[channel.chIdx].user2;
+    else
+      return this.pair[channel.chIdx].user1;
+  }
+
+  async isBan(chName: string, intraId: string) {
     const channel = await this.findOneByName(chName);
     if (await this.isDM(channel.chIdx)){
       const isDMBan = await this.memberService.isDMBan(this.pair[channel.chIdx].user1, this.pair[channel.chIdx].user2);
-      console.log(isDMBan);
       if (isDMBan)
+        return true;
+    } else {
+      const banUsers = await this.getChannelBanUsers(channel.chIdx);
+      if (banUsers.find(users => users.intraId === intraId))
         return true;
     }
     return false;

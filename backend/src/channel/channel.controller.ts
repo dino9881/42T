@@ -36,20 +36,19 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 export class ChannelController {
   constructor(private readonly channelService: ChannelService) {}
 
-  @ApiTags('Channel')
-  @Post('/create')
-  @ApiOperation({ summary: '채널 생성', description: 'Create Channel API' })
-  @ApiResponse({ status: 400, description: '잘못된 요청' })
-  @ApiResponse({ status: 409, description: '중복 이름' })
-  @ApiCreatedResponse({ type: CreateChannelDto })
-  @ApiBody({ type: CreateChannelDto })
-  create(
-    @GetMember() member: MemberInfoDto,
-    @Body() createChannelDto: CreateChannelDto,
-  ) {
-    console.log(member);
-    return this.channelService.create(member, createChannelDto);
-  }
+  // @ApiTags('Channel')
+  // @Post('/create')
+  // @ApiOperation({ summary: '채널 생성', description: 'Create Channel API' })
+  // @ApiResponse({ status: 400, description: '잘못된 요청' })
+  // @ApiResponse({ status: 409, description: '중복 이름' })
+  // @ApiCreatedResponse({ type: CreateChannelDto })
+  // @ApiBody({ type: CreateChannelDto })
+  // create(
+  //   @GetMember() member: MemberInfoDto,
+  //   @Body() createChannelDto: CreateChannelDto,
+  // ) {
+  //   return this.channelService.create(member, createChannelDto);
+  // }
 
   @ApiTags('Channel')
   @Patch(':idx')
@@ -164,6 +163,18 @@ export class ChannelController {
   }
 
   @ApiTags('Channel')
+  @Post('/author/:idx')
+  @ApiOperation({
+    summary: 'idx 채널 setting 권한 인지 확인',
+    description: 'Authorized',
+  })
+  @ApiBody({ type: MemberInfoDto })
+  @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx' })
+  isAuthor(@GetMember() member: MemberInfoDto, @Param('idx') idx: string) {
+    return this.channelService.isAuthor(+idx, member.intraId);
+  }
+
+  @ApiTags('Channel')
   @Post('/oper/:idx')
   @ApiOperation({
     summary: 'idx 채널의 operator 인지 확인',
@@ -238,22 +249,22 @@ export class ChannelController {
     return this.channelService.leave(+idx, member.intraId);
   }
 
-  @ApiTags('Channel User')
-  @Post('/kick/:idx')
-  @ApiResponse({ status: 403, description: '권한 없음' })
-  @ApiOperation({
-    summary: 'idx 채널의 user 쫓아내기',
-    description: 'Is operator',
-  })
-  @ApiBody({ type: ChannelUserDto })
-  @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx' })
-  kickChannel(
-    @GetMember() member: MemberInfoDto,
-    @Body() channelUserDto: ChannelUserDto,
-    @Param('idx') idx: string,
-  ) {
-    return this.channelService.kick(+idx, member.intraId, channelUserDto);
-  }
+  // @ApiTags('Channel User')
+  // @Post('/kick/:idx')
+  // @ApiResponse({ status: 403, description: '권한 없음' })
+  // @ApiOperation({
+  //   summary: 'idx 채널의 user 쫓아내기',
+  //   description: 'Is operator',
+  // })
+  // @ApiBody({ type: ChannelUserDto })
+  // @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx' })
+  // kickChannel(
+  //   @GetMember() member: MemberInfoDto,
+  //   @Body() channelUserDto: ChannelUserDto,
+  //   @Param('idx') idx: string,
+  // ) {
+  //   return this.channelService.kick(+idx, member.intraId, channelUserDto);
+  // }
 
   @ApiTags('Channel User')
   @Get('/users/:idx')
@@ -281,21 +292,21 @@ export class ChannelController {
 
   // ban
 
-  @ApiTags('Channel User')
-  @Post('/ban/save/:idx')
-  @ApiResponse({ status: 403, description: '권한 없음' })
-  @ApiOperation({
-    summary: 'idx 채널에 밴 유저 등록하기',
-    description: 'Save ban user',
-  })
-  @ApiBody({ type: ChannelUserDto })
-  @ApiParam({ name: 'idx', example: '3', description: 'Channel Idx' })
-  saveBanUser(
-    @Body() channelUserDto: ChannelUserDto,
-    @Param('idx') idx: string,
-  ) {
-    return this.channelService.saveBanUser(+idx, channelUserDto);
-  }
+  // @ApiTags('Channel User')
+  // @Post('/ban/save/:idx')
+  // @ApiResponse({ status: 403, description: '권한 없음' })
+  // @ApiOperation({
+  //   summary: 'idx 채널에 밴 유저 등록하기',
+  //   description: 'Save ban user',
+  // })
+  // @ApiBody({ type: ChannelUserDto })
+  // @ApiParam({ name: 'idx', example: '3', description: 'Channel Idx' })
+  // saveBanUser(
+  //   @Body() channelUserDto: ChannelUserDto,
+  //   @Param('idx') idx: string,
+  // ) {
+  //   return this.channelService.saveBanUser(+idx, channelUserDto);
+  // }
 
   @ApiTags('Channel User')
   @Post('/ban/delete/:idx')
@@ -339,17 +350,17 @@ export class ChannelController {
   }
 
   // mute
-  @ApiTags('Channel User')
-  @Post('/mute/:idx')
-  @ApiResponse({ status: 403, description: '권한 없음' })
-  @ApiOperation({
-    summary: 'idx 채널의 유저 mute 하기',
-    description: 'Mute user',
-  })
-  @ApiBody({ type: ChannelUserDto })
-  muteUser(@Param('idx') idx: string, @Body() channelUserDto: ChannelUserDto) {
-    this.channelService.muteUser(+idx, channelUserDto);
-  }
+  // @ApiTags('Channel User')
+  // @Post('/mute/:idx')
+  // @ApiResponse({ status: 403, description: '권한 없음' })
+  // @ApiOperation({
+  //   summary: 'idx 채널의 유저 mute 하기',
+  //   description: 'Mute user',
+  // })
+  // @ApiBody({ type: ChannelUserDto })
+  // muteUser(@Param('idx') idx: string, @Body() channelUserDto: ChannelUserDto) {
+  //   this.channelService.muteUser(+idx, channelUserDto);
+  // }
 
   // DM
 
