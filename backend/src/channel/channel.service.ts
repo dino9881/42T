@@ -45,9 +45,17 @@ export class ChannelService {
     return channel;
   }
 
+  async isDuplicateName(chName: string) {
+    const channels = await this.findChannelAll();
+    if (channels.find(chan => chan.chName === chName))
+      return true;
+    return false;
+  }
+
   async create(member: MemberInfoDto, createChannelDto: CreateChannelDto) {
     let createData ;
 
+    console.log("비밀번호" + createChannelDto.chPwd);
     if (createChannelDto.chPwd !== undefined) {
       createChannelDto = await this.hashPassword(createChannelDto);
     }
@@ -61,7 +69,8 @@ export class ChannelService {
     if (oper?.channel.length >= 3) {
       throw new ForbiddenException('Already oper on 3 channel');
     }
-
+    // duplicate check
+    await this.memberService.getOne(member.intraId);
     try {
       createData = await this.prisma.channel.create({
         data: {
@@ -356,10 +365,10 @@ export class ChannelService {
   async getMessageList(idx: number, member: MemberInfoDto) {
     // ban check
     const channel = await this.findOneById(idx);
-    if (this.banUsers[idx].find((user) => user.intraId === member.intraId)) return;
+    if (this.banUsers[idx].find((user) => user.intraId === member.intraId)) return {};
     if (this.isDM(idx)) {
-      // if (this.memberService.isDMBan(this.pair[idx].user1, this.pair[idx].user2))
-          // return ;
+      if (await this.memberService.isDMBan(this.pair[idx].user1, this.pair[idx].user2))
+          return null;
     }
     return this.messageList[idx];
   }
@@ -409,19 +418,11 @@ export class ChannelService {
     return false;
   }
 
-  // banMember 가 당한사람
   // DM
   async enterDM(member: MemberInfoDto, channelUserDto: ChannelUserDto) {
     let user1: string, user2: string;
     
-    const friend = await this.memberService.getOneByNick(channelUserDto.nickName);
-    const banUsers = await this.memberService.isBan(member, friend);
-    console.log(banUsers);
-    // if (banUsers) {
-    //   const socketId = this.socketIOGateway.getSocketByintraId(member.intraId);
-    //   console.log(socketId);
-    //   return;
-    // }
+    await this.memberService.getOneByNick(channelUserDto.nickName);
 
     if (member.intraId < channelUserDto.intraId) {
       user1 = member.intraId;
@@ -481,6 +482,15 @@ export class ChannelService {
       if (this.pair[idx].user1 === user1 && this.pair[idx].user2 === user2)
         return true;
     }
+    return false;
+  }
+
+  async isDMBan(chName: string, nickName: string) {
+    const channel = await this.findOneByName(chName);
+    const isDMBan = await this.memberService.isDMBan(this.pair[channel.chIdx].user1, this.pair[channel.chIdx].user2);
+    console.log(isDMBan);
+    if (isDMBan)
+      return true;
     return false;
   }
 }
