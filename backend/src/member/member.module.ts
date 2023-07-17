@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { MemberService } from './member.service';
 import { MemberController } from './member.controller';
-import { MailService } from '../util/mail/mail.service';
+import { MailModule } from 'src/util/mail/mail.module';
+import { ConfigModule } from '@nestjs/config';
+import jwtConfig from 'src/config/jwt.config';
 
 @Module({
-  imports: [],
+  imports: [MailModule, ConfigModule.forFeature(jwtConfig)],
   controllers: [MemberController],
-  providers: [MemberService, MailService],
+  providers: [MemberService],
   exports: [MemberService],
 })
 export class MemberModule {}

@@ -10,18 +10,21 @@ import { swaggerConfig } from './swagger';
 import { json, urlencoded } from 'body-parser';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { PrismaService } from './prisma/prisma.service';
+import { ConfigType } from '@nestjs/config';
+import appConfig from './config/app.config';
 
 const logger = new Logger('App');
 async function bootstrap() {
-  const corsOptions: CorsOptions = {
-    origin: 'http://localhost:3000',
-    credentials: true,
-  };
   try {
     const app = await NestFactory.create(AppModule);
-    app.use(cookieParser('cookieSecret'));
+    const config: ConfigType<typeof appConfig> = app.get(appConfig.KEY);
+    app.use(cookieParser(config.cookeSecret));
     app.useGlobalPipes(new ValidationPipe());
     app.useWebSocketAdapter(new IoAdapter(app));
+    const corsOptions: CorsOptions = {
+      origin: config.frontUrl,
+      credentials: true,
+    };
     app.enableCors(corsOptions);
     swaggerConfig(app);
 
@@ -34,7 +37,7 @@ async function bootstrap() {
 
     app.use(json({ limit: '50mb' }));
     app.use(urlencoded({ limit: '50mb', extended: true }));
-    await app.listen(5001);
+    await app.listen(config.backPort);
     const prismaService = app.get(PrismaService);
     await prismaService.enableShutdownHooks(app);
   } catch (error) {
