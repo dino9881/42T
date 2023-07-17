@@ -11,6 +11,7 @@ import { SocketIOModule } from './socketIO/socketio.module';
 import { APP_PIPE } from '@nestjs/core';
 import { MulterModule } from '@nestjs/platform-express';
 import { multerOptions } from './util/multer.options.factory';
+import appConfig from './config/app.config';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { multerOptions } from './util/multer.options.factory';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '../.env',
+      load: [appConfig],
     }),
     MailModule,
     MulterModule.registerAsync({

@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -10,13 +11,18 @@ import { Member, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
-import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { MemberInfoDto } from './dto/member-info.dto';
+import jwtConfig from 'src/config/jwt.config';
 
 @Injectable()
 export class MemberService {
-  constructor(private prisma: PrismaService, private config: ConfigService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(jwtConfig.KEY)
+    private jwt: ConfigType<typeof jwtConfig>,
+  ) {}
 
   async createAdminMember() {
     const adminMember = await this.prisma.member.findUnique({
@@ -207,8 +213,7 @@ export class MemberService {
     const currentDate = new Date();
     // Date 형식으로 데이터베이스에 저장하기 위해 문자열을 숫자 타입으로 변환 (paresInt)
     const currentRefreshTokenExp = new Date(
-      currentDate.getTime() +
-        parseInt(this.config.get('JWT_REFRESH_EXPIRATION_TIME')),
+      currentDate.getTime() + this.jwt.accessExpire,
     );
     return currentRefreshTokenExp;
   }

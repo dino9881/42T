@@ -1,20 +1,26 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { MemberService } from '../member/member.service';
 import { JwtService } from '@nestjs/jwt';
 import { Member } from '@prisma/client';
-import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '@nestjs/config';
 import axios from 'axios';
+import ftConfig from 'src/config/ft.config';
+import jwtConfig from 'src/config/jwt.config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private memberService: MemberService,
     private jwtService: JwtService,
-    public readonly config: ConfigService,
+    @Inject(jwtConfig.KEY)
+    private jwt: ConfigType<typeof jwtConfig>,
+    @Inject(ftConfig.KEY)
+    private ft: ConfigType<typeof ftConfig>,
   ) {}
 
   public async getIntraAccessToken(code: string): Promise<string> {
@@ -22,9 +28,9 @@ export class AuthService {
     const body = {
       grant_type: 'authorization_code',
       code: code,
-      client_id: this.config.get('CLIENT_ID'),
-      client_secret: this.config.get('CLIENT_SECRET'),
-      redirect_uri: 'http://localhost:3000/login',
+      client_id: this.ft.clientId,
+      client_secret: this.ft.clientSecret,
+      redirect_uri: this.ft.callBack,
     };
     try {
       const response = await axios.post(getTokenUrl, body);
@@ -36,6 +42,7 @@ export class AuthService {
       });
       return data.login;
     } catch (error) {
+      console.log(error);
       throw new UnauthorizedException('intra 인증 실패');
     }
   }
@@ -44,8 +51,8 @@ export class AuthService {
     return await this.jwtService.signAsync(
       { intraId: member.intraId },
       {
-        secret: this.config.get<string>('JWT_ACCESS_SECRET'),
-        expiresIn: this.config.get<string>('JWT_ACCESS_EXPIRATION_TIME'),
+        secret: this.jwt.accessSecret,
+        expiresIn: this.jwt.accessExpire,
       },
     );
   }
@@ -54,8 +61,8 @@ export class AuthService {
     return await this.jwtService.signAsync(
       { intraId: member.intraId },
       {
-        secret: this.config.get<string>('JWT_REFRESH_SECRET'),
-        expiresIn: this.config.get<string>('JWT_REFRESH_EXPIRATION_TIME'),
+        secret: this.jwt.refreshSecret,
+        expiresIn: this.jwt.refreshExpire,
       },
     );
   }
@@ -64,7 +71,7 @@ export class AuthService {
     // Verify refresh token
     // JWT Refresh Token 검증 로직
     const decodedRefreshToken = this.jwtService.verify(refreshToken, {
-      secret: this.config.get<string>('JWT_REFRESH_SECRET'),
+      secret: this.jwt.refreshSecret,
     });
     // user가 존재하는지 체크 (refresh token이 유효한지)
     const intraId: string = decodedRefreshToken.intraId;
