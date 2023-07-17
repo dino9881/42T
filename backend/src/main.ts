@@ -8,6 +8,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { swaggerConfig } from './swagger';
 import { SocketIOGateway } from './socketIO/socketio.gateway';
+import { PrismaService } from './prisma/prisma.service';
 
 const logger = new Logger('App');
 async function bootstrap() {
@@ -32,6 +33,8 @@ async function bootstrap() {
     //   console.log(socket.id);
     // });
     await app.listen(5001);
+    const prismaService = app.get(PrismaService);
+    await prismaService.enableShutdownHooks(app);
   } catch (error) {
     logger.error('An error occurred', error.stack);
   }
