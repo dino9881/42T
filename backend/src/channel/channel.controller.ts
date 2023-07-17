@@ -149,54 +149,17 @@ export class ChannelController {
     return this.channelService.checkPassword(+idx, updateChannelDto);
   }
 
-  @ApiTags('Channel')
-  @Post('/author/:idx')
-  @ApiOperation({
-    summary: 'idx 채널 setting 권한 인지 확인',
-    description: 'Authorized',
-  })
-  @ApiBody({ type: MemberInfoDto })
-  @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx' })
-  isAuthor(@GetMember() member: MemberInfoDto, @Param('idx') idx: string) {
-    return this.channelService.isAuthor(+idx, member.intraId);
-  }
-
-  @ApiTags('Channel')
-  @Post('/oper/:idx')
-  @ApiOperation({
-    summary: 'idx 채널의 owner 인지 확인',
-    description: 'Is owner',
-  })
-  @ApiBody({ type: MemberInfoDto })
-  @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx' })
-  isOwner(@GetMember() member: MemberInfoDto, @Param('idx') idx: string) {
-    return this.channelService.isOwner(+idx, member.intraId);
-  }
-
-  @ApiTags('Channel')
-  @Post('/admin/:idx')
-  @ApiOperation({
-    summary: 'idx 채널의 administrator 인지 확인',
-    description: 'Is administrator',
-  })
-  @ApiBody({ type: MemberInfoDto })
-  @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx' })
-  isAdmin(@GetMember() member: MemberInfoDto, @Param('idx') idx: string) {
-    return this.channelService.isAdmin(+idx, member.intraId);
-  }
-
-  @ApiTags('Channel')
-  @Post('/dm/:idx')
-  @ApiOperation({
-    summary: 'idx 채널이 dm 방인지 확인',
-    description: 'Is DM Channel',
-  })
-  @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx' })
-  isDM(@Param('idx') idx: string) {
-    return this.channelService.isDM(+idx);
-  }
-
   // channel users
+
+  @ApiTags('Channel User')
+  @Get('/my/all')
+  @ApiOperation({
+    summary: '나의 모든 채널 가져오기',
+    description: 'Get my all channel',
+  })
+  getChannels(@GetMember() member: MemberInfoDto) {
+    return this.channelService.getChannels(member.intraId);
+  }
 
   @ApiTags('Channel User')
   @Post('/enter/:idx')
@@ -225,13 +188,39 @@ export class ChannelController {
   }
 
   @ApiTags('Channel User')
-  @Get('/my/all')
+  @Post('/author/:idx')
   @ApiOperation({
-    summary: '나의 모든 채널 가져오기',
-    description: 'Get my all channel',
+    summary: 'idx 채널 setting 권한 인지 확인',
+    description: 'Authorized',
   })
-  getChannels(@GetMember() member: MemberInfoDto) {
-    return this.channelService.getChannels(member.intraId);
+  @ApiBody({ type: MemberInfoDto })
+  @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx' })
+  isAuthor(@GetMember() member: MemberInfoDto, @Param('idx') idx: string) {
+    return this.channelService.isAuthor(+idx, member.intraId);
+  }
+
+  @ApiTags('Channel User')
+  @Post('/oper/:idx')
+  @ApiOperation({
+    summary: 'idx 채널의 owner 인지 확인',
+    description: 'Is owner',
+  })
+  @ApiBody({ type: MemberInfoDto })
+  @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx' })
+  isOwner(@GetMember() member: MemberInfoDto, @Param('idx') idx: string) {
+    return this.channelService.isOwner(+idx, member.intraId);
+  }
+
+  @ApiTags('Channel User')
+  @Post('/admin/:idx')
+  @ApiOperation({
+    summary: 'idx 채널의 administrator 인지 확인',
+    description: 'Is administrator',
+  })
+  @ApiBody({ type: MemberInfoDto })
+  @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx' })
+  isAdmin(@GetMember() member: MemberInfoDto, @Param('idx') idx: string) {
+    return this.channelService.isAdmin(+idx, member.intraId);
   }
 
   // ban
@@ -265,6 +254,16 @@ export class ChannelController {
   // DM
 
   @ApiTags('Channel DM')
+  @Get('/my/dm')
+  @ApiOperation({
+    summary: '나의 모든 DM 채널 가져오기',
+    description: 'Get my all DM channel',
+  })
+  getMyDMChannels(@GetMember() member: MemberInfoDto) {
+    return this.channelService.getMyDMChannels(member.intraId);
+  }
+
+  @ApiTags('Channel DM')
   @Post('/enter/dm/chan')
   @ApiOperation({ summary: 'DM 채널 생성', description: 'Create Channel API' })
   @ApiCreatedResponse({ type: CreateChannelDto })
@@ -277,17 +276,6 @@ export class ChannelController {
   }
 
   @ApiTags('Channel DM')
-  @Get('/my/dm')
-  @ApiOperation({
-    summary: '나의 모든 DM 채널 가져오기',
-    description: 'Get my all DM channel',
-  })
-  getMyDMChannels(@GetMember() member: MemberInfoDto) {
-    return this.channelService.getMyDMChannels(member.intraId);
-  }
-
-  
-  @ApiTags('Channel DM')
   @Get('dm/all')
   @ApiCreatedResponse({ type: UpdateChannelDto })
   @ApiOperation({
@@ -299,6 +287,16 @@ export class ChannelController {
   }
 
   // private
+
+  @ApiTags('Channel Private')
+  @Get('/my/private')
+  @ApiOperation({
+    summary: '나의 모든 Private 채널 가져오기',
+    description: 'Get my all Pravate channel',
+  })
+  getMyPrivateChannels(@GetMember() member: MemberInfoDto) {
+    return this.channelService.getMyPrivateChannels(member.intraId);
+  }
 
   @ApiTags('Channel Private')
   @Post('/create')
@@ -324,14 +322,5 @@ export class ChannelController {
   findPrivateChannelAll() {
     return this.channelService.findPrivateChannelAll();
   }
-  
-  @ApiTags('Channel Private')
-  @Get('/my/private')
-  @ApiOperation({
-    summary: '나의 모든 Private 채널 가져오기',
-    description: 'Get my all Pravate channel',
-  })
-  getMyPrivateChannels(@GetMember() member: MemberInfoDto) {
-    return this.channelService.getMyPrivateChannels(member.intraId);
-  }
+
 }
