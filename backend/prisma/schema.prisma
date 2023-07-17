@@ -38,6 +38,7 @@ model Channel {
   chPwd       String?
   chUserCnt   Int?
   isDM        Boolean?
+  isPrivate   Boolean?
   owner    Member? @relation("channel", fields: [ownerId], references: [intraId])
   ownerId  String?
 }
