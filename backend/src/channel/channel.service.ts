@@ -53,7 +53,7 @@ export class ChannelService {
     if (createChannelDto.chPwd !== "") {
       createChannelDto = await this.hashPassword(createChannelDto);
     }
-    const { chName, chPwd, isDM } = createChannelDto;
+    const { chName, chPwd, isDM, isPrivate } = createChannelDto;
 
     // member check
     await this.memberService.getOne(member.intraId);
@@ -65,7 +65,7 @@ export class ChannelService {
     if (oper?.channel.length >= 3) {
       throw new ForbiddenException('Already oper on 3 channel');
     }
-    // duplicate check
+    // duplicate name check
     if (await this.isDuplicateName(chName))
       throw new ConflictException('Duplicate chName');
     const createData = await this.prisma.channel.create({
@@ -74,15 +74,18 @@ export class ChannelService {
         chUserCnt: 1,
         chPwd,
         isDM: isDM === undefined ? false : isDM,
+        isPrivate: isPrivate === undefined ? false : isPrivate,
         owner: { connect: { intraId: member.intraId } },
       },
     });
+    // initialize
     this.administrators[createData.chIdx] = [];
     this.channelUsers[createData.chIdx] = [
       { intraId: member.intraId, avatar: member.avatar, nickName: member.nickName },];
     this.banUsers[createData.chIdx] = [];
     this.messageList[createData.chIdx] = [];
     this.mutedUsers[createData.chIdx] = [];
+    this.pair[createData.chIdx] = {user1:"", user2:""};
     return createData;
   }
 
@@ -91,11 +94,13 @@ export class ChannelService {
     channel.chPwd = await bcrypt.hash(channel.chPwd, salt);
   }
 
-  // 삭제도 되는지 확인
   async updatePwd(idx: number, intraId: string, updateChannelDto: UpdateChannelDto) {
     const { chPwd } = updateChannelDto;
-    if (!this.isOperator(idx, intraId))
+    await this.findOneById(idx);
+    // auth check
+    if (!this.isOwner(idx, intraId))
       throw new ForbiddenException("no permissions");
+    // hashing
     if (chPwd !== undefined && chPwd !== "") {
       await this.hashPasswordModify(updateChannelDto);
     }
@@ -107,14 +112,6 @@ export class ChannelService {
     return updateData;
   }
 
-  async findOneById(idx: number) {
-    const findData = await this.prisma.channel.findUnique({
-      where: { chIdx: idx },
-    });
-    if (findData === null) throw new NotFoundException('channel not found');
-    return findData;
-  }
-
   async delete(idx: number) {
     await this.findOneById(idx);
     await this.prisma.channel.delete({ where: { chIdx: idx } });
@@ -123,14 +120,19 @@ export class ChannelService {
     this.banUsers[idx] = [];
     this.messageList[idx] = [];
     this.mutedUsers[idx] = [];
+    this.pair[idx] = {user1: "", user2: ""};
   }
-
+  
   async findChannelAll() {
-    return await this.prisma.channel.findMany({ where: { isDM: false } });
+    return await this.prisma.channel.findMany({ where: { isDM: false, isPrivate: false } });
   }
-
-  async findDMAll() {
-    return await this.prisma.channel.findMany({ where: { isDM: true } });
+  
+  async findOneById(idx: number) {
+    const findData = await this.prisma.channel.findUnique({
+      where: { chIdx: idx },
+    });
+    if (findData === null) throw new NotFoundException('channel not found');
+    return findData;
   }
 
   async findOneByName(name: string) {
@@ -166,12 +168,12 @@ export class ChannelService {
   }
 
   async isAuthor(idx: number, intraId: string) {
-    if (await this.isOperator(idx, intraId) || await this.isAdmin(idx, intraId))
+    if (await this.isOwner(idx, intraId) || await this.isAdmin(idx, intraId))
       return true;
     return false;
   }
 
-  async isOperator(idx: number, intraId: string) {
+  async isOwner(idx: number, intraId: string) {
     const channel = await this.findOneById(idx);
     const { ownerId } = channel;
     if (ownerId === intraId) return true;
@@ -187,10 +189,13 @@ export class ChannelService {
 
   async setAdmin(idx: number, intraId: string, channelUserDto: ChannelUserDto) {
     await this.findOneById(idx);
-    if (!await this.isOperator(idx, intraId))
+    // owner 인지 체크
+    if (!await this.isOwner(idx, intraId))
       throw new ForbiddenException("no permissions");
-    if (await this.isOperator(idx, channelUserDto.intraId))
+    // 상대가 owner 인지 체크
+    if (await this.isOwner(idx, channelUserDto.intraId))
       throw new ForbiddenException("no permissions");
+    // 채널에 들어와있는 user 인지 체크
     if (!await this.isChanUsersById(idx, channelUserDto.intraId))
       throw new NotFoundException('user not found');
     if (this.administrators[idx].find(user => user.intraId === channelUserDto.intraId))
@@ -247,20 +252,23 @@ export class ChannelService {
     );
     
     // 아무도 안 남을 경우 채널 삭제?
-    if (updatedChannel.chUserCnt <= 0) this.delete(idx);
-    else if (memberId === updatedChannel.ownerId) {
+    if (updatedChannel.chUserCnt <= 0) {
+      this.delete(idx);
+      return true;
+    } else if (memberId === updatedChannel.ownerId) {
       await this.prisma.channel.update({
         where: { chIdx: idx },
         data: { ownerId: null },
       });
     }
+    return false;
   }
 
   async kick(idx: number, operId: string, channelUserDto: ChannelUserDto) {
     await this.findOneById(idx);
-    if (!await this.isOperator(idx, operId) && !await this.isAdmin(idx, operId))
+    if (!await this.isOwner(idx, operId) && !await this.isAdmin(idx, operId))
       throw new ForbiddenException('no permissions');
-    if (await this.isOperator(idx, channelUserDto.intraId))
+    if (await this.isOwner(idx, channelUserDto.intraId))
       throw new ForbiddenException('no permissions');
     if (!await this.isChanUsersById(idx, channelUserDto.intraId))
       throw new NotFoundException('user not found');
@@ -317,9 +325,9 @@ export class ChannelService {
   async saveBanUser(idx: number, operId: string, channelUserDto: ChannelUserDto) {
     const { intraId } = channelUserDto;
     await this.findOneById(idx);
-    if (!await this.isOperator(idx, operId) && !await this.isAdmin(idx, operId))
+    if (!await this.isOwner(idx, operId) && !await this.isAdmin(idx, operId))
       throw new ForbiddenException('no permissions');
-    if (await this.isOperator(idx, channelUserDto.intraId))
+    if (await this.isOwner(idx, channelUserDto.intraId))
       throw new ForbiddenException('no permissions');
     if (!await this.isChanUsersById(idx, channelUserDto.intraId))
       throw new NotFoundException('user not found');
@@ -329,17 +337,23 @@ export class ChannelService {
     this.banUsers[idx].push({ intraId });
   }
 
-  async deleteBanUser(idx: number, channelUserDto: ChannelUserDto) {
-    const { intraId } = channelUserDto;
-    await this.findOneById(idx);
-    this.banUsers[idx] = this.banUsers[idx].filter(
-      (item) => item.intraId !== intraId,
-    );
-  }
-
   async getChannelBanUsers(idx: number) {
     await this.findOneById(idx);
     return this.banUsers[idx];
+  }
+
+  async isBan(chName: string, intraId: string) {
+    const channel = await this.findOneByName(chName);
+    if (await this.isDM(channel.chIdx)){
+      const isDMBan = await this.memberService.isDMBan(this.pair[channel.chIdx].user1, this.pair[channel.chIdx].user2);
+      if (isDMBan)
+        return true;
+    } else {
+      const banUsers = await this.getChannelBanUsers(channel.chIdx);
+      if (banUsers.find(users => users.intraId === intraId))
+        return true;
+    }
+    return false;
   }
 
   // message
@@ -358,12 +372,13 @@ export class ChannelService {
   }
 
   // mute
+
   async muteUser(idx: number, operId: string, channelUserDto: ChannelUserDto) {
     const { intraId, nickName } = channelUserDto;
     await this.findOneById(idx);
-    if (!await this.isOperator(idx, operId) && !await this.isAdmin(idx, operId))
+    if (!await this.isOwner(idx, operId) && !await this.isAdmin(idx, operId))
       throw new ForbiddenException('no permissions');
-    if (await this.isOperator(idx, channelUserDto.intraId))
+    if (await this.isOwner(idx, channelUserDto.intraId))
       throw new ForbiddenException('no permissions');
     if (!await this.isChanUsersById(idx, channelUserDto.intraId))
       throw new NotFoundException('user not found');
@@ -371,16 +386,17 @@ export class ChannelService {
     const foundUser = this.mutedUsers[idx].find(
       (user) => user.intraId === intraId,
     );
-    // reset
+    // 이미 mute 되어있으면 reset 후 다시 실행
     if (foundUser) {
       clearTimeout(foundUser.timeoutId);
       this.mutedUsers[idx] = this.mutedUsers[idx].filter(
         (user) => user.intraId !== intraId,
       );
     }
+    // 5분 후 unmute 실행
     const timeoutId = setTimeout(() => {
       this.unmuteUser(idx, intraId);
-    }, 1 * 60 * 1000);
+    }, 5 * 60 * 1000);
     this.mutedUsers[idx].push({ intraId, nickName, timeoutId });
   }
 
@@ -403,25 +419,21 @@ export class ChannelService {
   }
 
   // DM
-  async enterDM(member: MemberInfoDto, channelUserDto: ChannelUserDto) {
-    let user1: string, user2: string;
-    
-    await this.memberService.getOneByNick(channelUserDto.nickName);
 
-    if (member.intraId < channelUserDto.intraId) {
-      user1 = member.intraId;
-      user2 = channelUserDto.intraId;
-    } else {
-      user1 = channelUserDto.intraId;
-      user2 = member.intraId;
-    }
+  async enterDM(member: MemberInfoDto, channelUserDto: ChannelUserDto) {
+    // member check
+    await this.memberService.getOneByNick(channelUserDto.nickName);
+    const user1 = member.intraId < channelUserDto.intraId ? member.intraId : channelUserDto.intraId;
+    const user2 = member.intraId < channelUserDto.intraId ? channelUserDto.intraId : member.intraId;
     const chName = "#" + user1 + user2;
+    // 이미 존재하면 채널 정보 반환
     if (this.isAlreadyDM(user1, user2)) {
       const data = await this.prisma.channel.findUnique({
         where: { chName: chName }
       });
       return data;
     }
+    // 채널 생성
     const createData = await this.prisma.channel.create({
       data: {
         chName,
@@ -430,7 +442,7 @@ export class ChannelService {
         owner: { connect: { intraId: "admin" } }
       },
     });
-
+    // initialize
     this.pair[createData.chIdx] = { user1, user2 };
     this.channelUsers[createData.chIdx] = [
       { intraId: user1, avatar: '', nickName: '' },
@@ -446,9 +458,7 @@ export class ChannelService {
   async getMyDMChannels(intraId: string) {
     let channels = [];
     const allChannel = await this.findDMAll();
-    console.log('get all DMChannel');
     const chIdxList = allChannel.map((channel) => channel.chIdx);
-
     for (const idx of chIdxList) {
       const channel = await this.findOneById(idx);
       const users = this.channelUsers[idx];
@@ -478,18 +488,30 @@ export class ChannelService {
     else
       return this.pair[channel.chIdx].user1;
   }
+  
+  async findDMAll() {
+    return await this.prisma.channel.findMany({ where: { isDM: true } });
+  }
 
-  async isBan(chName: string, intraId: string) {
-    const channel = await this.findOneByName(chName);
-    if (await this.isDM(channel.chIdx)){
-      const isDMBan = await this.memberService.isDMBan(this.pair[channel.chIdx].user1, this.pair[channel.chIdx].user2);
-      if (isDMBan)
-        return true;
-    } else {
-      const banUsers = await this.getChannelBanUsers(channel.chIdx);
-      if (banUsers.find(users => users.intraId === intraId))
-        return true;
+  // private
+
+  async findPrivateChannelAll() {
+    return await this.prisma.channel.findMany({ where: { isPrivate: true } });
+  }
+
+  async getMyPrivateChannels(intraId: string) {
+    let channels = [];
+    const allChannel = await this.findPrivateChannelAll();
+    const chIdxList = allChannel.map((channel) => channel.chIdx);
+    for (const idx of chIdxList) {
+      const channel = await this.findOneById(idx);
+      const users = this.channelUsers[idx];
+      for (const data of users) {
+        if (data.intraId === intraId) {
+          channels.push(channel);
+        }
+      }
     }
-    return false;
+    return channels;
   }
 }

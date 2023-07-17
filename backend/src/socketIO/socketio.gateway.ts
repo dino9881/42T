@@ -134,8 +134,15 @@ export class SocketIOGateway
 
   @SubscribeMessage('leave-channel')
   async handleChannelLeave(client: any, payload: any) {
-    const { channelName, nickName } = payload;
+    const { channelName, chIdx, nickName } = payload;
     client.leave(channelName);
+    if (this.channelService.leave(chIdx, client['intraId'])) {
+      const members = await this.memberService.getAll();
+      members.map(users => {
+        if (users.intraId !== "admin")
+        this.getSocketByintraId(users.intraId)?.emit("reload");
+      });
+    }
     console.log(`${nickName} leave channel : ${channelName}`);
   }
 
@@ -237,8 +244,8 @@ export class SocketIOGateway
     client.emit('game-oppo-not-found', { nickName: nickName });
   }
 
-  // channel
 
+  // 일반채널 생성
   @UseFilters(ConflictExceptionFilter)
   @SubscribeMessage('create-channel')
   async handleChannelCreate(client: Socket, payload: Payload) {
@@ -264,6 +271,7 @@ export class SocketIOGateway
     });
   }
 
+  // 채널 kick, ban, mute, admin
   @UseFilters(ConflictExceptionFilter)
   @SubscribeMessage('channel-kick')
   async handleChannelKick(client: Socket, payload: Payload) {

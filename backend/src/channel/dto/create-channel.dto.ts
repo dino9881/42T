@@ -22,4 +22,8 @@ export class CreateChannelDto {
   @IsBoolean()
   @IsOptional()
   isDM?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  isPrivate?: boolean;
 }
