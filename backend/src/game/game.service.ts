@@ -61,16 +61,18 @@ export class GameService {
     while (this.queue.length >= 2) {
       const p1 = this.queue.shift();
       const p2 = this.queue.shift();
-      await this.makeGame(p1, p2);
+      await this.makeGame(p1, p2, 1); //queue대기자는 normal mode
     }
   }
 
-  async makeGame(p1: Socket, p2: Socket) {
+  async makeGame(p1: Socket, p2: Socket, mode: number) {
     console.log('makeGame');
     p1.emit('game-ready', { player1: p1['nickName'], player2: p2['nickName'] });
     p2.emit('game-ready', { player1: p1['nickName'], player2: p2['nickName'] });
     this.memberService.updateStatus(p1['intraId'], 2); // 2: 게임중
     this.memberService.updateStatus(p2['intraId'], 2);
+    // mode에 따라서 게임 시작하기
+    console.log(mode);
   }
 
   async exitQueue(member: Socket) {
