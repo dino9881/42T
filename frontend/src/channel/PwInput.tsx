@@ -72,6 +72,7 @@ function PwInput({ chIdx, chPwd, chUserCnt } : PwInputProps) {
                     .post(`http://localhost:5001/channel/enter/${chIdx}`)
                     .then((response) => {
                         navigate("/chat", { state: { chIdx } });
+
                     })
                     .catch((error) => {
                         // 요청이 실패하면 에러 처리

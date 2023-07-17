@@ -24,17 +24,17 @@ interface ChatItemProps {
 }
 
 interface ChatProps {
-    channelName: string;
     channelInit: (channelName : string, channelIdx : number) => void;
     isDM: boolean;
 }
 
 
 
-function Chat({channelName , channelInit}:ChatProps) {
+function Chat({channelInit}:ChatProps) {
     const location = useLocation();
     const [nickName, setNickname] = useState("");
     const [avatar, setAvatar] = useState("");
+    const [channelName, setChannelName] = useState("");
     const [msgList, setMsgList] = useState<MessageItem[]>(() => initialData());
     const navigate = useNavigate();
 	
@@ -49,7 +49,8 @@ function Chat({channelName , channelInit}:ChatProps) {
             setNickname(response.data.nickName);
             setAvatar(response.data.avatar);
             socket.emit("enter-channel", {channelName: channelName,nickName: response.data.nickName});
-                    });
+        });
+            
         const state = location.state as { chIdx : number };
         console.log(state)
         if (state && state.chIdx) {
@@ -60,7 +61,7 @@ function Chat({channelName , channelInit}:ChatProps) {
                 channelInit(response.data.chName, state.chIdx);
                 localStorage.setItem('chName', response.data.chName);
                 localStorage.setItem('chIdx', state.chIdx.toString());
-                
+                setChannelName(response.data.chName);
             })
             .catch((error) => {
                 // 요청이 실패하면 에러 처리
@@ -71,7 +72,7 @@ function Chat({channelName , channelInit}:ChatProps) {
             .get(`http://localhost:5001/channel/message/${state.chIdx}`)
             .then((response) => {
                 // 요청이 성공하면 데이터를 상태로 설정
-                console.log(response.data)
+                // console.log(response.data)
                 setMsgList(response.data);
             })
             .catch((error) => {
@@ -83,7 +84,7 @@ function Chat({channelName , channelInit}:ChatProps) {
             .get(`http://localhost:5001/channel/message/${state.chIdx}`)
             .then((response) => {
                 // 요청이 성공하면 데이터를 상태로 설정
-                console.log(response.data);
+                // console.log(response.data);
 
             })
             .catch((error) => {
@@ -93,7 +94,6 @@ function Chat({channelName , channelInit}:ChatProps) {
         } else {
             channelInit("error", 0);
         }
-        
 
         socket.on("welcome", (nickName) => {
             const newMessage = {nickName: "System", message: `${nickName} : 이 입장했습니다.` };
@@ -105,9 +105,29 @@ function Chat({channelName , channelInit}:ChatProps) {
             const newMessage = {nickName: nickName, message: message};
             addMessage(newMessage, avatar);
         });
+
+        socket.on("kick", () => {
+            navigate('/main');
+            alert("너 퇴장당함");
+        });
+        socket.on("ban", () => {
+            navigate('/main');
+            alert("너 밴당함");
+        });
+        socket.on("mute", () => {
+            alert("너 뮤트당함");
+        });
+        socket.on("admin", () => {
+            alert("너 관리자됨");
+        });
+
         return () => {
             socket.off("send-message");
             socket.off("welcome");
+            socket.off("kick");
+            socket.off("mute");
+            socket.off("ban");
+            socket.off("admin");
           };
     }, [channelName, channelInit, location.state]);
 
@@ -135,7 +155,7 @@ function Chat({channelName , channelInit}:ChatProps) {
             .post(`http://localhost:5001/channel/leave/${state.chIdx}`, {memberId : nickName})
             .then((response) => {
                 console.log(response.data);
-                console.log(nickName);
+                // console.log(nickName);
                 socket.emit("leave-channel",{channelName, nickName});
             })
             .catch((error) => {
@@ -156,7 +176,7 @@ function Chat({channelName , channelInit}:ChatProps) {
                 <span>채널 나가기</span>
             </div>
             <div className="chat-scroll" id="chat-scroll">
-                {msgList.map((message, index) => (
+                {msgList && msgList.map((message, index) => (
                     <ChatItem
                         key={index}
                         nickName={message.nickName}

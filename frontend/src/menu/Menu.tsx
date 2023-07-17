@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { socket } from "../socket";
 import ChannelNew from "../channel/ChannelNew"
 import MyChannelList from "./MyChannelList";
@@ -39,6 +39,8 @@ interface Dm {
 	const [intraId, setIntraId] = useState("");
 	const [nickName, setNickName] = useState("");
 	const [chName, setChName] = useState(channelName);
+	const [chIdx, setChIdx] = useState(0);
+
 	const [showWaiting, setShowWaiting] = useState(false);
 	const [showCancel, setShowCancel] = useState(false);
 	const [showDropDownBox, setShowDropDownBox] = useState(false); // 추가된 상태 값
@@ -46,8 +48,20 @@ interface Dm {
 	const navigate = useNavigate();
 	const [channels, setChannels] = useState<Channel[]>([]);
 	const [dms, setDms] = useState<Dm[]>([]);
-
-
+	const location = useLocation();
+	const state = location.state as { chIdx : number };
+	if (state && state.chIdx) {
+		instance
+		.get(`http://localhost:5001/channel/name/${state.chIdx}`)
+		.then((response) => {
+			// 요청이 성공하면 데이터를 상태로 설정
+			setChName(response.data.chName);
+			setChIdx(state.chIdx);
+		})
+		.catch((error) => {
+			// 요청이 실패하면 에러 처리
+			console.error("API 요청 실패:", error);
+		})};
 
 	function getChannel() {
 		instance.get("http://localhost:5001/channel/my/all")
@@ -98,18 +112,24 @@ interface Dm {
 	}
 	
 	const handleSettingButton = () => {
-		instance.post(`http://localhost:5001/channel/oper/${channelIdx}`)
+		instance.post(`http://localhost:5001/channel/author/${channelIdx}`)
               .then((response) => {
                 // console.log(response.data)
                 if (response.data!==true)
                 {
                     alert("관리자만 접속할 수 있습니다!");
-                    navigate('/chat');
+                    navigate('/chat', {
+						state: {
+						channelName : chName,
+						chIdx : chIdx
+						}
+					});
                 }
                 else
 				{navigate('/admin', {
 					state: {
-					channelName : channelName
+					channelName : chName,
+					chIdx : chIdx
 					}
 				})}
               })

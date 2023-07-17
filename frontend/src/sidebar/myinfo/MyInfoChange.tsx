@@ -1,7 +1,6 @@
 import React, { useState, ChangeEvent, KeyboardEvent } from "react";
 import instance from "../../refreshToken";
 import './MyInfo.css';
-import { error } from "console";
 
 interface MyInfoChangeProps {
 	myData: any;
@@ -88,20 +87,12 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 			reader.onload = () => {
 				const base64Image = reader.result as string;
 				setAvatarUrl(base64Image);
-				// setChangeData(prevData => ({
-				// 	...prevData,
-				// 	avatar: base64Image
-				// }));
-				instance.post("http://localhost:5001/member/upload/avatar/", base64Image)
-				.then((response) => {
-					console.log(response);
-				})
-				.catch((error) => {
-					
-				})
+				setChangeData(prevData => ({
+					...prevData,
+					avatar: base64Image
+				}));
 			};
 			reader.readAsDataURL(file);
-
 		}
 	};
 
@@ -128,7 +119,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 						내사진
 					</button>
 				</div>
-				<input type="file" accept="image/*" onChange={handleUpload} />
+				( 최대 40KB )<input type="file" accept="image/*" onChange={handleUpload} />
 			</div>
 			<div className="my-info-change-nick-box">
 				<div>닉네임</div>

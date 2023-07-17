@@ -11,7 +11,7 @@ interface ContentsProps {
 function Contents ({mainComponent, headerComponent} : ContentsProps) {
           instance.get('http://localhost:5001/auth/me').then((response) => {
             socket.emit("member-info", response.data);
-            console.log("member-info emit");
+            // console.log("member-info emit");
             });
           return <div>
           <div className="contents">
