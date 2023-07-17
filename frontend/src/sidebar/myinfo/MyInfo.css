@@ -131,7 +131,7 @@
 .my-info-change-avatar {
 	/* overflow: hidden; */
 	position: absolute;
-	top: 30px;
+	top: 25px;
 	border-radius: 100%;
 	width: 130px;
 	height: 130px;
@@ -151,7 +151,7 @@
 
 .my-info-change-avatar-box {
 	display: flex;
-	bottom: 165px;
+	bottom: 145px;
 	position: absolute;
 	width: 80%;
 	flex-direction: column;
@@ -174,7 +174,7 @@
 
 .my-info-change-nick-box {
 	position: absolute;
-	bottom: 90px;
+	bottom: 80px;
 }
 
 .my-info-change-set-button {

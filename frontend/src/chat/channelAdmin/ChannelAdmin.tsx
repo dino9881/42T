@@ -2,6 +2,7 @@ import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import './ChannelAdmin.css'
 import instance from "../../refreshToken";
 import { useNavigate } from "react-router-dom";
+import { socket } from "../../socket";
 
 interface UserInfos {
     intraId : string,
@@ -28,6 +29,7 @@ interface AdminUserListProps{
 function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
         const [banList, setBanList] = useState<UserInfos[]>(() => initialData());
         const [userList, setUserList] = useState<UserInfos[]>(() => initialData());
+        const [isOwner , setOwner] = useState(false);
         const chName = channelName;
         const chIdx = channelIdx;
 
@@ -35,24 +37,42 @@ function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
             return [];
           }
 
-          useEffect(() => {
+        useEffect(() => {
 
-            instance.get(`http://localhost:5001/channel/users/${channelIdx}`)
-              .then((response) => {
-                setUserList(response.data);
-              })
-              .catch((error) => {
-                console.error("API 요청 실패:", error);
-              });
+        instance.get(`http://localhost:5001/channel/users/${channelIdx}`)
+            .then((response) => {
+            setUserList(response.data);
+            })
+            .catch((error) => {
+            console.error("API 요청 실패:", error);
+            });
 
-              instance.get(`http://localhost:5001/channel/ban/${channelIdx}`)
-              .then((response) => {
-                setBanList(response.data);
-              })
-              .catch((error) => {
-                console.error("API 요청 실패:", error);
-              });
-          }, []);
+            instance.get(`http://localhost:5001/channel/ban/${channelIdx}`)
+            .then((response) => {
+            setBanList(response.data);
+            })
+            .catch((error) => {
+            console.error("API 요청 실패:", error);
+            });
+            
+            instance.post(`http://localhost:5001/channel/oper/${channelIdx}`)
+            .then((response) => {
+                setOwner(response.data);
+            })
+            .catch((error) => {
+            console.error("API 요청 실패:", error);
+            });
+
+            socket.on("no-permissions", () => {
+                alert("너 권한없음");
+            });
+
+            return () => {
+                socket.off("no-permissions")
+              }
+        }, []);
+
+          
 
     return <div className="channel-admin">
         <span>admin  : {chName}</span>
@@ -63,7 +83,7 @@ function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
         <Setting setting="kick" chIdx={chIdx} userList={userList} banList={banList} />
         <Setting setting="ban" chIdx={chIdx}userList={userList} banList={banList} />
 
-        <PassSetting/>
+        { isOwner && <PassSetting/>}
       </div>
     </div>
 }
@@ -95,16 +115,18 @@ function Setting({setting, chIdx , userList} : SettingInfo ){
             const targetIntraId = userList.find(user => user.nickName === text);
             if (targetIntraId)
             {
-                instance
-                .post(`http://localhost:5001/channel/${chIdx}`, {intraId : targetIntraId, nickName: text})
-                .then((response) => {
-                    console.log(response.data);
-                })
-                .catch((error) => {
-                    console.error("API 요청 실패:", error);
-                });
-                navigate('/main');
-                alert('관리자가 변경되어 main 페이지로 이동합니다.');
+                // instance
+                // .post(`http://localhost:5001/channel/${chIdx}`, {intraId : targetIntraId, nickName: text})
+                // .then((response) => {
+                //     console.log(response.data);
+                // })
+                // .catch((error) => {
+                //     console.error("API 요청 실패:", error);
+                // });
+                // navigate('/main');
+                // alert('관리자가 변경되어 main 페이지로 이동합니다.');
+                socket.emit("channel-admin", { chIdx: chIdx, intraId: targetIntraId.intraId });
+                alert('실행 완료');
             }
             else
                 alert("올바르지 않은 닉네임")
@@ -114,14 +136,15 @@ function Setting({setting, chIdx , userList} : SettingInfo ){
             const targetIntraId = userList.find(user => user.nickName === text);
             if (targetIntraId)
             {
-                instance
-                .post(`http://localhost:5001/channel/mute/${chIdx}`, {intraId : targetIntraId, nickName: text})
-                .then((response) => {
-                    console.log(response.data);
-                })
-                .catch((error) => {
-                    console.error("API 요청 실패:", error);
-                });
+                // instance
+                // .post(`http://localhost:5001/channel/mute/${chIdx}`, {intraId : targetIntraId, nickName: text})
+                // .then((response) => {
+                //     console.log(response.data);
+                // })
+                // .catch((error) => {
+                //     console.error("API 요청 실패:", error);
+                // });
+                socket.emit("channel-mute", { chIdx: chIdx, intraId: targetIntraId.intraId, nickName: targetIntraId.nickName });
                 alert('실행 완료');
             }
             else
@@ -132,14 +155,15 @@ function Setting({setting, chIdx , userList} : SettingInfo ){
             const targetIntraId = userList.find(user => user.nickName === text);
             if (targetIntraId)
             {
-                instance
-                .post(`http://localhost:5001/channel/kick/${chIdx}`, {intraId : targetIntraId, nickName: text})
-                .then((response) => {
-                    console.log(response.data);
-                })
-                .catch((error) => {
-                    console.error("API 요청 실패:", error);
-                });
+                // instance
+                // .post(`http://localhost:5001/channel/kick/${chIdx}`, {intraId : targetIntraId, nickName: text})
+                // .then((response) => {
+                //     console.log(response.data);
+                // })
+                // .catch((error) => {
+                //     console.error("API 요청 실패:", error);
+                // });
+                socket.emit("channel-kick", { chIdx: chIdx, intraId: targetIntraId.intraId });
                 alert('실행 완료');
 
             }
@@ -151,16 +175,18 @@ function Setting({setting, chIdx , userList} : SettingInfo ){
             const targetIntraId = userList.find(user => user.nickName === text);
             if (targetIntraId)
             {
-                instance
-                .post(`http://localhost:5001/channel/ban/save/${chIdx}`, {intraId : targetIntraId, nickName: text})
-                .then((response) => {
-                    console.log(response.data);
-                })
-                .catch((error) => {
-                    console.error("API 요청 실패:", error);
-                });
-                window.location.reload();
+                // instance
+                // .post(`http://localhost:5001/channel/ban/save/${chIdx}`, {intraId : targetIntraId, nickName: text})
+                // .then((response) => {
+                //     console.log(response.data);
+                // })
+                // .catch((error) => {
+                //     console.error("API 요청 실패:", error);
+                // });
+                // window.location.reload();
+                socket.emit("channel-ban", { chIdx: chIdx, intraId: targetIntraId.intraId });
                 alert('실행 완료');
+                window.location.reload();
             }
             else
                 alert("올바르지 않은 닉네임")

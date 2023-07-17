@@ -1,7 +1,7 @@
-import React from "react";
-import { socket } from "../../socket";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import instance from "../../refreshToken";
+import Custom from "../../custom/Custom";
 import './FriendInfo.css';
 import '../myinfo/MyInfo.css';
 
@@ -17,36 +17,42 @@ interface FriendInfoProps {
 }
 
 const FriendInfoSimple: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, avatar, winCnt, loseCnt, currstate, state }) => {
+	const [isCustomOpen, setIsCustomOpen] = useState(false);
     const navigate = useNavigate();
-
+	
 	const handleButtonClick = () => {
 		instance
-            .post('http://localhost:5001/channel/enter/dm/chan',{
-				"intraId": intraId,
-				"nickName": nickName,
-				"avatar": avatar
-			})
-			.then((response) => {
+		.post('http://localhost:5001/channel/enter/dm/chan',{
+			"intraId": intraId,
+			"nickName": nickName,
+			"avatar": avatar
+		})
+		.then((response) => {
 			console.log(`dm respose = ${response.data}`)
-				//   .post(`http://localhost:5001/dm/enter/${chIdx}`)
-                navigate("/dm", { state: { chIdx:response.data.chIdx } });
-            })
-            .catch((error) => {
-                // 요청이 실패하면 에러 처리
-                console.error("API 요청 실패:", error);
-                //   403 밴 유저
-                //   404 없는 채널 번호
-                //   500 서버 에러
-
-			})
+			//   .post(`http://localhost:5001/dm/enter/${chIdx}`)
+			navigate("/dm", { state: { chIdx:response.data.chIdx } });
+		})
+		.catch((error) => {
+			// 요청이 실패하면 에러 처리
+			console.error("API 요청 실패:", error);
+			//   403 밴 유저
+			//   404 없는 채널 번호
+			//   500 서버 에러
+			
+		})
 	}
-
+	
 	function handleVsClick(){
-		instance.get('http://localhost:5001/auth/me').then((response) => {
-			console.log({intraId : response.data.intraId, nickName : response.data.nickName  , player2: nickName });
-            socket.emit("game-apply", {intraId : response.data.intraId, nickName : response.data.nickName  , player2: nickName });
-		});
+		setIsCustomOpen(true);
+		// instance.get('http://localhost:5001/auth/me').then((response) => {
+		// 	console.log({intraId : response.data.intraId, nickName : response.data.nickName  , player2: nickName });
+        //     socket.emit("game-apply", {intraId : response.data.intraId, nickName : response.data.nickName  , player2: nickName });
+		// });
 	}
+	
+	const handleCloseCustom = () => {
+		setIsCustomOpen(false);
+	};
 
 	return (
 		<div className='friend-info-simple'>
@@ -78,6 +84,7 @@ const FriendInfoSimple: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, 
 					</div>
 				</div>
 			</div>
+			{isCustomOpen && <Custom nickName={nickName} onClose={handleCloseCustom} />}
 		</div>
 	);
 }

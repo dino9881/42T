@@ -29,8 +29,15 @@ function Channel({channelName, channelInit} : ChannelProps) {
         // 요청이 실패하면 에러 처리
         console.error("API 요청 실패:", error);
       });
+
+    socket.on("reload", () => { window.location.reload(); });
+    socket.on("send-dm", (intraId: string) => {
+      alert(intraId + " 님이 DM 을 보냈습니다.");
+    });
+
+    return () => {socket.off("reload")};
   }, []);
-  socket.connect();
+
 
   // 채널 데이터를 페이지 단위로 나누는 함수
     const paginateChannels = (data: any[], page: number) => {

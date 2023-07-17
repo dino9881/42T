@@ -65,10 +65,9 @@ const MyInfo = () => {
 				</div>
 				</div>
 			</div>
-			{/* {showChangeForm && <MyInfoChange onClose={handleCloseForm} avatar={myData && myData.avatar} nickName={myData && myData.nickName} />} */}
-			{/* {showChangeForm && <CheckEmail myData={myData} onClose={handleCloseForm} onEmail={handleEmail}/>} */}
-			{/* {isEmail && <MyInfoChange myData={myData} onClose={handleEmail} />} */}
-			{showChangeForm && <MyInfoChange myData={myData} onClose={handleEmail} />}
+			{showChangeForm && <CheckEmail myData={myData} onClose={handleCloseForm} onEmail={handleEmail}/>}
+			{isEmail && <MyInfoChange myData={myData} onClose={handleEmail} />}
+			{/* {showChangeForm && <MyInfoChange myData={myData} onClose={handleEmail} />} */}
 		</div>
 	);
 };
