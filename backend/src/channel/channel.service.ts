@@ -50,7 +50,7 @@ export class ChannelService {
   }
 
   async create(member: ChannelUserDto, createChannelDto: CreateChannelDto) {
-    if (createChannelDto.chPwd !== "") {
+    if (createChannelDto.chPwd !== "" && createChannelDto.chPwd !== undefined) {
       createChannelDto = await this.hashPassword(createChannelDto);
     }
     const { chName, chPwd, isDM, isPrivate } = createChannelDto;
@@ -264,12 +264,12 @@ export class ChannelService {
     this.administrators[idx] = this.administrators[idx].filter(
       (user) => user.intraId !== memberId
     );
-    
+    // 관리자일 경우 관리자 권한 없애기
     if (await this.isOwner(idx, memberId)) {
       await this.prisma.channel.update({
         where: { chIdx: idx },
         data: {
-          owner: null,
+          ownerId: null,
         },
       });
     }
@@ -515,6 +515,11 @@ export class ChannelService {
     return await this.prisma.channel.findMany({ where: { isPrivate: true } });
   }
 
+  async isPrivate(idx: number) {
+    const channel = await this.findOneById(idx);
+    return channel.isPrivate;
+  }
+
   async getMyPrivateChannels(intraId: string) {
     let channels = [];
     const allChannel = await this.findPrivateChannelAll();
@@ -531,26 +536,20 @@ export class ChannelService {
     return channels;
   }
 
-  async isPrivate(idx) {
-    const channel = this.findOneById(idx);
-    console.log(channel);
-    // return channel.isPrivate;
-  }
-
-  async channelInvite(idx: number, channelUserDto: ChannelUserDto) {
+  async channelInvite(chanName: string, channelUserDto: ChannelUserDto) {
     const { intraId, avatar, nickName } = channelUserDto;
-    const channel = await this.findOneById(idx);
+    const channel = await this.findOneByName(chanName);
     // user check
-    if (this.channelUsers[idx].find((user) => user.intraId === intraId))
+    if (this.channelUsers[channel.chIdx].find((user) => user.intraId === intraId))
       return ;
     // max check
     if (channel.chUserCnt >= 5) throw new ForbiddenException('max capacity');
     await this.prisma.channel.update({
-      where: { chIdx: idx },
+      where: { chIdx: channel.chIdx },
       data: {
         chUserCnt: { increment: 1 },
       },
     });
-    this.channelUsers[idx].push({ intraId, avatar, nickName });
+    this.channelUsers[channel.chIdx].push({ intraId, avatar, nickName });
   }
 }

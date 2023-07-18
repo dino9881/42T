@@ -260,27 +260,28 @@ export class SocketIOGateway
         { chName: channelName, chPwd: password, },
       );
       client.emit('new-channel', { chIdx: channel.chIdx });
+      const members = await this.memberService.getAll();
+      members.map((users) => {
+        if (users.intraId !== 'admin')
+          this.getSocketByintraId(users.intraId)?.emit('reload');
+      });
     } catch (error) {
       if (error.response.statusCode === 409) client.emit('duplicate-chanName');
       else if (error.response.statusCode === 403) client.emit('max-channel');
       else client.emit('server-error');
     }
-    const members = await this.memberService.getAll();
-    members.map((users) => {
-      if (users.intraId !== 'admin')
-        this.getSocketByintraId(users.intraId)?.emit('reload');
-    });
   }
 
   // invite
   @UseFilters(ConflictExceptionFilter)
   @SubscribeMessage('channel-invite')
   async handleChannelInvite(client: Socket, payload: Payload) {
-    const { chIdx, intraId } = payload;
+    const { channelName, intraId } = payload;
     try {
       const user = this.getSocketByintraId(intraId);
-      this.channelService.channelInvite(chIdx, {intraId: user['intraId'], avatar: user['avatar'] ,nickName: user['nickName']});
-      user?.emit('invite');
+      this.channelService.channelInvite(channelName, {intraId: user['intraId'], avatar: user['avatar'] ,nickName: user['nickName']});
+      // nickName 님이 channelName 에 초대하셨습니다 이런거
+      user?.emit('invite', client['nickName'], channelName);
     } catch (error) {
       if (error.response && error.response.statusCode === 403)
         client.emit('max-capacity');

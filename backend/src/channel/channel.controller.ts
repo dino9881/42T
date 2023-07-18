@@ -328,7 +328,7 @@ export class ChannelController {
   }
 
   @ApiTags('Channel Private')
-  @Get('private/all')
+  @Get('private/')
   @ApiCreatedResponse({ type: UpdateChannelDto })
   @ApiOperation({
     summary: '모든 Private 채널 조회',
@@ -338,14 +338,14 @@ export class ChannelController {
     return this.channelService.findPrivateChannelAll();
   }
 
-  // @ApiTags('Channel Private')
-  // @Get('private/is')
-  // @ApiOperation({
-  //   summary: '모든 Private 채널 조회',
-  //   description: 'Find Private Channel API',
-  // })@ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx' })
-  // isPrivate(@Param('idx') idx: string) {
-  //   return this.channelService.isPrivate(idx);
-  // }
+  @ApiTags('Channel Private')
+  @Get('private/:idx')
+  @ApiOperation({
+    summary: 'idx 채널이 private 채널 인지 조회',
+    description: 'Is Private',
+  })@ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx' })
+  isPrivate(@Param('idx') idx: string) {
+    return this.channelService.isPrivate(+idx);
+  }
 
 }
