@@ -112,6 +112,16 @@ export class ChannelService {
     return updateData;
   }
 
+  async updateNickName(intraId: string, nickName: string) {
+    const channels = await this.findAll();
+    channels.map(chan => {
+      this.channelUsers[chan.chIdx].map(users => {
+        if (users.intraId === intraId)
+          users.nickName = nickName;
+      })
+    })
+  }
+
   async delete(idx: number) {
     await this.findOneById(idx);
     await this.prisma.channel.delete({ where: { chIdx: idx } });
@@ -121,6 +131,10 @@ export class ChannelService {
     this.messageList[idx] = [];
     this.mutedUsers[idx] = [];
     this.pair[idx] = {user1: "", user2: ""};
+  }
+
+  async findAll() {
+    return await this.prisma.channel.findMany();
   }
   
   async findChannelAll() {
@@ -251,16 +265,18 @@ export class ChannelService {
       (user) => user.intraId !== memberId
     );
     
-    // 아무도 안 남을 경우 채널 삭제?
+    if (await this.isOwner(idx, memberId)) {
+      await this.prisma.channel.update({
+        where: { chIdx: idx },
+        data: {
+          owner: null,
+        },
+      });
+    }
     if (updatedChannel.chUserCnt <= 0) {
       this.delete(idx);
       return true;
-    } else if (memberId === updatedChannel.ownerId) {
-      await this.prisma.channel.update({
-        where: { chIdx: idx },
-        data: { ownerId: null },
-      });
-    }
+    } 
     return false;
   }
 
@@ -513,5 +529,28 @@ export class ChannelService {
       }
     }
     return channels;
+  }
+
+  async isPrivate(idx) {
+    const channel = this.findOneById(idx);
+    console.log(channel);
+    // return channel.isPrivate;
+  }
+
+  async channelInvite(idx: number, channelUserDto: ChannelUserDto) {
+    const { intraId, avatar, nickName } = channelUserDto;
+    const channel = await this.findOneById(idx);
+    // user check
+    if (this.channelUsers[idx].find((user) => user.intraId === intraId))
+      return ;
+    // max check
+    if (channel.chUserCnt >= 5) throw new ForbiddenException('max capacity');
+    await this.prisma.channel.update({
+      where: { chIdx: idx },
+      data: {
+        chUserCnt: { increment: 1 },
+      },
+    });
+    this.channelUsers[idx].push({ intraId, avatar, nickName });
   }
 }
