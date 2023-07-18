@@ -3,6 +3,22 @@ import { CreateGameDto } from './dto/create-game.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MemberService } from 'src/member/member.service';
 import { Socket } from 'socket.io';
+import { Interval } from '@nestjs/schedule';
+interface GameProps {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  bx: number;
+  by: number;
+}
+
+interface GameRoom {
+  player1: Socket;
+  player2: Socket;
+  gameProps: GameProps;
+  mode: number;
+}
 
 @Injectable()
 export class GameService {
@@ -11,8 +27,10 @@ export class GameService {
     private memberService: MemberService,
   ) {
     this.queue = [];
+    this.gameRooms = {};
   }
   private queue: Socket[];
+  private gameRooms: Record<string, GameRoom>;
 
   async addHistory(game: CreateGameDto) {
     if (game.winnerId == game.loserId)
@@ -61,18 +79,81 @@ export class GameService {
     while (this.queue.length >= 2) {
       const p1 = this.queue.shift();
       const p2 = this.queue.shift();
-      await this.makeGame(p1, p2, 1); //queue대기자는 normal mode
+      await this.makeGame(p1, p2, 1);
+      //queue대기자는 normal mode
     }
   }
 
   async makeGame(p1: Socket, p2: Socket, mode: number) {
     console.log('makeGame');
-    p1.emit('game-ready', { player1: p1['nickName'], player2: p2['nickName'] });
-    p2.emit('game-ready', { player1: p1['nickName'], player2: p2['nickName'] });
+    console.log(mode);
+    const roomName = 'G#' + p1['intraId'] + p2['intraId'];
+    console.log(roomName);
+    const payload = {
+      player1: p1['nickName'],
+      player2: p2['nickName'],
+      roomName,
+      mode,
+    };
+    p1.emit('game-ready', payload);
+    p2.emit('game-ready', payload);
     this.memberService.updateStatus(p1['intraId'], 2); // 2: 게임중
     this.memberService.updateStatus(p2['intraId'], 2);
-    // mode에 따라서 게임 시작하기
+  }
+
+  async enterGame(players: Socket[], roomName: string, mode: number) {
+    //실제로 paddle의 움직임, ball의 움직임을 계산하고,
+    //player에게 전달해야함.
+    this.gameRooms[roomName] = {
+      player1: players[0],
+      player2: players[1],
+      gameProps: { x1: 10, y1: 300, x2: 1270, y2: 300, bx: 300, by: 300 },
+      mode: mode,
+    };
+    console.log('startGame');
     console.log(mode);
+  }
+
+  @Interval('gameRender', 100)
+  async gameRender() {
+    for (const roomName in this.gameRooms) {
+      if (this.gameRooms.hasOwnProperty(roomName)) {
+        const gameRoom = this.gameRooms[roomName];
+        console.log(gameRoom.gameProps);
+        // calculate gameProps
+
+        // update gameRoom gameProps
+        // const gameProps: GameProps = gameRoom.gameProps;
+        // gameRoom.player1.emit('game-render', gameProps);
+        // gameRoom.player2.emit('game-render', gameProps);
+      }
+    }
+  }
+
+  async playerW(player: Socket, roomName: string) {
+    console.log('gameservice - playerW');
+    //game render
+    if (this.gameRooms[roomName].player1['intraId'] == player['intraId']) {
+      console.log(player['intraId']);
+      this.gameRooms[roomName].gameProps.bx = 670;
+    } else {
+      console.log(player['intraId']);
+      this.gameRooms[roomName].gameProps.bx = 670;
+    }
+  }
+
+  // paddle bar를 움직일 때만 렌더링하는게 아니라,
+  // 움직이고 있지 않을때도 렌더링 되어야함.
+  async playerS(player: Socket, roomName: string) {
+    console.log('gameservice - playerS');
+    //game render
+    if (this.gameRooms[roomName].player1['intraId'] == player['intraId']) {
+      console.log(player['intraId']);
+      this.gameRooms[roomName].gameProps.by = 670;
+    } else {
+      console.log(player['intraId']);
+      this.gameRooms[roomName].gameProps.by = 670;
+    }
   }
 
   async exitQueue(member: Socket) {
