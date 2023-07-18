@@ -30,6 +30,7 @@ interface Payload {
   text: string;
   player1: string;
   player2: string;
+  roomName: string;
   mode: number; // 0 : easy, 1 : normal, 2: hard
   password: string;
   chIdx: number;
@@ -63,7 +64,7 @@ export class SocketIOGateway
 
   handleConnection(@ConnectedSocket() socket: Socket) {
     console.log(`${socket.id} 소켓 연결`);
-    socket['nickname'] = 'anon';
+    socket['nickName'] = 'anon';
   }
 
   handleDisconnect(@ConnectedSocket() socket: Socket) {
@@ -119,33 +120,7 @@ export class SocketIOGateway
     return 'Message received!';
   }
 
-  @SubscribeMessage('enter-channel')
-  async handleChannelEnter(client: Socket, payload: Payload) {
-    const { channelName, nickName } = payload;
-    // const isChanUsers = await this.channelService.isChanUsers(
-    //   channelName,
-    //   nickName,
-    // );
-    // if (!isChanUsers) client.to(channelName).emit('welcome', nickName);
-    client.join(channelName);
-    client['nickName'] = nickName;
-    console.log(`${nickName} enter channel : ${channelName}`);
-  }
-
-  @SubscribeMessage('leave-channel')
-  async handleChannelLeave(client: any, payload: any) {
-    const { channelName, chIdx, nickName } = payload;
-    client.leave(channelName);
-    if (this.channelService.leave(chIdx, client['intraId'])) {
-      const members = await this.memberService.getAll();
-      members.map(users => {
-        if (users.intraId !== "admin")
-        this.getSocketByintraId(users.intraId)?.emit("reload");
-      });
-    }
-    console.log(`${nickName} leave channel : ${channelName}`);
-  }
-
+  // 게임관련 메세지
   @SubscribeMessage('game-queue-join')
   handleGameQueueJoin(client: Socket, payload: Payload) {
     const { intraId, nickName } = payload;
@@ -166,10 +141,21 @@ export class SocketIOGateway
 
   @SubscribeMessage('game-start')
   handleGameStart(client: Socket, payload: Payload) {
-    const { intraId, nickName } = payload;
-    client['intraId'] = intraId;
-    client['nickName'] = nickName;
-    console.log(`${nickName}(${intraId}) 님이 게임을 시작했습니다.`);
+    const { roomName, mode } = payload;
+    console.log(
+      `${client['nickName']}(${client['intraId']}) 님이 게임을 시작했습니다.`,
+    );
+    client.join(roomName);
+    // 두명이 다 입장했는지 확인 후, 게임시작
+    const room = this.server.sockets.adapter.rooms.get(roomName);
+    if (room && room.size == 2) {
+      const roomSockets = [];
+      room.forEach((socketId) => {
+        const socket = this.server.sockets.sockets.get(socketId);
+        roomSockets.push(socket);
+      });
+      this.gameService.enterGame(roomSockets, roomName, mode);
+    }
   }
 
   @SubscribeMessage('game-apply')
@@ -188,7 +174,7 @@ export class SocketIOGateway
         this.playerNotFoundEmitError(client, player2);
         return;
       }
-      p2socket.emit('game-apply', { nickName: nickName, mode: mode }); // 게임 수락/거절 화면을 뜨워야함. 프론트에서 처리
+      p2socket.emit('game-apply', { nickName, mode }); // 게임 수락/거절 화면을 뜨워야함. 프론트에서 처리
       console.log(
         `${nickName}(${intraId}) 님이 ${player2}님과의 게임을 요청했습니다.`,
       );
@@ -233,7 +219,7 @@ export class SocketIOGateway
         this.playerNotFoundEmitError(client, player1);
         return;
       }
-      p1socket.emit('game-reject', { nickName: nickName });
+      p1socket.emit('game-reject', { nickName });
     } catch (error) {
       this.playerNotFoundEmitError(client, player1);
     }
@@ -241,10 +227,16 @@ export class SocketIOGateway
 
   playerNotFoundEmitError(client: Socket, nickName: string) {
     console.log(`${nickName}님이 존재하지 않습니다.`);
-    client.emit('game-oppo-not-found', { nickName: nickName });
+    client.emit('game-oppo-not-found', { nickName });
   }
 
+  @SubscribeMessage('player-w')
+  handlePlayerW(client: Socket, payload: Payload) {
+    const { roomName } = payload;
+    this.gameService.playerW(client, roomName);
+  }
 
+  // 채널관련 메세지
   // 일반채널 생성
   @UseFilters(ConflictExceptionFilter)
   @SubscribeMessage('create-channel')
@@ -269,6 +261,33 @@ export class SocketIOGateway
       if (users.intraId !== 'admin')
         this.getSocketByintraId(users.intraId)?.emit('reload');
     });
+  }
+
+  @SubscribeMessage('enter-channel')
+  async handleChannelEnter(client: Socket, payload: Payload) {
+    const { channelName, nickName } = payload;
+    // const isChanUsers = await this.channelService.isChanUsers(
+    //   channelName,
+    //   nickName,
+    // );
+    // if (!isChanUsers) client.to(channelName).emit('welcome', nickName);
+    client.join(channelName);
+    client['nickName'] = nickName;
+    console.log(`${nickName} enter channel : ${channelName}`);
+  }
+
+  @SubscribeMessage('leave-channel')
+  async handleChannelLeave(client: any, payload: any) {
+    const { channelName, chIdx, nickName } = payload;
+    client.leave(channelName);
+    if (this.channelService.leave(chIdx, client['intraId'])) {
+      const members = await this.memberService.getAll();
+      members.map((users) => {
+        if (users.intraId !== 'admin')
+          this.getSocketByintraId(users.intraId)?.emit('reload');
+      });
+    }
+    console.log(`${nickName} leave channel : ${channelName}`);
   }
 
   // 채널 kick, ban, mute, admin
