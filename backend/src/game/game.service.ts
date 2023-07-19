@@ -10,8 +10,15 @@ interface GameProps {
   y1: number;
   x2: number;
   y2: number;
-  bx: number;
-  by: number;
+  ball: {
+    x: number;
+    y: number;
+    dx: number;
+    dy: number;
+  };
+  p1Score: number;
+  p2Score: number;
+  speed: number;
 }
 
 interface GameRoom {
@@ -103,36 +110,100 @@ export class GameService {
   }
 
   async enterGame(players: Socket[], roomName: string, mode: number) {
-    //실제로 paddle의 움직임, ball의 움직임을 계산하고,
-    //player에게 전달해야함.
+    // if (gameRoom.mode == 0) {
+    //   // easy mode : paddle speed 2 & ball speed 1
+    // } else if (gameRoom.mode == 1) {
+    //   // normal mode paddle speed 1 & ball speed 1
+    // } else if (gameRoom.mode == 2) {
+    //   // ghost mode : ball disappers sometime
+    // }
     this.gameRooms[roomName] = {
       player1: players[0],
       player2: players[1],
-      gameProps: { x1: 10, y1: 300, x2: 1270, y2: 300, bx: 300, by: 300 },
+      gameProps: {
+        x1: 10,
+        y1: 300,
+        x2: 1270,
+        y2: 300,
+        ball: { x: 640, y: 300, dx: 2, dy: -2 },
+        p1Score: 0,
+        p2Score: 0,
+        speed: 2,
+      },
       mode: mode,
     };
     console.log('startGame');
     console.log(mode);
   }
 
-  @Interval('gameRender', 100)
+  async ballMove(gameRoom: GameRoom) {
+    const dx = gameRoom.gameProps.ball.dx;
+    const dy = gameRoom.gameProps.ball.dy;
+    // ball의 다음위치
+    const ballX = gameRoom.gameProps.ball.x + dx;
+    const ballY = gameRoom.gameProps.ball.y + dy;
+    // ball의 다음위치가 위아래 벽에 맞았는지 확인
+    if (ballY < 15 || ballY > 600 - 15) gameRoom.gameProps.ball.dy = -dy;
+    if (ballX < 25 || ballX > 1280 - 25) {
+      if (
+        (ballX < 25 &&
+          ballY > gameRoom.gameProps.y1 - 100 &&
+          ballY < gameRoom.gameProps.y1 + 100) ||
+        (ballX > 1280 - 25 &&
+          ballY > gameRoom.gameProps.y2 - 100 &&
+          ballY < gameRoom.gameProps.y2 + 100)
+      ) {
+        // gameRoom.gameProps.speed *= 1.1;
+        gameRoom.gameProps.ball.dx = -dx * 1.4;
+      } else {
+        console.log('someone lose');
+        if (ballX > 1200) {
+          gameRoom.gameProps.p1Score += 1;
+          gameRoom.gameProps.ball.x = 640;
+          gameRoom.gameProps.ball.y = 300;
+          gameRoom.gameProps.ball.dx = 2;
+          gameRoom.gameProps.ball.dy = -2;
+        } else {
+          gameRoom.gameProps.p2Score += 1;
+          gameRoom.gameProps.ball.x = 640;
+          gameRoom.gameProps.ball.y = 300;
+          gameRoom.gameProps.ball.dx = -2;
+          gameRoom.gameProps.ball.dy = 2;
+        }
+        // gameRoom Player들에게 점수 emit
+        gameRoom.player1.emit('game-score', {
+          p1Score: gameRoom.gameProps.p1Score,
+          p2Score: gameRoom.gameProps.p2Score,
+        });
+        gameRoom.player2.emit('game-score', {
+          p1Score: gameRoom.gameProps.p1Score,
+          p2Score: gameRoom.gameProps.p2Score,
+        });
+      }
+    }
+  }
+
+  @Interval('gameRender', 15)
   async gameRender() {
     for (const roomName in this.gameRooms) {
       if (this.gameRooms.hasOwnProperty(roomName)) {
         const gameRoom = this.gameRooms[roomName];
-        // console.log(gameRoom.gameProps);
-        // // calculate gameProps
-        // if (gameRoom.mode == 0) {
-        //   // easy mode : paddle speed 2 & ball speed 1
-        // } else if (gameRoom.mode == 1) {
-        //   // normal mode paddle speed 1 & ball speed 1
-        // } else if (gameRoom.mode == 2) {
-        //   // ghost mode : ball disappers sometime
-        // }
+        // calculate gameProps
+        this.ballMove(gameRoom);
+        gameRoom.gameProps.ball.x += gameRoom.gameProps.ball.dx;
+        gameRoom.gameProps.ball.y += gameRoom.gameProps.ball.dy;
         // update gameRoom gameProps
-        const gameProps: GameProps = gameRoom.gameProps;
-        gameRoom.player1.emit('game-render', gameProps);
-        gameRoom.player2.emit('game-render', gameProps);
+        const { ball, ...gameProps }: GameProps = gameRoom.gameProps;
+        gameRoom.player1.emit('game-render', {
+          ...gameProps,
+          bx: ball.x,
+          by: ball.y,
+        });
+        gameRoom.player2.emit('game-render', {
+          ...gameProps,
+          bx: ball.x,
+          by: ball.y,
+        });
       }
     }
   }
