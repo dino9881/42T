@@ -25,7 +25,7 @@ export class MemberInfoDto {
   nickName: string;
 
   @ApiProperty({
-    example: '../public/img/avatar.jpg',
+    example: 'avatar/avatar.jpeg',
     description: '아바타 경로',
     required: true,
   })
