@@ -291,6 +291,7 @@ export class SocketIOGateway
       client.emit('new-channel', { chIdx: channel.chIdx });
     } catch (error) {
       if (error.response.statusCode === 409) client.emit('duplicate-chanName');
+      else if (error.response.statusCode === 403) client.emit('max-channel');
       else if (error.response.statusCode === 500) client.emit('server-error');
     }
     const members = await this.memberService.getAll();

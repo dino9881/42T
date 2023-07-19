@@ -12,6 +12,7 @@ import { ChannelUserDto } from './dto/channel-user.dto';
 import * as bcrypt from 'bcrypt';
 import { MemberInfoDto } from 'src/member/dto/member-info.dto';
 import { MemberService } from 'src/member/member.service';
+import { channelConstants } from 'src/util/constants';
 
 @Injectable()
 export class ChannelService {
@@ -62,7 +63,7 @@ export class ChannelService {
       where: { intraId: member.intraId },
       include: { channel: true },
     });
-    if (oper?.channel.length >= 3) {
+    if (oper?.channel.length >= channelConstants.OPERATOR_CNT) {
       throw new ForbiddenException('Already oper on 3 channel');
     }
     // duplicate name check
@@ -245,7 +246,7 @@ export class ChannelService {
       }
     });
     // max check
-    if (channel.chUserCnt >= 5) throw new ForbiddenException('max capacity');
+    if (channel.chUserCnt >= channelConstants.USER_CNT) throw new ForbiddenException('max capacity');
 
     const updatedChannel = await this.prisma.channel.update({
       where: { chIdx: idx },
@@ -408,10 +409,10 @@ export class ChannelService {
         (user) => user.intraId !== intraId,
       );
     }
-    // 5분 후 unmute 실행
+    // 9분 후 unmute 실행
     const timeoutId = setTimeout(() => {
       this.unmuteUser(idx, intraId);
-    }, 5 * 60 * 1000);
+    }, channelConstants.MUTE_TIME);
     this.mutedUsers[idx].push({ intraId, nickName, timeoutId });
   }
 
@@ -542,7 +543,7 @@ export class ChannelService {
     if (this.channelUsers[channel.chIdx].find((user) => user.intraId === intraId))
       return ;
     // max check
-    if (channel.chUserCnt >= 5) throw new ForbiddenException('max capacity');
+    if (channel.chUserCnt >= channelConstants.USER_CNT) throw new ForbiddenException('max capacity');
     await this.prisma.channel.update({
       where: { chIdx: channel.chIdx },
       data: {
