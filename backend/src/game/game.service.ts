@@ -44,16 +44,6 @@ export class GameService {
   private gameRooms: Record<string, GameRoom>;
 
   async addHistory(game: CreateGameDto) {
-    if (game.winnerId == game.loserId)
-      throw new ConflictException('P1 and P2 are same Member');
-    await this.memberService.getOne(game.winnerId);
-    await this.memberService.getOne(game.loserId);
-    if (game.winnerScore < game.loserScore) {
-      throw new HttpException(
-        'winnerScore must be bigger than loserScore',
-        416,
-      );
-    }
     await this.prisma.gameHistory.create({ data: game });
     await this.memberService.updateRank(game.winnerId, 5);
     await this.memberService.updateWinCnt(game.winnerId);
@@ -128,7 +118,7 @@ export class GameService {
         y1: 300,
         x2: 1270,
         y2: 300,
-        ball: { x: 640, y: 300, dx: 2, dy: -2 },
+        ball: { x: 640, y: 300, dx: 4, dy: -4 },
         p1Score: 0,
         p2Score: 0,
         speed: 2,
@@ -166,13 +156,7 @@ export class GameService {
           loserScore: gameRoom.gameProps.p1Score,
         };
       }
-      await this.prisma.gameHistory.create({ data: game });
-      await this.memberService.updateRank(game.winnerId, 5);
-      await this.memberService.updateWinCnt(game.winnerId);
-      await this.memberService.updateStatus(game.winnerId, 1);
-      await this.memberService.updateRank(game.loserId, 3);
-      await this.memberService.updateLoseCnt(game.loserId);
-      await this.memberService.updateStatus(game.loserId, 1);
+      await this.addHistory(game);
       gameRoom.player1.leave(roomName);
       gameRoom.player2.leave(roomName);
       delete this.gameRooms[roomName];
@@ -182,17 +166,34 @@ export class GameService {
 
   async playerExit(player: Socket, roomName: string) {
     const gameRoom = this.gameRooms[roomName];
+    let game;
     if (gameRoom.player1['intraId'] == player['intraId']) {
       gameRoom.gameProps.p1Score = 0;
       gameRoom.gameProps.p2Score = 5;
+      game = {
+        winnerId: gameRoom.player2['intraId'],
+        winnerScore: gameRoom.gameProps.p2Score,
+        loserId: gameRoom.player1['intraId'],
+        loserScore: gameRoom.gameProps.p1Score,
+      };
     } else {
       gameRoom.gameProps.p1Score = 5;
       gameRoom.gameProps.p2Score = 0;
+      game = {
+        winnerId: gameRoom.player1['intraId'],
+        winnerScore: gameRoom.gameProps.p1Score,
+        loserId: gameRoom.player2['intraId'],
+        loserScore: gameRoom.gameProps.p2Score,
+      };
     }
     this.emitBothPlayer(gameRoom, 'game-sudden-end', {
       p1Score: gameRoom.gameProps.p1Score,
       p2Score: gameRoom.gameProps.p2Score,
     });
+    await this.addHistory(game);
+    gameRoom.player1.leave(roomName);
+    gameRoom.player2.leave(roomName);
+    delete this.gameRooms[roomName];
   }
 
   async checkBallMove(gameRoom: GameRoom, roomName: string) {
@@ -214,21 +215,21 @@ export class GameService {
           ballY < gameRoom.gameProps.y2 + 100)
       ) {
         // gameRoom.gameProps.speed *= 1.1;
-        gameRoom.gameProps.ball.dx = -dx * 1.4;
+        gameRoom.gameProps.ball.dx = -dx * 1.2;
       } else {
         console.log('someone lose');
         if (ballX > 1200) {
           gameRoom.gameProps.p1Score += 1;
           gameRoom.gameProps.ball.x = 640;
           gameRoom.gameProps.ball.y = 300;
-          gameRoom.gameProps.ball.dx = 2;
-          gameRoom.gameProps.ball.dy = -2;
+          gameRoom.gameProps.ball.dx = 4;
+          gameRoom.gameProps.ball.dy = -4;
         } else if (ballX < 0) {
           gameRoom.gameProps.p2Score += 1;
           gameRoom.gameProps.ball.x = 640;
           gameRoom.gameProps.ball.y = 300;
-          gameRoom.gameProps.ball.dx = -2;
-          gameRoom.gameProps.ball.dy = 2;
+          gameRoom.gameProps.ball.dx = -4;
+          gameRoom.gameProps.ball.dy = 4;
         }
         // gameRoom Player들에게 점수 emit
         this.emitBothPlayer(gameRoom, 'game-score', {
