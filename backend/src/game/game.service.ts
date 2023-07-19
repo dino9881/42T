@@ -163,7 +163,7 @@ export class GameService {
           gameRoom.gameProps.ball.y = 300;
           gameRoom.gameProps.ball.dx = 2;
           gameRoom.gameProps.ball.dy = -2;
-        } else {
+        } else if (ballX < 0) {
           gameRoom.gameProps.p2Score += 1;
           gameRoom.gameProps.ball.x = 640;
           gameRoom.gameProps.ball.y = 300;
