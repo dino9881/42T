@@ -4,18 +4,21 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { MemberService } from 'src/member/member.service';
 import { Socket } from 'socket.io';
 import { Interval } from '@nestjs/schedule';
+import { statusConstants } from 'src/util/constants';
+
+interface Ball {
+  x: number;
+  y: number;
+  dx: number;
+  dy: number;
+}
 
 interface GameProps {
   x1: number;
   y1: number;
   x2: number;
   y2: number;
-  ball: {
-    x: number;
-    y: number;
-    dx: number;
-    dy: number;
-  };
+  ball: Ball;
   p1Score: number;
   p2Score: number;
   speed: number;
@@ -87,8 +90,8 @@ export class GameService {
     while (this.queue.length >= 2) {
       const p1 = this.queue.shift();
       const p2 = this.queue.shift();
-      await this.makeGame(p1, p2, 1);
       //queue대기자는 normal mode
+      await this.makeGame(p1, p2, 1);
     }
   }
 
@@ -105,8 +108,8 @@ export class GameService {
     };
     p1.emit('game-ready', payload);
     p2.emit('game-ready', payload);
-    this.memberService.updateStatus(p1['intraId'], 2); // 2: 게임중
-    this.memberService.updateStatus(p2['intraId'], 2);
+    this.memberService.updateStatus(p1['intraId'], statusConstants.IN_GAME);
+    this.memberService.updateStatus(p2['intraId'], statusConstants.IN_GAME);
   }
 
   async enterGame(players: Socket[], roomName: string, mode: number) {
@@ -136,7 +139,46 @@ export class GameService {
     console.log(mode);
   }
 
-  async ballMove(gameRoom: GameRoom) {
+  async emitBothPlayer(gameRoom: GameRoom, message: string, payload: any) {
+    gameRoom.player1.emit(message, payload);
+    gameRoom.player2.emit(message, payload);
+  }
+
+  async checkGameEnd(gameRoom: GameRoom, roomName: string) {
+    if (gameRoom.gameProps.p1Score == 5 || gameRoom.gameProps.p2Score == 5) {
+      this.emitBothPlayer(gameRoom, 'game-end', {
+        p1Score: gameRoom.gameProps.p1Score,
+        p2Score: gameRoom.gameProps.p2Score,
+      });
+      this.addHistory({
+        winnerId: gameRoom.player1['intraId'],
+        winnerScore: gameRoom.gameProps.p1Score,
+        loserId: gameRoom.player2['intraId'],
+        loserScore: gameRoom.gameProps.p2Score,
+      });
+      gameRoom.player1.leave(roomName);
+      gameRoom.player2.leave(roomName);
+      delete this.gameRooms[roomName];
+      // delete가 맞나?
+    }
+  }
+
+  async playerExit(player: Socket, roomName: string) {
+    const gameRoom = this.gameRooms[roomName];
+    if (gameRoom.player1['intraId'] == player['intraId']) {
+      gameRoom.gameProps.p1Score = 0;
+      gameRoom.gameProps.p2Score = 5;
+    } else {
+      gameRoom.gameProps.p1Score = 5;
+      gameRoom.gameProps.p2Score = 0;
+    }
+    this.emitBothPlayer(gameRoom, 'game-sudden-end', {
+      p1Score: gameRoom.gameProps.p1Score,
+      p2Score: gameRoom.gameProps.p2Score,
+    });
+  }
+
+  async checkBallMove(gameRoom: GameRoom, roomName: string) {
     const dx = gameRoom.gameProps.ball.dx;
     const dy = gameRoom.gameProps.ball.dy;
     // ball의 다음위치
@@ -145,6 +187,7 @@ export class GameService {
     // ball의 다음위치가 위아래 벽에 맞았는지 확인
     if (ballY < 15 || ballY > 600 - 15) gameRoom.gameProps.ball.dy = -dy;
     if (ballX < 25 || ballX > 1280 - 25) {
+      // ball의 다음위치가 paddle에 맞았는지 확인
       if (
         (ballX < 25 &&
           ballY > gameRoom.gameProps.y1 - 100 &&
@@ -171,14 +214,11 @@ export class GameService {
           gameRoom.gameProps.ball.dy = 2;
         }
         // gameRoom Player들에게 점수 emit
-        gameRoom.player1.emit('game-score', {
+        this.emitBothPlayer(gameRoom, 'game-score', {
           p1Score: gameRoom.gameProps.p1Score,
           p2Score: gameRoom.gameProps.p2Score,
         });
-        gameRoom.player2.emit('game-score', {
-          p1Score: gameRoom.gameProps.p1Score,
-          p2Score: gameRoom.gameProps.p2Score,
-        });
+        this.checkGameEnd(gameRoom, roomName);
       }
     }
   }
@@ -189,17 +229,12 @@ export class GameService {
       if (this.gameRooms.hasOwnProperty(roomName)) {
         const gameRoom = this.gameRooms[roomName];
         // calculate gameProps
-        this.ballMove(gameRoom);
+        this.checkBallMove(gameRoom, roomName);
         gameRoom.gameProps.ball.x += gameRoom.gameProps.ball.dx;
         gameRoom.gameProps.ball.y += gameRoom.gameProps.ball.dy;
         // update gameRoom gameProps
         const { ball, ...gameProps }: GameProps = gameRoom.gameProps;
-        gameRoom.player1.emit('game-render', {
-          ...gameProps,
-          bx: ball.x,
-          by: ball.y,
-        });
-        gameRoom.player2.emit('game-render', {
+        this.emitBothPlayer(gameRoom, 'game-render', {
           ...gameProps,
           bx: ball.x,
           by: ball.y,
