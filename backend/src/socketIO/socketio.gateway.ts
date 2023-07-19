@@ -122,11 +122,11 @@ export class SocketIOGateway
   @SubscribeMessage('enter-channel')
   async handleChannelEnter(client: Socket, payload: Payload) {
     const { channelName, nickName } = payload;
-    // const isChanUsers = await this.channelService.isChanUsers(
-    //   channelName,
-    //   nickName,
-    // );
-    // if (!isChanUsers) client.to(channelName).emit('welcome', nickName);
+    const isChanUsers = await this.channelService.isChanUsers(
+      channelName,
+      nickName,
+    );
+    if (!isChanUsers) client.to(channelName).emit('welcome', nickName);
     client.join(channelName);
     client['nickName'] = nickName;
     console.log(`${nickName} enter channel : ${channelName}`);
@@ -136,8 +136,9 @@ export class SocketIOGateway
   async handleChannelLeave(client: any, payload: any) {
     const { channelName, chIdx, nickName } = payload;
     client.leave(channelName);
-    if (this.channelService.leave(chIdx, client['intraId'])) {
+    if (await this.channelService.leave(chIdx, client['intraId'])) {
       const members = await this.memberService.getAll();
+      client.to(channelName).emit('delete');
       members.map(users => {
         if (users.intraId !== "admin")
         this.getSocketByintraId(users.intraId)?.emit("reload");
@@ -276,12 +277,13 @@ export class SocketIOGateway
   @UseFilters(ConflictExceptionFilter)
   @SubscribeMessage('channel-invite')
   async handleChannelInvite(client: Socket, payload: Payload) {
-    const { channelName, intraId } = payload;
+    const { channelName, nickName } = payload;
     try {
-      const user = this.getSocketByintraId(intraId);
-      this.channelService.channelInvite(channelName, {intraId: user['intraId'], avatar: user['avatar'] ,nickName: user['nickName']});
+      const user = await this.memberService.getOneByNick(nickName);
+      const userSocket = this.getSocketByintraId(user.intraId);
+      this.channelService.channelInvite(channelName, {intraId: userSocket['intraId'], avatar: userSocket['avatar'] ,nickName: userSocket['nickName']});
       // nickName 님이 channelName 에 초대하셨습니다 이런거
-      user?.emit('invite', client['nickName'], channelName);
+      userSocket?.emit('invite', client['nickName'], channelName);
     } catch (error) {
       if (error.response && error.response.statusCode === 403)
         client.emit('max-capacity');
