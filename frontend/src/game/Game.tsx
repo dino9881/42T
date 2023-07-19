@@ -36,7 +36,7 @@ function gameRender(
         context.stroke();
 
         context.beginPath();
-        context.arc(bx, by, 20, 0, 2 * Math.PI);
+        context.arc(bx, by, 15, 0, 2 * Math.PI);
         context.fillStyle = "#000000";
         context.fill();
 
