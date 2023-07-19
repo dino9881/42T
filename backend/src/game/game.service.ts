@@ -150,12 +150,29 @@ export class GameService {
         p1Score: gameRoom.gameProps.p1Score,
         p2Score: gameRoom.gameProps.p2Score,
       });
-      this.addHistory({
-        winnerId: gameRoom.player1['intraId'],
-        winnerScore: gameRoom.gameProps.p1Score,
-        loserId: gameRoom.player2['intraId'],
-        loserScore: gameRoom.gameProps.p2Score,
-      });
+      let game;
+      if (gameRoom.gameProps.p1Score == 5) {
+        game = {
+          winnerId: gameRoom.player1['intraId'],
+          winnerScore: gameRoom.gameProps.p1Score,
+          loserId: gameRoom.player2['intraId'],
+          loserScore: gameRoom.gameProps.p2Score,
+        };
+      } else {
+        game = {
+          winnerId: gameRoom.player2['intraId'],
+          winnerScore: gameRoom.gameProps.p2Score,
+          loserId: gameRoom.player1['intraId'],
+          loserScore: gameRoom.gameProps.p1Score,
+        };
+      }
+      await this.prisma.gameHistory.create({ data: game });
+      await this.memberService.updateRank(game.winnerId, 5);
+      await this.memberService.updateWinCnt(game.winnerId);
+      await this.memberService.updateStatus(game.winnerId, 1);
+      await this.memberService.updateRank(game.loserId, 3);
+      await this.memberService.updateLoseCnt(game.loserId);
+      await this.memberService.updateStatus(game.loserId, 1);
       gameRoom.player1.leave(roomName);
       gameRoom.player2.leave(roomName);
       delete this.gameRooms[roomName];
