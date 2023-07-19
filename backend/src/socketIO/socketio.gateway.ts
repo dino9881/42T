@@ -249,7 +249,7 @@ export class SocketIOGateway
   @UseFilters(ConflictExceptionFilter)
   @SubscribeMessage('create-channel')
   async handleChannelCreate(client: Socket, payload: Payload) {
-    const { channelName, password } = payload;
+    const { channelName, password, } = payload;
     try {
       const channel = await this.channelService.create(
         {
@@ -257,18 +257,36 @@ export class SocketIOGateway
           nickName: client['nickName'],
           avatar: client['avatar'],
         },
-        { chName: channelName, chPwd: password },
+        { chName: channelName, chPwd: password, },
       );
       client.emit('new-channel', { chIdx: channel.chIdx });
+      const members = await this.memberService.getAll();
+      members.map((users) => {
+        if (users.intraId !== 'admin')
+          this.getSocketByintraId(users.intraId)?.emit('reload');
+      });
     } catch (error) {
       if (error.response.statusCode === 409) client.emit('duplicate-chanName');
-      else if (error.response.statusCode === 500) client.emit('server-error');
+      else if (error.response.statusCode === 403) client.emit('max-channel');
+      else client.emit('server-error');
     }
-    const members = await this.memberService.getAll();
-    members.map((users) => {
-      if (users.intraId !== 'admin')
-        this.getSocketByintraId(users.intraId)?.emit('reload');
-    });
+  }
+
+  // invite
+  @UseFilters(ConflictExceptionFilter)
+  @SubscribeMessage('channel-invite')
+  async handleChannelInvite(client: Socket, payload: Payload) {
+    const { channelName, intraId } = payload;
+    try {
+      const user = this.getSocketByintraId(intraId);
+      this.channelService.channelInvite(channelName, {intraId: user['intraId'], avatar: user['avatar'] ,nickName: user['nickName']});
+      // nickName 님이 channelName 에 초대하셨습니다 이런거
+      user?.emit('invite', client['nickName'], channelName);
+    } catch (error) {
+      if (error.response && error.response.statusCode === 403)
+        client.emit('max-capacity');
+      else client.emit('server-error');
+    }
   }
 
   // 채널 kick, ban, mute, admin
@@ -286,6 +304,7 @@ export class SocketIOGateway
     } catch (error) {
       if (error.response && error.response.statusCode === 403)
         client.emit('no-permissions');
+      else client.emit('server-error');
     }
   }
 
@@ -303,6 +322,7 @@ export class SocketIOGateway
     } catch (error) {
       if (error.response && error.response.statusCode === 403)
         client.emit('no-permissions');
+      else client.emit('server-error');
     }
   }
 
@@ -320,6 +340,7 @@ export class SocketIOGateway
     } catch (error) {
       if (error.response && error.response.statusCode === 403)
         client.emit('no-permissions');
+      else client.emit('server-error');
     }
   }
 
@@ -337,6 +358,7 @@ export class SocketIOGateway
     } catch (error) {
       if (error.response && error.response.statusCode === 403)
         client.emit('no-permissions');
+      else client.emit('server-error');
     }
   }
 }

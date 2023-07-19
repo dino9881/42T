@@ -50,7 +50,7 @@ export class ChannelService {
   }
 
   async create(member: ChannelUserDto, createChannelDto: CreateChannelDto) {
-    if (createChannelDto.chPwd !== "") {
+    if (createChannelDto.chPwd !== "" && createChannelDto.chPwd !== undefined) {
       createChannelDto = await this.hashPassword(createChannelDto);
     }
     const { chName, chPwd, isDM, isPrivate } = createChannelDto;
@@ -112,6 +112,16 @@ export class ChannelService {
     return updateData;
   }
 
+  async updateNickName(intraId: string, nickName: string) {
+    const channels = await this.findAll();
+    channels.map(chan => {
+      this.channelUsers[chan.chIdx].map(users => {
+        if (users.intraId === intraId)
+          users.nickName = nickName;
+      })
+    })
+  }
+
   async delete(idx: number) {
     await this.findOneById(idx);
     await this.prisma.channel.delete({ where: { chIdx: idx } });
@@ -121,6 +131,10 @@ export class ChannelService {
     this.messageList[idx] = [];
     this.mutedUsers[idx] = [];
     this.pair[idx] = {user1: "", user2: ""};
+  }
+
+  async findAll() {
+    return await this.prisma.channel.findMany();
   }
   
   async findChannelAll() {
@@ -250,17 +264,19 @@ export class ChannelService {
     this.administrators[idx] = this.administrators[idx].filter(
       (user) => user.intraId !== memberId
     );
-    
-    // 아무도 안 남을 경우 채널 삭제?
+    // 관리자일 경우 관리자 권한 없애기
+    if (await this.isOwner(idx, memberId)) {
+      await this.prisma.channel.update({
+        where: { chIdx: idx },
+        data: {
+          ownerId: null,
+        },
+      });
+    }
     if (updatedChannel.chUserCnt <= 0) {
       this.delete(idx);
       return true;
-    } else if (memberId === updatedChannel.ownerId) {
-      await this.prisma.channel.update({
-        where: { chIdx: idx },
-        data: { ownerId: null },
-      });
-    }
+    } 
     return false;
   }
 
@@ -499,6 +515,11 @@ export class ChannelService {
     return await this.prisma.channel.findMany({ where: { isPrivate: true } });
   }
 
+  async isPrivate(idx: number) {
+    const channel = await this.findOneById(idx);
+    return channel.isPrivate;
+  }
+
   async getMyPrivateChannels(intraId: string) {
     let channels = [];
     const allChannel = await this.findPrivateChannelAll();
@@ -513,5 +534,22 @@ export class ChannelService {
       }
     }
     return channels;
+  }
+
+  async channelInvite(chanName: string, channelUserDto: ChannelUserDto) {
+    const { intraId, avatar, nickName } = channelUserDto;
+    const channel = await this.findOneByName(chanName);
+    // user check
+    if (this.channelUsers[channel.chIdx].find((user) => user.intraId === intraId))
+      return ;
+    // max check
+    if (channel.chUserCnt >= 5) throw new ForbiddenException('max capacity');
+    await this.prisma.channel.update({
+      where: { chIdx: channel.chIdx },
+      data: {
+        chUserCnt: { increment: 1 },
+      },
+    });
+    this.channelUsers[channel.chIdx].push({ intraId, avatar, nickName });
   }
 }
