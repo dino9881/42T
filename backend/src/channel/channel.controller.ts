@@ -36,18 +36,6 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 export class ChannelController {
   constructor(private readonly channelService: ChannelService) {}
 
-  
-
-  // @ApiTags('Channel User')
-  // @Post('/leave/:idx')
-  // @ApiOperation({
-  //   summary: 'idx 채널에서 나오기',
-  //   description: 'Leave channel By Idx',
-  // })
-  // leaveChannel(@GetMember() member: MemberInfoDto, @Param('idx') idx: string) {
-  //   return this.channelService.leave(+idx, member.intraId);
-  // }
-
   @ApiTags('Channel')
   @Patch(':idx')
   @ApiOperation({
@@ -200,6 +188,20 @@ export class ChannelController {
     @GetMember() member: MemberInfoDto,
   ) {
     return this.channelService.getChannelUsers(+idx, member);
+  }
+
+  @ApiTags('Channel User')
+  @Get('/isChan/:idx')
+  @ApiOperation({
+    summary: '내가 idx 채널 유저인지 확인하기',
+    description: 'Is Channels User By Idx',
+  })
+  @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx' })
+  isChanUser(
+    @Param('idx') idx: string,
+    @GetMember() member: MemberInfoDto,
+  ) {
+    return this.channelService.isChanUser(+idx, member.intraId);
   }
 
   @ApiTags('Channel User')
