@@ -230,8 +230,10 @@ export class SocketIOGateway
       this.getSocketByintraId(client['intraId'])?.emit('mute');
       return 'Message received! But you are muted. You cannot send message.';
     }
+    // ban check
     if (await this.channelService.isBan(channelName, client['intraId']))
       return 'Message received! But you are banned.';
+    // dm 첫 메세지 알람
     const user = await this.channelService.isFirstMessage(
       channelName,
       client['intraId'],
@@ -243,16 +245,17 @@ export class SocketIOGateway
     return 'Message received!';
   }
 
+  @SubscribeMessage('first-enter')
+  async handleFirstEnter(client: Socket, payload: Payload) {
+    const { channelName, } = payload;
+    client.join(channelName);
+    client.to(channelName).emit('welcome', client['nickName']);
+  }
+  
   @SubscribeMessage('enter-channel')
   async handleChannelEnter(client: Socket, payload: Payload) {
     const { channelName, nickName } = payload;
-    const isChanUsers = await this.channelService.isChanUsers(
-      channelName,
-      nickName,
-    );
-    if (!isChanUsers) client.to(channelName).emit('welcome', nickName);
     client.join(channelName);
-    client['nickName'] = nickName;
     console.log(`${nickName} enter channel : ${channelName}`);
   }
 
@@ -297,6 +300,24 @@ export class SocketIOGateway
     });
   }
 
+  // invite
+  @UseFilters(ConflictExceptionFilter)
+  @SubscribeMessage('channel-invite')
+  async handleChannelInvite(client: Socket, payload: Payload) {
+    const { channelName, nickName } = payload;
+    try {
+      const user = await this.memberService.getOneByNick(nickName);
+      const userSocket = this.getSocketByintraId(user.intraId);
+      this.channelService.channelInvite(channelName, {intraId: userSocket['intraId'], avatar: userSocket['avatar'] ,nickName: userSocket['nickName']});
+      // nickName 님이 channelName 에 초대하셨습니다 이런거
+      userSocket?.emit('invite', client['nickName'], channelName);
+    } catch (error) {
+      if (error.response && error.response.statusCode === 403)
+        client.emit('max-capacity');
+      else client.emit('server-error');
+    }
+  }
+  
   // 채널 kick, ban, mute, admin
   @UseFilters(ConflictExceptionFilter)
   @SubscribeMessage('channel-kick')
