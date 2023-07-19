@@ -15,6 +15,7 @@ import { ConfigType } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { MemberInfoDto } from './dto/member-info.dto';
 import jwtConfig from 'src/config/jwt.config';
+import { memberConstants, statusConstants } from 'src/util/constants';
 
 @Injectable()
 export class MemberService {
@@ -26,17 +27,17 @@ export class MemberService {
 
   async createAdminMember() {
     const adminMember = await this.prisma.member.findUnique({
-      where: { intraId: 'admin' },
+      where: { intraId: memberConstants.ADMIN },
     });
     if (adminMember) return;
     const adminMemberData = {
-      intraId: 'admin',
-      nickName: 'admin',
-      avatar: 'admin.jpg',
-      rank: 100,
+      intraId: memberConstants.ADMIN,
+      nickName: memberConstants.ADMIN,
+      avatar: memberConstants.ADMIN + '.jpg',
+      rank: memberConstants.RANK,
       currentRefreshTokenExp: undefined,
       currentRefreshToken: undefined,
-      status: 1,
+      status: statusConstants.ONLINE,
     };
     await this.prisma.member.create({ data: adminMemberData });
   }
@@ -108,10 +109,10 @@ export class MemberService {
     await this.prisma.member.create({
       data: {
         ...memberDto,
-        rank: 100, // 기본 랭크 100
+        rank: memberConstants.RANK,
         currentRefreshTokenExp: undefined,
         currentRefreshToken: undefined,
-        status: 1,
+        status: statusConstants.ONLINE,
       },
     });
     return;
