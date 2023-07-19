@@ -264,17 +264,9 @@ export class ChannelService {
     this.administrators[idx] = this.administrators[idx].filter(
       (user) => user.intraId !== memberId
     );
-    // 관리자일 경우 관리자 권한 없애기
-    if (await this.isOwner(idx, memberId)) {
-      await this.prisma.channel.update({
-        where: { chIdx: idx },
-        data: {
-          ownerId: null,
-        },
-      });
-    }
-    if (updatedChannel.chUserCnt <= 0) {
-      this.delete(idx);
+     // 관리자일 경우, 채널에 아무도 없을 때 채널 삭제
+     if (await this.isOwner(idx, memberId) || updatedChannel.chUserCnt <= 0) {
+      await this.delete(idx);
       return true;
     } 
     return false;
