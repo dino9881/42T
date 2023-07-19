@@ -37,4 +37,5 @@ export class gameConstants {
 export class channelConstants {
   public static readonly OPERATOR_CNT = 3;
   public static readonly USER_CNT = 5;
+  public static readonly MUTE_TIME = 5 * 60 * 1000;
 }
