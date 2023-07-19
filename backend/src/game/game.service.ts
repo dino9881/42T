@@ -4,6 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { MemberService } from 'src/member/member.service';
 import { Socket } from 'socket.io';
 import { Interval } from '@nestjs/schedule';
+
 interface GameProps {
   x1: number;
   y1: number;
@@ -119,15 +120,28 @@ export class GameService {
     for (const roomName in this.gameRooms) {
       if (this.gameRooms.hasOwnProperty(roomName)) {
         const gameRoom = this.gameRooms[roomName];
-        console.log(gameRoom.gameProps);
-        // calculate gameProps
-
+        // console.log(gameRoom.gameProps);
+        // // calculate gameProps
+        // if (gameRoom.mode == 0) {
+        //   // easy mode : paddle speed 2 & ball speed 1
+        // } else if (gameRoom.mode == 1) {
+        //   // normal mode paddle speed 1 & ball speed 1
+        // } else if (gameRoom.mode == 2) {
+        //   // ghost mode : ball disappers sometime
+        // }
         // update gameRoom gameProps
-        // const gameProps: GameProps = gameRoom.gameProps;
-        // gameRoom.player1.emit('game-render', gameProps);
-        // gameRoom.player2.emit('game-render', gameProps);
+        const gameProps: GameProps = gameRoom.gameProps;
+        gameRoom.player1.emit('game-render', gameProps);
+        gameRoom.player2.emit('game-render', gameProps);
       }
     }
+  }
+
+  async checkLimit(gameProps: GameProps) {
+    if (gameProps.y1 > 500) gameProps.y1 = 500;
+    if (gameProps.y1 < 100) gameProps.y1 = 100;
+    if (gameProps.y2 > 500) gameProps.y2 = 500;
+    if (gameProps.y2 < 100) gameProps.y2 = 100;
   }
 
   async playerW(player: Socket, roomName: string) {
@@ -135,25 +149,25 @@ export class GameService {
     //game render
     if (this.gameRooms[roomName].player1['intraId'] == player['intraId']) {
       console.log(player['intraId']);
-      this.gameRooms[roomName].gameProps.bx = 670;
+      this.gameRooms[roomName].gameProps.y1 -= 40;
     } else {
       console.log(player['intraId']);
-      this.gameRooms[roomName].gameProps.bx = 670;
+      this.gameRooms[roomName].gameProps.y2 -= 40;
     }
+    this.checkLimit(this.gameRooms[roomName].gameProps);
   }
 
-  // paddle bar를 움직일 때만 렌더링하는게 아니라,
-  // 움직이고 있지 않을때도 렌더링 되어야함.
   async playerS(player: Socket, roomName: string) {
     console.log('gameservice - playerS');
     //game render
     if (this.gameRooms[roomName].player1['intraId'] == player['intraId']) {
       console.log(player['intraId']);
-      this.gameRooms[roomName].gameProps.by = 670;
+      this.gameRooms[roomName].gameProps.y1 += 40;
     } else {
       console.log(player['intraId']);
-      this.gameRooms[roomName].gameProps.by = 670;
+      this.gameRooms[roomName].gameProps.y2 += 40;
     }
+    this.checkLimit(this.gameRooms[roomName].gameProps);
   }
 
   async exitQueue(member: Socket) {
