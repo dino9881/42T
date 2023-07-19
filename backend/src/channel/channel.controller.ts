@@ -70,6 +70,21 @@ export class ChannelController {
   }
 
   @ApiTags('Channel')
+  @Patch('update/nick')
+  @ApiOperation({
+    summary: '모든 닉네임 업데이트',
+    description: 'Update NickName API',
+  })
+  updateNickName(
+    @GetMember() member: MemberInfoDto,
+  ) {
+    this.channelService.updateNickName(
+      member.intraId,
+      member.nickName,
+    );
+  }
+
+  @ApiTags('Channel')
   @Delete(':idx')
   @ApiOperation({ summary: '채널 삭제', description: 'Delete Channel API' })
   @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx' })
@@ -81,8 +96,8 @@ export class ChannelController {
   @Get('/all')
   @ApiCreatedResponse({ type: UpdateChannelDto })
   @ApiOperation({
-    summary: '모든 채널 조회',
-    description: 'Find All Channel API',
+    summary: '모든 일반 채널 조회',
+    description: 'Find All Public Channel API',
   })
   findChannelAll() {
     return this.channelService.findChannelAll();
@@ -313,7 +328,7 @@ export class ChannelController {
   }
 
   @ApiTags('Channel Private')
-  @Get('private/all')
+  @Get('private/')
   @ApiCreatedResponse({ type: UpdateChannelDto })
   @ApiOperation({
     summary: '모든 Private 채널 조회',
@@ -321,6 +336,16 @@ export class ChannelController {
   })
   findPrivateChannelAll() {
     return this.channelService.findPrivateChannelAll();
+  }
+
+  @ApiTags('Channel Private')
+  @Get('private/:idx')
+  @ApiOperation({
+    summary: 'idx 채널이 private 채널 인지 조회',
+    description: 'Is Private',
+  })@ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx' })
+  isPrivate(@Param('idx') idx: string) {
+    return this.channelService.isPrivate(+idx);
   }
 
 }

@@ -99,27 +99,6 @@ export class SocketIOGateway
     this.socketList.set(intraId, client);
   }
 
-  @SubscribeMessage('message')
-  async handleMessage(client: Socket, payload: Payload): Promise<string> {
-    const { channelName, nickName, message, avatar } = payload;
-    // mute check
-    if (await this.channelService.ismuted(channelName, nickName)) {
-      this.getSocketByintraId(client['intraId'])?.emit('mute');
-      return 'Message received! But you are muted. You cannot send message.';
-    }
-    if (await this.channelService.isBan(channelName, client['intraId']))
-      return 'Message received! But you are banned.';
-    const user = await this.channelService.isFirstMessage(
-      channelName,
-      client['intraId'],
-    );
-    if (user !== '')
-      this.getSocketByintraId(user)?.emit('send-dm', client['intraId']);
-    client.to(channelName).emit('send-message', { nickName, message, avatar });
-    this.channelService.sendMessage(channelName, nickName, message, avatar);
-    return 'Message received!';
-  }
-
   // 게임관련 메세지
   @SubscribeMessage('game-queue-join')
   handleGameQueueJoin(client: Socket, payload: Payload) {
@@ -243,6 +222,55 @@ export class SocketIOGateway
   }
 
   // 채널관련 메세지
+  @SubscribeMessage('message')
+  async handleMessage(client: Socket, payload: Payload): Promise<string> {
+    const { channelName, nickName, message, avatar } = payload;
+    // mute check
+    if (await this.channelService.ismuted(channelName, nickName)) {
+      this.getSocketByintraId(client['intraId'])?.emit('mute');
+      return 'Message received! But you are muted. You cannot send message.';
+    }
+    if (await this.channelService.isBan(channelName, client['intraId']))
+      return 'Message received! But you are banned.';
+    const user = await this.channelService.isFirstMessage(
+      channelName,
+      client['intraId'],
+    );
+    if (user !== '')
+      this.getSocketByintraId(user)?.emit('send-dm', client['intraId']);
+    client.to(channelName).emit('send-message', { nickName, message, avatar });
+    this.channelService.sendMessage(channelName, nickName, message, avatar);
+    return 'Message received!';
+  }
+
+  @SubscribeMessage('enter-channel')
+  async handleChannelEnter(client: Socket, payload: Payload) {
+    const { channelName, nickName } = payload;
+    const isChanUsers = await this.channelService.isChanUsers(
+      channelName,
+      nickName,
+    );
+    if (!isChanUsers) client.to(channelName).emit('welcome', nickName);
+    client.join(channelName);
+    client['nickName'] = nickName;
+    console.log(`${nickName} enter channel : ${channelName}`);
+  }
+
+  @SubscribeMessage('leave-channel')
+  async handleChannelLeave(client: any, payload: any) {
+    const { channelName, chIdx, nickName } = payload;
+    client.leave(channelName);
+    if (await this.channelService.leave(chIdx, client['intraId'])) {
+      const members = await this.memberService.getAll();
+      client.to(channelName).emit('delete');
+      members.map((users) => {
+        if (users.intraId !== 'admin')
+          this.getSocketByintraId(users.intraId)?.emit('reload');
+      });
+    }
+    console.log(`${nickName} leave channel : ${channelName}`);
+  }
+
   // 일반채널 생성
   @UseFilters(ConflictExceptionFilter)
   @SubscribeMessage('create-channel')
@@ -269,33 +297,6 @@ export class SocketIOGateway
     });
   }
 
-  @SubscribeMessage('enter-channel')
-  async handleChannelEnter(client: Socket, payload: Payload) {
-    const { channelName, nickName } = payload;
-    // const isChanUsers = await this.channelService.isChanUsers(
-    //   channelName,
-    //   nickName,
-    // );
-    // if (!isChanUsers) client.to(channelName).emit('welcome', nickName);
-    client.join(channelName);
-    client['nickName'] = nickName;
-    console.log(`${nickName} enter channel : ${channelName}`);
-  }
-
-  @SubscribeMessage('leave-channel')
-  async handleChannelLeave(client: any, payload: any) {
-    const { channelName, chIdx, nickName } = payload;
-    client.leave(channelName);
-    if (this.channelService.leave(chIdx, client['intraId'])) {
-      const members = await this.memberService.getAll();
-      members.map((users) => {
-        if (users.intraId !== 'admin')
-          this.getSocketByintraId(users.intraId)?.emit('reload');
-      });
-    }
-    console.log(`${nickName} leave channel : ${channelName}`);
-  }
-
   // 채널 kick, ban, mute, admin
   @UseFilters(ConflictExceptionFilter)
   @SubscribeMessage('channel-kick')
@@ -311,6 +312,7 @@ export class SocketIOGateway
     } catch (error) {
       if (error.response && error.response.statusCode === 403)
         client.emit('no-permissions');
+      else client.emit('server-error');
     }
   }
 
@@ -328,6 +330,7 @@ export class SocketIOGateway
     } catch (error) {
       if (error.response && error.response.statusCode === 403)
         client.emit('no-permissions');
+      else client.emit('server-error');
     }
   }
 
@@ -345,6 +348,7 @@ export class SocketIOGateway
     } catch (error) {
       if (error.response && error.response.statusCode === 403)
         client.emit('no-permissions');
+      else client.emit('server-error');
     }
   }
 
@@ -362,6 +366,7 @@ export class SocketIOGateway
     } catch (error) {
       if (error.response && error.response.statusCode === 403)
         client.emit('no-permissions');
+      else client.emit('server-error');
     }
   }
 }
