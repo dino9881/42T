@@ -12,6 +12,7 @@ import { APP_PIPE } from '@nestjs/core';
 import { MulterModule } from '@nestjs/platform-express';
 import { multerOptions } from './util/multer.options.factory';
 import appConfig from './config/app.config';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import appConfig from './config/app.config';
       load: [appConfig],
     }),
     MailModule,
+    ScheduleModule.forRoot(),
     MulterModule.registerAsync({
       useFactory: multerOptions,
     }),
