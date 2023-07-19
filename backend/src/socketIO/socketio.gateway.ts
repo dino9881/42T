@@ -119,16 +119,17 @@ export class SocketIOGateway
     return 'Message received!';
   }
 
+  @SubscribeMessage('first-enter')
+  async handleFirstEnter(client: Socket, payload: Payload) {
+    const { channelName, } = payload;
+    client.join(channelName);
+    client.to(channelName).emit('welcome', client['nickName']);
+  }
+
   @SubscribeMessage('enter-channel')
   async handleChannelEnter(client: Socket, payload: Payload) {
     const { channelName, nickName } = payload;
-    const isChanUsers = await this.channelService.isChanUsers(
-      channelName,
-      nickName,
-    );
-    if (!isChanUsers) client.to(channelName).emit('welcome', nickName);
     client.join(channelName);
-    client['nickName'] = nickName;
     console.log(`${nickName} enter channel : ${channelName}`);
   }
 
