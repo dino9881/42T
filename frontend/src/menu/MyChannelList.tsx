@@ -6,12 +6,10 @@ interface ChannelProps {
     chName: string;
     chUserCnt: number;
 	setShowDropDownBox:any;
-    // chPwd: number | null;
-    // isDM: boolean;
-    // operatorId: string;
+	isPrivate: boolean;
 }
 
-const MyChannelList: React.FC<ChannelProps> = ({chIdx, chName, chUserCnt, setShowDropDownBox}) => {
+const MyChannelList: React.FC<ChannelProps> = ({chIdx, chName, chUserCnt, setShowDropDownBox, isPrivate}) => {
 	const navigate = useNavigate();
 
 	const handleIntoChannel = () => {
@@ -23,7 +21,7 @@ const MyChannelList: React.FC<ChannelProps> = ({chIdx, chName, chUserCnt, setSho
 	return (
 		<button className="menu-drop-down-channel-box" onClick={handleIntoChannel}>
 			<span className="menu-drop-down-channel-text">{chName}</span>
-			<span className="menu-drop-down-channel-text-usercnt">{chUserCnt}/5</span>
+			{!isPrivate && <span className="menu-drop-down-channel-text-usercnt">{chUserCnt}/5</span>}
 		</button>
 	)
 };

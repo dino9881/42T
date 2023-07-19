@@ -31,7 +31,7 @@ const ChannelUserForm: React.FC<ChannelUserFormProps> = ({ nickName }) => {
 	return (
 		<div>
 			{userState !== 2 && (
-				<FriendInfo intraId={userData && userData.intraId} nickName={userData && userData.nickName} rank={userData && userData.rank} avatar={userData && userData.avatar} winCnt={userData && userData.winCnt} loseCnt={userData && userData.loseCnt} state={userState} currstate={userData && userData.status}/>
+				<FriendInfo intraId={userData && userData.intraId} nickName={userData && userData.nickName} rank={userData && userData.rank} avatar={userData && userData.avatar} winCnt={userData && userData.winCnt} loseCnt={userData && userData.loseCnt} state={userState} currstate={userData && userData.status} info={true}/>
 			)}
 			{userState === 2 && (
 				<BanList nickName={userData.nickName} avatar={userData.avatar}/>

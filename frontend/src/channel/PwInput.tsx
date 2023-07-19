@@ -35,6 +35,12 @@ function PwInput({ chIdx, chPwd, chUserCnt } : PwInputProps) {
             .catch((error) => {
                 // 요청이 실패하면 에러 처리
                 console.error("API 요청 실패:", error);
+				if (error.response.status === 403)
+					alert("당신은 벤 유저 입니다 ^^ (못들어감).");
+				else if(error.response.status === 404)
+					alert("없는 채널번호...;;");    
+				else if(error.response.status === 500)
+					alert("서버에러 (뺵 잘못)");
                 //   403 밴 유저
                 //   404 없는 채널 번호
                 //   500 서버 에러
@@ -52,6 +58,12 @@ function PwInput({ chIdx, chPwd, chUserCnt } : PwInputProps) {
             .catch((error) => {
                 // 요청이 실패하면 에러 처리
                 console.error("API 요청 실패:", error);
+				if (error.response.status === 403)
+					alert("당신은 벤 유저 입니다 ^^ (못들어감).");
+				else if(error.response.status === 404)
+					alert("없는 채널번호...;;");    
+				else if(error.response.status === 500)
+					alert("서버에러 (뺵 잘못)");
                 //   403 밴 유저
                 //   404 없는 채널 번호
                 //   500 서버 에러
@@ -72,11 +84,16 @@ function PwInput({ chIdx, chPwd, chUserCnt } : PwInputProps) {
                     .post(`http://localhost:5001/channel/enter/${chIdx}`)
                     .then((response) => {
                         navigate("/chat", { state: { chIdx } });
-
                     })
                     .catch((error) => {
                         // 요청이 실패하면 에러 처리
                         console.error("API 요청 실패:", error);
+                        if (error.response.status === 403)
+                            alert("당신은 벤 유저 입니다 ^^ (못들어감).");
+                        else if(error.response.status === 404)
+                            alert("없는 채널번호...;;");    
+                        else if(error.response.status === 500)
+                            alert("서버에러 (뺵 잘못)");
                         //   403 밴 유저
                         //   404 없는 채널 번호
                         //   500 서버 에러

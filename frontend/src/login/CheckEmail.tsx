@@ -70,18 +70,12 @@ const CheckEmail: React.FC<EmailProps> = ({ myData, onClose, onEmail }) => {
 				"code": verificationCode
 			})
 			.then((response) => {
-				// console.log(response);
-				if (response === undefined) {
-					alert("인증번호가 틀립니다.")
-					onClose();
-				}
-				else {
 					onEmail();
 					onClose();
-				}
 			})
 			.catch(function (error) {
-				console.log(error);
+				alert("인증번호가 틀립니다.")
+				onClose();
 			});
 		}
 	};

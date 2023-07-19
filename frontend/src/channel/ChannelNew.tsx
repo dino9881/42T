@@ -1,10 +1,9 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, KeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import instance from "../refreshToken";
-import { socket } from "../socket"
-import { platform } from "os";
+import { socket } from "../socket";
 
-interface ChannelData {
+interface ChannelData{
     chIdx: number;
 }
 
@@ -14,6 +13,12 @@ function ChannelNew() {
     const [inputValue, setInputValue] = useState("");
     const [isCloseNewMake, setCloseNewMake] = useState(true);
     const [isChecked, setIsChecked] = useState(false);
+
+    const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
+        if(event.key === "Enter") {
+          makeNewChannel();
+        }
+    };
 
     const closeNewMake = () => {
         setCloseNewMake(false);
@@ -49,12 +54,9 @@ function ChannelNew() {
             alert("비밀번호는 4자리로 입력해주세요.");
             return;
         }
-        
-        const requestData = {
-            chName: title,
-            chPwd: isChecked ? password : undefined,
-        };
-
+        // private => channel/create chanName, isPrivate: true
+        // if { api 호출 response => closeNewMake, navaigate => error }
+        // else { emit create-channel }
         socket.emit("create-channel", {
             channelName: title,
             password: password,
@@ -67,6 +69,11 @@ function ChannelNew() {
         
         socket.on("duplicate-chanName", () => {
             alert("같은 제목의 방이 이미 있습니다.");
+            return;
+        });
+        
+        socket.on("max-channel", () => {
+            alert("만들 수 있는 방의 수를 초과했습니다.");
         });
 
         socket.on("server-error", () => {
@@ -78,54 +85,7 @@ function ChannelNew() {
             socket.off("duplicate-chanName");
             socket.off("server-error");
         };
-
-        // return navigate("/chat", { state: { chIdx:response.data.chIdx } });
-        //         closeNewMake();
-        // if(password) {
-        //     return instance
-        //         .post("http://localhost:5001/channel/create" , requestData)
-        //         .then((response) => {
-        //             console.log(response.data.chIdx)
-        //             navigate("/chat", { state: { chIdx:response.data.chIdx } });
-        //             closeNewMake();
-        //         })
-        //         .catch((error) => {
-        //             console.log(error.response.status);
-        //             if(error.response.status === 409)
-        //                 alert("같은 제목의 방이 이미 있습니다.");
-        //             else if (error.response.status === 400)
-        //                 alert("입력정보가 잘못되었습니다(bad request).");
-        //             else if (error.response.status === 400)
-        //                 alert("입력정보가 잘못되었습니다(bad request).");
-        //             else if(error.response.status === 404)
-        //                 alert("멤버가 아님...;;");    
-        //             else if(error.response.status === 500)
-        //                 alert("서버에러 (뺵 잘못)");
-        //         });
-        // } else {
-        //     return instance
-        //     .post("http://localhost:5001/channel/create" ,{ 
-        //         chName: title,
-        //     })
-        //     .then((response) => {
-        //         console.log(response.data.chIdx)
-        //         navigate("/chat", { state: { chIdx:response.data.chIdx } });
-        //         closeNewMake();
-        //     })
-        //     .catch((error) => {
-        //         console.log(error.response.status);
-        //         if(error.response.status === 409)
-        //             alert("같은 제목의 방이 이미 있습니다.");
-        //         else if (error.response.status === 400)
-        //             alert("입력정보가 잘못되었습니다(bad request).");
-        //         else if(error.response.status === 404)
-        //             alert("멤버가 아님...;;");    
-        //         else if(error.response.status === 500)
-        //             alert("서버에러 (뺵 잘못)");
-        //         // 요청이 실패하면 에러 처리
-        //         // console.error("API 요청 실패:", error);
-        //     });
-        // } 
+            
     };
 
 return (
@@ -137,7 +97,7 @@ return (
         </button>
         <div className="chan-new_namebox">
             <div className="chan-new_name">방 제목</div>
-            <input type="text" name="title_inputbox" className="chan-new_input_title" maxLength={20}></input>
+            <input onKeyDown={handleKeyPress} type="text" name="title_inputbox" className="chan-new_input_title" maxLength={20}></input>
         </div>    
         <div className="chan-new_pwbox">
             <div className="chan-new_pwcheck">

@@ -8,7 +8,7 @@ interface BanProps {
 
 const BanList: React.FC<BanProps> = ({nickName, avatar}) => {
 	function getBanList() {
-		instance.delete(`http://localhost:5001/member/unban/${nickName}`).then(() => {
+		instance.delete(`http://localhost:5001/member/ban/delete/${nickName}`).then(() => {
 			window.location.reload();
 			console.log("차단해제")
 		});

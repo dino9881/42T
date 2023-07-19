@@ -52,7 +52,7 @@ function Chat({channelInit}:ChatProps) {
         });
             
         const state = location.state as { chIdx : number };
-        console.log(state)
+        // console.log(state)
         if (state && state.chIdx) {
             instance
             .get(`http://localhost:5001/channel/name/${state.chIdx}`)
@@ -150,23 +150,9 @@ function Chat({channelInit}:ChatProps) {
     function exitChannel(){
         const state = location.state;
        if (state && state.chIdx) {
-
-        instance
-            .post(`http://localhost:5001/channel/leave/${state.chIdx}`, {memberId : nickName})
-            .then((response) => {
-                console.log(response.data);
-                // console.log(nickName);
-                socket.emit("leave-channel",{channelName, nickName});
-            })
-            .catch((error) => {
-                console.error("API 요청 실패:", error);
-            });
-            navigate('/main', {
-                state: {
-                }
-            });
-            window.location.reload();
-        }
+        socket.emit("leave-channel", {channelName : channelName, chIdx:state.chIdx, nickName:nickName})
+        navigate('/main');
+       }
     }
 
     return (  

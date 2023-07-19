@@ -28,16 +28,17 @@ function Channel({channelName, channelInit} : ChannelProps) {
       .catch((error) => {
         // 요청이 실패하면 에러 처리
         console.error("API 요청 실패:", error);
+        if (error.response.status === 401)
+			      alert("Accesstoken 인증 실패.");
+        else if(error.response.status === 404)
+            alert("없는 멤버...;;");    
+        else if(error.response.status === 500)
+            alert("서버에러 (뺵 잘못)");
       });
-
-    socket.on("reload", () => { window.location.reload(); });
-    socket.on("send-dm", (intraId: string) => {
-      alert(intraId + " 님이 DM 을 보냈습니다.");
-    });
-
+      socket.on("reload", () => { window.location.reload(); });
     return () => {socket.off("reload")};
   }, []);
-
+  
 
   // 채널 데이터를 페이지 단위로 나누는 함수
     const paginateChannels = (data: any[], page: number) => {

@@ -44,6 +44,15 @@ function ChannelRoom({ channelData }: ChannelRoomProps) {
       .catch((error) => {
         // 요청이 실패하면 에러 처리
         console.error("API 요청 실패:", error);
+        if (error.response.status === 401)
+			alert("Accesstoken 인증 실패.");
+        else if(error.response.status === 404)
+            alert("없는 멤버...;;");    
+        else if(error.response.status === 500)
+            alert("서버에러 (뺵 잘못)");
+        // 401	Accesstoken 인증 실패
+        // 404	멤버를 찾지 못함
+        // 500	서버 에러
       });
     }, []);
 

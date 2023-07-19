@@ -26,18 +26,73 @@ interface AdminUserListProps{
     banList:UserInfos[];
 }
 
+interface PassSettingProps{
+    channelName:string,
+    channelIdx:number
+    isPass:boolean;
+}
+
 function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
         const [banList, setBanList] = useState<UserInfos[]>(() => initialData());
         const [userList, setUserList] = useState<UserInfos[]>(() => initialData());
+        const [inviteName, setInviteName] = useState("");
+        const navigate = useNavigate();
         const [isOwner , setOwner] = useState(false);
+        const [isPass , setIsPass] = useState(false);
+        
         const chName = channelName;
         const chIdx = channelIdx;
-
+        
         function initialData(): UserInfos[]  {
             return [];
+        }
+        
+        const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+            setInviteName(event.target.value);
+        };
+        function handleOnclick () {
+            navigate('/chat', {
+						state: {
+						channelName : chName,
+						chIdx : chIdx
+						}
+					});
+          }
+          const handleInvite  = (event: FormEvent<HTMLFormElement>) => {
+            event.preventDefault();
+            const targetIntraId = userList.find(user => user.nickName === inviteName);
+            if (targetIntraId)
+            {
+                alert("이미 채팅방에 있는 사람입니다.")
+                setInviteName("")
+                return;
+            }
+           socket.emit("channel-invite", {nickName : inviteName, channelName : channelName});
+           console.log(`nick = ${inviteName}, channel = ${channelName}`);
+           window.location.reload();
+           setInviteName("")
           }
 
         useEffect(() => {
+
+            instance.get(`http://localhost:5001/auth/me`)
+            .then((response) => {
+                const intraId = response.data.intraId;
+                instance.get(`http://localhost:5001/channel/${chIdx}`)
+                .then((response) => {
+                    if (response.data.ownerId === intraId)
+                        setOwner(true);
+                    if (response.data.chPwd)
+                        setIsPass(true);
+                })
+                .catch((error) => {
+                console.error("API 요청 실패:", error);
+                });
+            })
+            .catch((error) => {
+            console.error("API 요청 실패:", error);
+            });
+
 
         instance.get(`http://localhost:5001/channel/users/${channelIdx}`)
             .then((response) => {
@@ -49,27 +104,40 @@ function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
 
             instance.get(`http://localhost:5001/channel/ban/${channelIdx}`)
             .then((response) => {
+                console.log(response.data);
             setBanList(response.data);
             })
             .catch((error) => {
             console.error("API 요청 실패:", error);
             });
             
-            instance.post(`http://localhost:5001/channel/oper/${channelIdx}`)
-            .then((response) => {
-                setOwner(response.data);
-            })
-            .catch((error) => {
-            console.error("API 요청 실패:", error);
-            });
+        socket.on("no-permissions", () => {
+            alert("너 권한없음");
+        });
 
-            socket.on("no-permissions", () => {
-                alert("너 권한없음");
-            });
+        socket.on("kick", () => {
+        navigate('/main');
+        alert("너 퇴장당함");
+        });
+        socket.on("ban", () => {
+            navigate('/main');
+            alert("너 밴당함");
+        });
+        socket.on("mute", () => {
+            alert("너 뮤트당함");
+        });
+        socket.on("max-capacity" ,() => {
+            alert("채널에 남는 자리가 없어요")
+        })
 
-            return () => {
-                socket.off("no-permissions")
-              }
+        return () => {
+            socket.off("kick");
+            socket.off("mute");
+            socket.off("ban");
+            socket.off("no-permissions")
+            socket.off("max-capacity")
+          };
+
         }, []);
 
           
@@ -82,8 +150,12 @@ function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
         <Setting setting="mute" chIdx={chIdx} userList={userList} banList={banList} />
         <Setting setting="kick" chIdx={chIdx} userList={userList} banList={banList} />
         <Setting setting="ban" chIdx={chIdx}userList={userList} banList={banList} />
-
-        { isOwner && <PassSetting/>}
+        { isOwner && <PassSetting  channelIdx={chIdx} channelName={channelName} isPass={isPass} />}
+        <form onSubmit={handleInvite}>
+            <input placeholder="닉네임" onChange={onChange} value={inviteName} type="text" autoComplete="off" ></input>
+            <button>초대하기</button>
+        </form>
+        <button onClick={handleOnclick}>설정완료</button>
       </div>
     </div>
 }
@@ -203,19 +275,70 @@ function Setting({setting, chIdx , userList} : SettingInfo ){
                 value={text}
                 name="setting"
                 autoComplete="off"
+                placeholder="닉네임"
             />
              <button>제출</button>
         </form>
     </div>
 }
 
-function PassSetting()
-{
+function PassSetting({channelIdx, isPass} : PassSettingProps)
+{   
+    const [pass, setPass] = useState("");
+    const [option, setOption] = useState("");
+
+    const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        // 숫자 이외의 문자 제거
+        const filteredValue = value.replace(/\D/g, "");
+        setPass(filteredValue);
+    };
+    const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        var newPass = "";
+        if (option === "modify" || option === "create")
+        {
+            newPass = pass;
+            if (newPass.length !== 4)
+            {
+                alert("패스워드는 4자리만 가능합니다.");
+                return;
+            }
+        }
+        else if (option === "delete")
+        {
+            console.log(`${pass} ${option}`)
+        }
+        else return;
+        instance
+        .patch(`http://localhost:5001/channel/${channelIdx}`, {chPwd:pass})
+        .then((response) => {
+            if (option === "modify" || option === "create")
+                alert (`${pass} 로 패스워드 ${option} 성공 `)
+            else if (option === "delete")
+                alert (`패스워드 삭제 성공`);
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+        window.location.reload();
+        setPass("");
+    };
     return <div className="admin-pass-box">
         <h1>채널 비밀번호 설정</h1>
-        <button> 수정 </button>
-        <button> 삭제 </button>
-        <button> 생성 </button>
+        <form onSubmit={onSubmit}>
+            <input
+                placeholder="비밀번호를 입력해주세요."
+                type="text"
+                onChange={onChange}
+                value={pass}
+                autoComplete="off"
+                maxLength={4}
+                />
+           {isPass && <button onClick={() => {setOption("modify")}}> 수정 </button>}
+           {!isPass && <button onClick={() => {setOption("create")}}> 생성 </button>}
+           {isPass &&<button onClick={() => {setOption("delete")}}> 삭제 </button>}
+        </form>
     </div>
 }
 

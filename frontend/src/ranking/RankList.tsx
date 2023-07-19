@@ -23,12 +23,14 @@ function RankList(props: { ranking: RankData[] }) {
 
   let currentRank = 1; // 현재 순위
   let prevScore: number | null = null; // 이전 점수
+  let addRankText= "";
+
 
   return (
     <div className="ranking-etc">
       <div className="ranking-etc_titlebox">
-        <div>트센 분노의 핑 투더 퐁</div>
-        <div>순위 발표</div>
+        <div>분노의 핑 투더 퐁</div>
+        <div className="ranking-etc_titlebox_result">순위 발표</div>
       </div>
       <div className="ranking-etc_ranklist">
       {extendedRanking.map((rank: RankData | null, index: number) => {
@@ -45,14 +47,25 @@ function RankList(props: { ranking: RankData[] }) {
           rankText = `${currentRank}위`; 
           prevScore = rank.rank;
 
+          if(rankText === "1위")
+            addRankText = "_1st";
+          else if(rankText === "2위")
+            addRankText = "_2nd";
+          else if(rankText === "3위")
+            addRankText = "_3rd";
+          else
+            addRankText = "";
+
+            console.log(`ranking-etc_ranktext${addRankText}`);
+
           return (
             <div key={index} className="ranking-etc_rank">
-              <div>{rankText}</div>
-              <img src="" alt={`${currentRank}위 로고? 그림`} />
-              <img src={rank.avatar} alt={`${currentRank}위 아바타사진`} />
+              <div className={`ranking-etc_ranktext${addRankText}`}>{rankText}</div>
+              {/* <img src="" alt={`${currentRank}위 로고? 그림`} /> */}
+              <img className={`ranking-etc_rank_avatar${addRankText}`} src={rank.avatar} alt={`${currentRank}위 아바타사진`} />
               <div className="ranking-etc_namebox">
                 <div>닉넴: {rank.nickName}</div>
-                <div>승점: {rank.rank}!</div>
+                <div>승점: {rank.rank}</div>
               </div>
             </div>
           );
