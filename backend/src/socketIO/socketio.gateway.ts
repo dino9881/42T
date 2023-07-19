@@ -236,6 +236,12 @@ export class SocketIOGateway
     this.gameService.playerW(client, roomName);
   }
 
+  @SubscribeMessage('player-s')
+  handlePlayerS(client: Socket, payload: Payload) {
+    const { roomName } = payload;
+    this.gameService.playerS(client, roomName);
+  }
+
   // 채널관련 메세지
   // 일반채널 생성
   @UseFilters(ConflictExceptionFilter)
