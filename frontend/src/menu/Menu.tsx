@@ -6,6 +6,7 @@ import MyChannelList from "./MyChannelList";
 import instance from "../refreshToken";
 import MyDmList from "./MyDmList";
 import './Menu.css';
+import { error } from "console";
 
 type MenuProps = {
 	showBackButton: boolean;
@@ -14,8 +15,24 @@ type MenuProps = {
 
 };
 
+interface GameApplyProps{
+	playerNickName :string;
+	mode : number;
+	handleAcceptButton : () => void;
+	handleRefuseButton : () => void;
+}
+
 const Menu = ({ showBackButton, channelName, channelIdx}: MenuProps) => {
 interface Channel {
+	chIdx: number;
+    chName: string;
+    chPwd: number | null;
+    chUserCnt: number;
+    isDM: boolean;
+    operatorId: string;
+}
+
+interface PrivateChannel {
 	chIdx: number;
     chName: string;
     chPwd: number | null;
@@ -40,22 +57,39 @@ interface Dm {
 	const [nickName, setNickName] = useState("");
 	const [chName, setChName] = useState(channelName);
 	const [chIdx, setChIdx] = useState(0);
-
+	const [playerNickName, setPlayerNickName] = useState("");
+	const [mode, setMode] = useState(0);
 	const [showWaiting, setShowWaiting] = useState(false);
 	const [showCancel, setShowCancel] = useState(false);
+	const [isGameApply, setisGameApply] = useState(false);
 	const [showDropDownBox, setShowDropDownBox] = useState(false); // 추가된 상태 값
 	const [showNewChat, setShowNewChat] = useState(false);
 	const navigate = useNavigate();
 	const [channels, setChannels] = useState<Channel[]>([]);
+	const [privateChannels, setPrivateChannels] = useState<PrivateChannel[]>([]);
 	const [dms, setDms] = useState<Dm[]>([]);
 	const location = useLocation();
 	const state = location.state as { chIdx : number };
+	const handleRefuseButton = () => {
+		socket.emit("game-reject", {intraId : intraId, nickName :nickName, player1 : playerNickName, mode: mode })
+		setisGameApply(false);
+	  };
+	  const handleAcceptButton = () => {
+		socket.emit("game-accept", {intraId : intraId, nickName :nickName, player1 : playerNickName, mode: mode })
+		setisGameApply(false);
+	  };
 	if (state && state.chIdx) {
 		instance
 		.get(`http://localhost:5001/channel/name/${state.chIdx}`)
-		.then((response) => {
+		.then(async (response) => {
 			// 요청이 성공하면 데이터를 상태로 설정
-			setChName(response.data.chName);
+			if (response.data.chName[0] === '#') {
+				let name :string = await ChannelName(response.data.chName.replace(/#/g, '').replace(intraId, ''));
+				setChName(name);
+			}
+			else {
+				setChName(response.data.chName);
+			}
 			setChIdx(state.chIdx);
 		})
 		.catch((error) => {
@@ -74,16 +108,28 @@ interface Dm {
 			});
 	}
 
-	function getDm() {
-		instance.get("http://localhost:5001/channel/my/dm")
+	function getPrivateChannel() {
+		instance.get("http://localhost:5001/channel/my/private")
 			.then((response) => {
 				// console.log(response.data);
-				setDms(response.data);
+				setPrivateChannels(response.data);
 			})
 			.catch((error) => {
 				console.log(error);
 			});
 	}
+
+	function getDm() {
+		return instance
+		  .get("http://localhost:5001/channel/my/dm") // Return the promise here
+		  .then((response) => {
+			return response; // Return the response
+		  })
+		  .catch((error) => {
+			console.log(error);
+			throw error; // Re-throw the error to handle it later if needed
+		  });
+	  }
 
 
 	const handleStartClick = () => {
@@ -97,46 +143,68 @@ interface Dm {
 		setShowCancel(false);
 	};
 
-	const handleDropDownBoxToggle = () => {
+	const ChannelName = async (chName: string) => {
+		try {
+		  const response = await instance.get(`http://localhost:5001/member/${chName}`);
+
+		  return response.data.nickName;
+		} catch (error) {
+		  console.log(error);
+		  return '';
+		}
+	  };
+
+	const handleDropDownBoxToggle = async () => {
 		setIsExpanded(!isExpanded);
 		if (!isExpanded) {
-			getChannel()
-			getDm()
+			getChannel();
+			getPrivateChannel();
+			try {
+			const response = await getDm();
+			const modifiedDms = await Promise.all(
+				response.data.map(async (dm: Dm) => ({
+				...dm,
+				chName: await ChannelName(dm.chName.replace(/#/g, '').replace(intraId, '')),
+				}))
+			);
+			setDms(modifiedDms);
+			} catch (error) {
+			console.log(error);
+			}
 		}
 		setToggleImgSrc(isExpanded ? "toggle_down.svg" : "toggle_up.svg");
 		setShowDropDownBox(!showDropDownBox);
 	};
-
+	
 	const handleMakeNew = () =>{
 		setShowNewChat(!showNewChat);
 	}
 	
 	const handleSettingButton = () => {
 		instance.post(`http://localhost:5001/channel/author/${channelIdx}`)
-              .then((response) => {
-                // console.log(response.data)
-                if (response.data!==true)
-                {
-                    alert("관리자만 접속할 수 있습니다!");
-                    navigate('/chat', {
+			.then((response) => {
+				// console.log(response.data)
+				if (response.data!==true)
+				{
+					alert("관리자만 접속할 수 있습니다!");
+					navigate('/chat', {
 						state: {
 						channelName : chName,
 						chIdx : chIdx
 						}
 					});
-                }
-                else
+				}
+				else
 				{navigate('/admin', {
 					state: {
 					channelName : chName,
 					chIdx : chIdx
 					}
 				})}
-              })
-              .catch((error) => {
-                console.error("API 요청 실패:", error);
-              });
-		
+			})
+			.catch((error) => {
+				console.error("API 요청 실패:", error);
+			});
 	}
 
 	useEffect(() => {
@@ -147,27 +215,29 @@ interface Dm {
         });
 
 		socket.on("game-apply", (data) => {
-			alert(`게임 신청 ${data}`);
+			setPlayerNickName(data.nickName);
+			setMode(data.mode)
+			setisGameApply(true);
         });
+
 		instance.get("http://localhost:5001/auth/me")
 		.then((response) => {
 			setIntraId(response.data.intraId);
 			setNickName(response.data.nickName);
-			if (chName[0] === "#")
-			instance.get(`http://localhost:5001/member/${chName.replace(response.data.intraId,"").replace("#","")}`)
-			.then((response) => {
-				setChName(response.data.nickName + " 와의 DM ");
-			})
-			.catch(() => {
-				return ("error");
-			});
 		})
 		.catch((error) => {
 			console.log(error);
 		});
-
+		return(() => {
+			socket.off("game-apply");
+			socket.off("game-ready");
+		})
 	},[]);
 	
+	const handleIntoHome = () => {
+		setShowDropDownBox(false); // 드롭다운 박스가 사라지도록 상태 변경
+		navigate("/main");
+	}
 
 	return (
 		<div className="menu-box">
@@ -176,14 +246,22 @@ interface Dm {
 			<img src={toggleImgSrc} alt="toggle" className="menu-channel-drop-down-button" onClick={handleDropDownBoxToggle} style={{ cursor: 'pointer' }}/>
 			{showDropDownBox && (
 			<div className="menu-drop-down-channel-list">
-				{/* <div className="menu-drop-down-channel-list-text">channel</div> */}
-				{channels && <div className="menu-drop-down-channel-list-text">{'< '}channel{' >'}</div>}
+				<button className="menu-drop-down-home-box" onClick={handleIntoHome}>
+					<span className="menu-drop-down-home-text">{'< '}Home{' >'}</span>
+				</button>
+				{channels.length !== 0 && <div className="menu-drop-down-channel-list-text">{'< '}channel{' >'}</div>}
 				{channels && channels.map((channel, index) => (
 					<div className="menu-drop-down-channel">
-						<MyChannelList key={index} chIdx={channel.chIdx} chName={channel.chName} chUserCnt={channel.chUserCnt} setShowDropDownBox={setShowDropDownBox}/>
+						<MyChannelList key={index} chIdx={channel.chIdx} chName={channel.chName} chUserCnt={channel.chUserCnt} setShowDropDownBox={setShowDropDownBox} isPrivate={false}/>
 					</div>
 				))}
-				{dms && <div className="menu-drop-down-channel-list-text">{'< '}dm{' >'}</div>}
+				{privateChannels.length !== 0 && <div className="menu-drop-down-channel-list-text">{'< '}private channels{' >'}</div>}
+				{privateChannels && privateChannels.map((privateChannels, index) => (
+					<div className="menu-drop-down-channel">
+						<MyChannelList key={index} chIdx={privateChannels.chIdx} chName={privateChannels.chName} chUserCnt={privateChannels.chUserCnt} setShowDropDownBox={setShowDropDownBox} isPrivate={true}/>
+					</div>
+				))}
+				{dms.length !== 0 && <div className="menu-drop-down-channel-list-text">{'< '}dm{' >'}</div>}
 				{dms && dms.map((dm, index) => (
 					<div className="menu-drop-down-channel">
 						<MyDmList key={index} chIdx={dm.chIdx} chName={dm.chName} chUserCnt={dm.chUserCnt} setShowDropDownBox={setShowDropDownBox}/>
@@ -209,8 +287,32 @@ interface Dm {
 		<Link to="/rank"> <button className="menu-grin-button menu-lank-button">Rank</button> </Link>
 		<button className="menu-grin-button menu-custom-button">custom</button>
 		{showNewChat && <ChannelNew/>}
+		{isGameApply && <GameApply playerNickName={playerNickName} mode={mode} handleAcceptButton={handleAcceptButton} handleRefuseButton={handleRefuseButton}></GameApply>}
+
 		</div>
 	);
+}
+
+function GameApply({playerNickName, mode, handleAcceptButton, handleRefuseButton} : GameApplyProps){
+	var gameMode;
+	if (mode === 0)
+	gameMode = "easy"
+	else if (mode === 1)
+	gameMode = "normal"
+	else if (mode === 2)
+	gameMode = "hard"
+
+	return <div className="game-apply-box">
+		<div>
+			{playerNickName} 님이 게임({gameMode})을 신청했습니다. 
+		</div>
+		<div>
+			<button onClick={handleAcceptButton}>수락</button>
+			<button onClick={handleRefuseButton}>거절</button>
+		</div>
+	
+	</div>
+	
 }
 
 export default Menu

@@ -37,7 +37,7 @@ const InfoScore: React.FC<InfoScoreProps> = ({ intraId, nickName, rank, state })
   };
 
   const handleBan = () => {
-    instance.post(`http://localhost:5001/member/ban/${nickName}`).then(()=>{
+    instance.post(`http://localhost:5001/member/ban/add/${nickName}`).then(()=>{
 		window.location.reload();
     })
   };

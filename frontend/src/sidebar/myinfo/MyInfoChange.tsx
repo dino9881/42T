@@ -106,13 +106,13 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 			/>
 			<div className="my-info-change-avatar-box">
 				<div className="my-info-change-avatar-buttons">
-					<button className="my-info-change-avatar-button" onClick={() => handleAvatarButtonClick("avatar/haaland.jpeg")}>
+					<button className="my-info-change-avatar-button" onClick={() => handleAvatarButtonClick("avatar/avatar1.jpeg")}>
 						기본1
 					</button>
-					<button className="my-info-change-avatar-button" onClick={() => handleAvatarButtonClick("avatar/son.jpeg")}>
+					<button className="my-info-change-avatar-button" onClick={() => handleAvatarButtonClick("avatar/avatar2.jpeg")}>
 						기본2
 					</button>
-					<button className="my-info-change-avatar-button" onClick={() => handleAvatarButtonClick("avatar/phil-foden.jpeg")}>
+					<button className="my-info-change-avatar-button" onClick={() => handleAvatarButtonClick("avatar/avatar3.jpeg")}>
 						기본3
 					</button>
 					<button className="my-info-change-avatar-button" onClick={() => handleAvatarButtonClick(`${myData.avatar}`)}>

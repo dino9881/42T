@@ -1,88 +1,170 @@
 .ranking{
     height:100%;
     display: flex;
-    flex-direction: row;
-    border: skyblue solid 3px;
+    flex-direction: row-reverse;
+    /* border: skyblue solid 3px; */
 }
 
 .ranking-123rk{
     max-height: 100%;
     max-width: 60%;
-    border: green solid 2px;
+    /* border: green solid 2px; */
     display: flex;
-    justify-content: center; /* 가운데 정렬 추가 */
+    /* justify-content: center; 가운데 정렬 추가 */
     align-items: center;
-    background-image: url("../../public/ranking/contest2.avif");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain; /* 이미지 크기 조정을 위해 contain으로 설정 */
 }
 
 .ranking-2rk{
-    height: 50%;
-    width: 20%;
-    border: yellow solid 2px;
+    margin-top: 50px;
+    height: 60%;
+    width: 33%;
+    /* border: yellow solid 2px; */
     text-align: center;
     justify-content: flex-start;
-    order: 1;
+    flex-direction: column; /* 아래에서 위로 아이템을 배치하도록 변경 */
 }
 
 .ranking-2rk img{
-    height: 20%;
-    width: 50%;
+    border: solid black 2px;
+    height: 65%;
+    width: 100%;
 }
 
-.ranking-1rk{
-    height: 100%;
-    width: 20%;
-    border: red solid 2px;
-    text-align: center;
-    justify-content: flex-start;
-    order: 2;
-    
-}
-
-.ranking-1rk img{
-    height: 20%;
-    width: 60%;
-}
-
-.ranking-3rk{
-    height: 100%;
-    width: 20%;
-    border: blue solid 2px;
-    text-align: center;
-    justify-content: flex-start;
-    order: 3;
-}
-.ranking-3rk_namerankbox{  
+.ranking-2rk_namerankbox{  
+    color: rgb(27, 100, 209);
+    width:100%;
+    height: 50px;
     position: relative; /* 위치 지정을 위해 상대적인 위치로 설정 */
-    background-color: rgb(27, 100, 209); /* 배경색을 빨간색으로 설정 */
+    font-size: x-large;
+    font-weight: 800;
+    margin-top: 10px;
 }
 
-.ranking-3rk_namerankbox::before{  
+.ranking-2rk_box{
+    border: solid white 2px;
+    border-right: none;
+    color: white;
+    font-size: x-large;
+    font-weight: 800;
+    width: 100%;
+    height: 75px;
+    position: relative; /* 위치 지정을 위해 상대적인 위치로 설정 */
+    background-color: #90B4FA; /* 배경색을 빨간색으로 설정 */
+    display: flex;
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+
+.ranking-2rk_box::before{
     content: ""; /* 가상 요소(content)를 생성 */
   position: absolute; /* 위치를 상대적인 요소에 대해 절대적으로 설정 */
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url("../../public/ranking/1st.png");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain; /* 이미지 크기 조정을 위해 contain으로 설정 */
   z-index: 1; /* 이미지를 상위로 겹치기 위해 z-index 설정 */
 }
 
-
-
-.ranking-3rk img{
-    height: 20%;
-    width: 40%;
+.ranking-1rk{
+    height: 60%;
+    width: 33%;
+    /* border: red solid 2px; */
+    text-align: center;
+    justify-content: flex-start;
 }
 
+.ranking-1rk_namerankbox{  
+    color: darkgoldenrod;
+    width:100%;
+    height: 50px;
+    position: relative; /* 위치 지정을 위해 상대적인 위치로 설정 */
+    font-size: x-large;
+    font-weight: 800;
+    margin-top: 10px;
+}
+
+.ranking-1rk_box{
+    border: solid white 2px;
+    color: white;
+    font-size: xx-large;
+    font-weight: 800;
+    width: 100%;
+    height: 100px;
+    position: relative; /* 위치 지정을 위해 상대적인 위치로 설정 */
+    background-color: #FBD471; /* 배경색을 빨간색으로 설정 */
+    display: flex;
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+
+.ranking-1rk_box::before{
+    content: ""; /* 가상 요소(content)를 생성 */
+  position: absolute; /* 위치를 상대적인 요소에 대해 절대적으로 설정 */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* 이미지를 상위로 겹치기 위해 z-index 설정 */
+}
+
+.ranking-1rk img{
+    border: solid black 2px;
+    height: 65%;
+    width: 100%;
+}
+
+.ranking-3rk{
+    margin-top: 100px;
+    height: 60%;
+    width: 33%;
+    /* border: blue solid 2px; */
+    text-align: center;
+    justify-content: flex-start;
+}
+.ranking-3rk_namerankbox{  
+    color: darkgreen;
+    width:100%;
+    height: 50px;
+    position: relative; /* 위치 지정을 위해 상대적인 위치로 설정 */
+    font-size: x-large;
+    font-weight: 800;
+    margin-top: 10px;
+}
+
+.ranking-3rk_box{
+    border: solid white 2px;
+    border-left: none;
+    color: white;
+    font-size: x-large;
+    font-weight: 800;
+    width: 100%;
+    height: 50px;
+    position: relative; /* 위치 지정을 위해 상대적인 위치로 설정 */
+    background-color: #76D074; /* 배경색을 빨간색으로 설정 */
+    display: flex;
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+
+.ranking-3rk_box::before{
+    content: ""; /* 가상 요소(content)를 생성 */
+  position: absolute; /* 위치를 상대적인 요소에 대해 절대적으로 설정 */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* 이미지를 상위로 겹치기 위해 z-index 설정 */
+}
+
+.ranking-3rk img{
+    border: solid black 2px;
+    height: 65%;
+    width: 100%;
+}
+
+/* ranking Etc */
+
 .ranking-etc{
-border:solid 1px black;
 display: flex;
 justify-content: flex-start;
 align-items: center;
@@ -96,23 +178,119 @@ flex-direction: column;
 /* z-index: 1; */
 }
 
+.ranking-etc_rank{
+    width: 288.72px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+}
+
+.ranking-etc_ranktext{
+    margin-right: 5px;
+    width:40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ranking-etc_ranktext_1st{
+    margin-right: 5px;
+    color: darkgoldenrod;
+    /* text-shadow: -1px 0 #000, 0 1px #000, 1px 0 #000, 0 -1px #000;   */ 
+    width:40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: x-large;
+    font-weight: 800;
+}
+
+.ranking-etc_ranktext_2nd{
+    margin-right: 5px;
+    color: rgb(27, 100, 209);
+    /* text-shadow: -1px 0 #000, 0 1px #000, 1px 0 #000, 0 -1px #000;   */
+    width:40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: large;
+    font-weight: 800;
+}
+
+.ranking-etc_ranktext_3rd{
+    margin-right: 5px;
+    color: darkgreen;
+    /* text-shadow: -1px 0 #000, 0 1px #000, 1px 0 #000, 0 -1px #000;   */
+    width:40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: large;
+    font-weight: 800;
+}
+
+.ranking-etc_rank_avatar 
+{
+    border: solid black 1px;
+    display: flex;
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+
+.ranking-etc_rank_avatar_1st 
+{
+    border: solid black 1px;
+    display: flex;
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+
+.ranking-etc_rank_avatar_2nd 
+{
+    border: solid black 1px;
+    display: flex;
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+
+.ranking-etc_rank_avatar_3rd 
+{
+    border: solid black 1px;
+    display: flex;
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+}
+
 .ranking-etc_titlebox{
     width: 85%;
     padding: 10px;
-    border: purple solid 2px;
+    border: black solid 2px;
     margin-top: 10px;
+    font-size: xx-large;
+    font-weight: 800;
+    /* align-items: center;
+    justify-content: center; 가운데 정렬 추가 */
+    text-align: center;
+
+}
+
+.ranking-etc_titlebox_result{
+    font-size: large;
+    font-weight: 600;
+    text-align: left;
+    padding-left:10px;
 }
 
 .ranking-etc_ranklist{
     width: 85%;
-    border: pink solid 2px;
+    border: gray solid 1px;
     margin-top: 10px;
 }
 
 .ranking-etc_rank {
     width: 100%;
     height: 58px;
-    border: black solid 2px;
+    border: gray solid 1px;
     display: flex;
     flex-direction: row;
     position: relative; /* 부모 요소를 기준으로 자식 요소의 위치를 조정하기 위해 position을 설정합니다. */
@@ -128,17 +306,19 @@ flex-direction: column;
 .ranking-etc_emptyrank {
     width: 100%;
     height: 58px;
-    border: black solid 1px;
+    border: gray solid 1px;
 }
 
-/* Rank-Result */
-
 .ranking-etc_namebox{
-    border: solid purple 2px;
+    /* border: solid purple 2px; */
+    margin-top: 5px;
     display: flex;
     flex-direction: column;
     margin-left: 50px;
 }
+
+
+/* Rank-Result */
 
 .Ranking-Result{
     height:100%;
@@ -148,7 +328,7 @@ flex-direction: column;
 }
 
 .Ranking-Result_upper{
-    height: 40%;
+    height: 70%;
     display: flex;
     flex-direction: row;
 }
@@ -207,3 +387,18 @@ flex-direction: column;
 }
 
 
+.Ranking-Result_under{
+    height: 20%;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.Ranking-Result_under_gotoMain{
+    width: 100px;
+    height: 30px;
+}
+
+.Ranking-Result_under_gotoRanking{
+    width: 100px;
+    height: 30px;
+}

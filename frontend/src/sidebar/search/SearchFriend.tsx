@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import FriendInfoSimple from "../friendlist/FriendInfoSimple";
 import IsNotFriend from "./IsNotFriend";
 import instance from "../../refreshToken";
-import IsBan from "./IsBan";
+import FriendInfo from "../friendlist/FriendInfo";
+import BanList from "../friendlist/BanList";
 import "./AddFriend.css";
 
 interface SearchFriendProps {
@@ -14,7 +15,6 @@ onClose: () => void;
 const SearchFriend: React.FC<SearchFriendProps> = ({ intraId, friendStatus, onClose, }) => {
 	const [userData, setUserData] = useState<any>(null);
 
-	// console.log(friendStatus)
 	useEffect(() => {
 		instance.get(`http://localhost:5001/member/${intraId}`).then((response) => {
 		console.log(response);
@@ -44,7 +44,7 @@ const SearchFriend: React.FC<SearchFriendProps> = ({ intraId, friendStatus, onCl
 			/>
 			)}
 			{userData && friendStatus === 1 && (
-			<FriendInfoSimple
+			<FriendInfo
 				intraId={userData.intraId}
 				nickName={userData.nickName}
 				rank={userData.rank}
@@ -53,10 +53,12 @@ const SearchFriend: React.FC<SearchFriendProps> = ({ intraId, friendStatus, onCl
 				loseCnt={userData.loseCnt}
 				currstate={userData.state}
 				state={friendStatus}
+				info={false}
 			/>
+			
 			)}
 			{userData && friendStatus === 2 &&
-			<IsBan 
+			<BanList 
 				nickName={userData.nickName}
 				avatar={userData.avatar}
 			/>}

@@ -49,15 +49,7 @@ const AddFriend = () => {
 
 	return (
 		<div className='add-friend'>
-		<input
-			id='search-friend'
-			placeholder='검색'
-			onChange={onChange}
-			onKeyPress={onKeyPress}
-			autoComplete='off'
-			value={text}
-			maxLength={12}
-		/>
+		<input id='search-friend' placeholder='검색' onChange={onChange} onKeyPress={onKeyPress} autoComplete='off' value={text} maxLength={12} />
 		<button id='serch-friend-button' onClick={onReset}>친구추가</button>
 		{friendStatus !== -1 && (
 			<SearchFriend intraId={intraId} friendStatus={friendStatus} onClose={closeFriendStatus} />

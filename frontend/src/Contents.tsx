@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Sidebar from "./sidebar/Sidebar";
 import instance from "./refreshToken";
 import { socket } from "./socket";
@@ -13,6 +13,24 @@ function Contents ({mainComponent, headerComponent} : ContentsProps) {
             socket.emit("member-info", response.data);
             // console.log("member-info emit");
             });
+
+          useEffect(() => {
+
+            socket.on("invite", (intraId: string, chanName: string) => {
+              alert(intraId + " 님이 " + chanName + "에 초대하셨습니다.")
+            });
+
+            socket.on("send-dm", (intraId: string) => {
+              alert(intraId + " 님이 DM 을 보냈습니다.");
+            });
+  
+          return () => {
+              socket.off("invite");
+              socket.off("send-dm");
+            };
+  
+          }, []);
+  
           return <div>
           <div className="contents">
           <div className="contents-header"> {headerComponent}</div>

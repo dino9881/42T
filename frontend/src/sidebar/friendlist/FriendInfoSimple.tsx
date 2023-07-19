@@ -14,10 +14,10 @@ interface FriendInfoProps {
 	winCnt: number;
 	currstate: number;
 	state: number;
+	setIsCustomOpen: any;
 }
 
-const FriendInfoSimple: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, avatar, winCnt, loseCnt, currstate, state }) => {
-	const [isCustomOpen, setIsCustomOpen] = useState(false);
+const FriendInfoSimple: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, avatar, winCnt, loseCnt, currstate, state, setIsCustomOpen }) => {
     const navigate = useNavigate();
 	
 	const handleButtonClick = () => {
@@ -44,15 +44,8 @@ const FriendInfoSimple: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, 
 	
 	function handleVsClick(){
 		setIsCustomOpen(true);
-		// instance.get('http://localhost:5001/auth/me').then((response) => {
-		// 	console.log({intraId : response.data.intraId, nickName : response.data.nickName  , player2: nickName });
-        //     socket.emit("game-apply", {intraId : response.data.intraId, nickName : response.data.nickName  , player2: nickName });
-		// });
 	}
-	
-	const handleCloseCustom = () => {
-		setIsCustomOpen(false);
-	};
+
 
 	return (
 		<div className='friend-info-simple'>
@@ -70,10 +63,8 @@ const FriendInfoSimple: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, 
 				</div>
 				<div className='friend-info-button'>
 					<div className="friend-button">
-						{/* {currstate !== 0 ? (<button className="dm-button">dm</button>) */}
 						{currstate !== 0 ? (<button className="dm-button" onClick={handleButtonClick}>dm</button>)
 						:( <button className="dm-button" disabled>dm</button> )}
-						{/* <Link to="/chat"> <button className='dm-button'>dm</button> </Link> */}
 						<button onClick={handleVsClick} className='vs-button'>1vs1</button>
 						
 					</div>
@@ -84,7 +75,6 @@ const FriendInfoSimple: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, 
 					</div>
 				</div>
 			</div>
-			{isCustomOpen && <Custom nickName={nickName} onClose={handleCloseCustom} />}
 		</div>
 	);
 }

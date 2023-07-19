@@ -117,8 +117,8 @@ const RankingResult = () => {  // 프롭스 아직 안받는연습모드
                 </div>
             </div>
             <div className="Ranking-Result_under">
-                <button onClick={gotoMain}>메인가기</button>
-                <button onClick={gotoRanking}>랭킹페이지 가기</button>
+                <button className="Ranking-Result_under_gotoMain" onClick={gotoMain}>메인가기</button>
+                <button className="Ranking-Result_under_gotoRanking" onClick={gotoRanking}>랭킹페이지 가기</button>
             </div>
         </div>
     );

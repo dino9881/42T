@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import instance from "../../refreshToken";
 
 interface SearchFriendProps {
@@ -14,8 +14,21 @@ interface FriendInfoProps {
 }
 
 const IsNotFriend: React.FC<FriendInfoProps & SearchFriendProps> = ({ nickName, rank, avatar, onClose }) => {
-  
+	const [myData, setMyData] = useState<any>(null);
+
+	useEffect(() => {
+		instance.get('http://localhost:5001/auth/me').then((response) => {
+			if (myData !== response.data){
+				setMyData(response.data); 
+			}
+		})
+	}, []);
+
 	const handleAdd = () => {
+		if (myData.nickName === nickName){
+			alert("Error!!!")
+			return;
+		}
 		instance.post(`http://localhost:5001/member/friend/add/${nickName}`)
 		.then(() => {
 			onClose();
@@ -27,7 +40,11 @@ const IsNotFriend: React.FC<FriendInfoProps & SearchFriendProps> = ({ nickName, 
 	};
 
 	const handleBan = () => {
-		instance.post(`http://localhost:5001/member/ban/${nickName}`).then(()=>{
+		if (myData.nickName === nickName){
+			alert("Error!!!")
+			return;
+		}
+		instance.post(`http://localhost:5001/member/ban/add/${nickName}`).then(()=>{
 			window.location.reload();
 		})
 	};

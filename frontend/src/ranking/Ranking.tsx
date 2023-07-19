@@ -52,24 +52,28 @@ const RankingComponent = () => {
 						<div className="ranking-2rk">
 							{ranking.length > 1 && ranking[1]?.rank > 100 && ( <>
 							<img src={ranking[1].avatar} alt="2위 사진"/>
-							<div className="ranking-2rk_user">닉넴: {ranking[1].nickName}</div>
-							<div className="ranking-2rk_box">순위: 2위</div>	
+							<div className="ranking-2rk_namerankbox">
+								{ranking[1].nickName}
+							</div>
+							<div className="ranking-2rk_box">2 위</div>
 							</>)}
 						</div>
 						<div className="ranking-1rk">
 							{ranking && ranking[0]?.rank > 100 && ( <>
 							<img src={ranking[0].avatar} alt="1위 사진"/>
-							<div className="ranking-1rk_user">닉넴: {ranking[0].nickName}</div>
-							<div className="ranking-1rk_box">순위: 1위</div>
+							<div className="ranking-1rk_namerankbox">
+								{ranking[0].nickName}
+							</div>
+							<div className="ranking-1rk_box">1 위</div>
 							</>)}
 						</div>
 						<div className="ranking-3rk">
 							{ranking.length > 2 && ranking[2]?.rank > 100 && ( <>
 							<img src={ranking[2].avatar} alt="3위 사진"/>
 							<div className="ranking-3rk_namerankbox">
-								<div className="ranking-3rk_user">닉넴: {ranking[2].nickName}</div>
-								<div className="ranking-3rk_box">순위: 3위</div>
+								{ranking[2].nickName}
 							</div>
+							<div className="ranking-3rk_box">3 위</div>
 							</>)}
 						</div>
 					</div>

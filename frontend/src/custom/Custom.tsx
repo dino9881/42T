@@ -17,8 +17,15 @@ const Custom: React.FC<CustomProps> = ({ nickName, onClose }) => {
 
 	const handleSubmit = () => {
 		instance.get('http://localhost:5001/auth/me').then((response) => {
-			console.log({intraId : response.data.intraId, nickName : response.data.nickName  , player2: nickName });
-            socket.emit("game-apply", {intraId : response.data.intraId, nickName : response.data.nickName  , player2: nickName });
+			var mode;
+			if (selectedCheckbox === "checkbox1")
+			mode = 0
+			else if (selectedCheckbox === "checkbox2")
+			mode = 1
+			else if (selectedCheckbox === "checkbox3")
+			mode = 2
+			console.log({intraId : response.data.intraId, nickName : response.data.nickName  , player2: nickName , mode : mode});
+            socket.emit("game-apply", {intraId : response.data.intraId, nickName : response.data.nickName  , player2: nickName, mode : mode });
 		});
 		// 제출 버튼 동작 처리
 		console.log("선택된 체크박스:", selectedCheckbox);
@@ -27,8 +34,8 @@ const Custom: React.FC<CustomProps> = ({ nickName, onClose }) => {
 
 	return (
 		<div className="custom">
-		<img className="my-info-change-close" src="close_button.svg" alt="Close" onClick={onClose} width={18} height={18} style={{ cursor: 'pointer' }}/>
 		<div className="custom-box">
+			<img className="custom-close" src="close_button.svg" alt="Close" onClick={onClose} width={18} height={18} style={{ cursor: 'pointer' }}/>
 			<div>
 				{nickName} 에게 게임을 신청합니다.
 			</div>
