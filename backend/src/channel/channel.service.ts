@@ -180,6 +180,13 @@ export class ChannelService {
     const isMatch = await bcrypt.compare(updateChannelDto.chPwd, channel.chPwd);
     return isMatch;
   }
+  
+  async isChanUser(idx:number, intraId: string) {
+    await this.findOneById(idx);
+    if (this.channelUsers[idx].find(user => user.intraId === intraId))
+      return true;
+    return false;
+  }
 
   async isAuthor(idx: number, intraId: string) {
     if (await this.isOwner(idx, intraId) || await this.isAdmin(idx, intraId))
