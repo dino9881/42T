@@ -20,6 +20,7 @@ import { MemberService } from '../member/member.service';
 import { GameService } from '../game/game.service';
 import { WsGuard } from '../auth/ws.guard';
 import { ConflictExceptionFilter } from './ConflictExceptionFilter';
+import { modeConstants, statusConstants } from 'src/util/constants';
 
 interface Payload {
   channelName: string;
@@ -31,20 +32,17 @@ interface Payload {
   player1: string;
   player2: string;
   roomName: string;
-  mode: number; // 0 : easy, 1 : normal, 2: hard
+  mode: number;
   password: string;
   chIdx: number;
 }
 
 @Injectable()
-@WebSocketGateway(
-  // 5002,
-  {
-    cors: {
-      origin: 'http://localhost:3000',
-    },
+@WebSocketGateway({
+  cors: {
+    origin: 'http://localhost:3000',
   },
-)
+})
 export class SocketIOGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -76,7 +74,10 @@ export class SocketIOGateway
       }
     });
     if (socket['intraId']) {
-      this.memberService.updateStatus(socket['intraId'], 0); // 0 : offline
+      this.memberService.updateStatus(
+        socket['intraId'],
+        statusConstants.OFFLINE,
+      );
       this.socketList.delete(socket['intraId']);
     }
   }
@@ -94,7 +95,7 @@ export class SocketIOGateway
     client['intraId'] = intraId;
     client['nickName'] = nickName;
     client['avatar'] = avatar;
-    this.memberService.updateStatus(intraId, 1); // 1 : online
+    this.memberService.updateStatus(intraId, statusConstants.ONLINE); // 1 : online
     console.log(`${nickName}(${intraId}) 님이 접속하셨습니다.`);
     this.socketList.set(intraId, client);
   }
@@ -142,7 +143,11 @@ export class SocketIOGateway
     const { intraId, nickName, player2, mode } = payload;
     client['intraId'] = intraId;
     client['nickName'] = nickName;
-    if (mode !== 0 && mode !== 1 && mode !== 2) {
+    if (
+      mode !== modeConstants.EASY &&
+      mode !== modeConstants.NORMAL &&
+      mode !== modeConstants.HARD
+    ) {
       client.emit('game-mode-error', { mode });
       return;
     }
@@ -168,7 +173,11 @@ export class SocketIOGateway
     const { intraId, nickName, player1, mode } = payload; // player1 : nickname
     client['intraId'] = intraId;
     client['nickName'] = nickName;
-    if (mode !== 0 && mode !== 1 && mode !== 2) {
+    if (
+      mode !== modeConstants.EASY &&
+      mode !== modeConstants.NORMAL &&
+      mode !== modeConstants.HARD
+    ) {
       client.emit('game-mode-error', { mode });
       return;
     }
@@ -219,6 +228,12 @@ export class SocketIOGateway
   handlePlayerS(client: Socket, payload: Payload) {
     const { roomName } = payload;
     this.gameService.playerS(client, roomName);
+  }
+
+  @SubscribeMessage('exit-game')
+  handleGameExit(client: Socket, payload: Payload) {
+    const { roomName } = payload;
+    this.gameService.playerExit(client, roomName);
   }
 
   // 채널관련 메세지
