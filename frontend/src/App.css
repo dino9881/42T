@@ -185,25 +185,24 @@ body {
 .chan-hostinfo {
   display: flex;
   justify-content: center;
-  /* align-items: center; */
+  align-items: center;
 }
 
 .chan-hostimg {
   margin : 10px;
-  /* border:solid 2px gray; */
   border:solid 1px gray;
-  width: 70px;
+  width: 65px;
   height: 70px;
   display: inline-block;
   overflow: hidden;
-  display: flex;
   justify-content: center;
-  align-items: center;
+  overflow: hidden; /* 추가: 내부 컨텐츠가 넘치는 경우를 막기 위해 */
 }
 
 .chan-hostimg img {
   max-width: 100%;
   max-height: 100%;
+  object-fit: cover /* 추가: 이미지가 부모 요소에 딱 맞게 표시되도록 설정 */
 }
 
 .chan-hostname {
@@ -371,15 +370,67 @@ body {
 }
 
 .chan-new_namebox{
+  width:240px;
+  height:96;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 10px;
 }
+.chan-new_nameAndcheckbox{
+  display: flex;
+  flex-direction: row;
+}
 
 .chan-new_name{
   font-size: x-large;
   padding-bottom: 10px;
+  padding-left: 70px;
+}
+
+.toggleSwitch {
+  margin-top:8px;
+  margin-left:15px;
+  width: 35px;
+  height: 20px;
+  display: block;
+  position: relative;
+  border-radius: 30px;
+  background-color: #fff;
+  box-shadow: 0 0 16px 3px rgba(0 0 0 / 15%);
+  cursor: pointer;
+}
+
+ /* 토글 버튼 */
+.toggleSwitch .toggleButton {
+  /* 버튼은 토글보다 작아야함  */
+  width: 15px;
+  height: 15px;
+  position: absolute;
+  top: 50%;
+  left: 4px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: yellowgreen;
+}
+
+#toggle:checked ~ .toggleSwitch {
+  background: yellowgreen;
+}
+
+#toggle:checked ~ .toggleSwitch .toggleButton {
+  left: calc(100% - 20px);
+  background: #fff;
+}
+
+.toggleSwitch, .toggleButton {
+  transition: all 0.2s ease-in;
+}
+
+.chan-new_publicAndPrivate{
+  padding-left: 5px;
+  padding-top: 8px;
+  font-size: 15px;
 }
 
 .chan-new_input_title{
@@ -410,6 +461,7 @@ body {
   width: 150px;
   height: 28px;
   text-align: center; /* 가운데 정렬로 설정 */
+  font-size: 15px;
 }
 
 .chan-new_make_do_box{
@@ -422,7 +474,7 @@ body {
 }
 
 .chan-new_make_checkbox {
-  transform: scale(1.5); /* Checkbox 크기 조절 */
+  transform: scale(1.2); /* Checkbox 크기 조절 */
   margin-top: 10px; /* 수정: 체크박스 위쪽 여백 추가 */
   margin-right: 8px;
   size: large;

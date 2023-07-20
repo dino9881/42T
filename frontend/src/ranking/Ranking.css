@@ -324,18 +324,16 @@ flex-direction: column;
     height:100%;
     display: flex;
     flex-direction: column;
-    border: skyblue solid 3px;
 }
 
 .Ranking-Result_upper{
-    height: 70%;
+    height: 5;
     display: flex;
     flex-direction: row;
 }
 
 .Ranking-Result_leftbox{
-    border: goldenrod solid 2px;
-    width: 30%;
+    width: 50%;
     height:100%;
     display: flex;
     justify-content: center; /* 가운데 정렬 추가 */
@@ -343,11 +341,46 @@ flex-direction: column;
     flex-direction: column;
 }
 
-.Ranking-Result_resultbox
-{
-    border: purple solid 2px;
+.Ranking-Result_leftbox img{
+    border: solid white 4px;
+    width: 200px;
+    height: 200px;
+}
+
+.Ranking-Result_leftName{
+    margin-top: 10px;
+    font-size: 32px;
+    font-weight: 700;
+    color: #6E6E6E;
+}
+
+.Ranking-Result_rightbox{
     height:100%;
-    width: 40%;
+    width: 50%;
+    display: flex;
+    justify-content: center; /* 가운데 정렬 추가 */
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.Ranking-Result_rightbox img{
+    border: solid white 4px;
+    width: 200px;
+    height: 200px;
+}
+
+.Ranking-Result_rightName{
+    margin-top: 10px;
+    font-size: 32px;
+    font-weight: 700;
+    color: #01A9DB;
+}
+
+.Ranking-Result_middle_resultbox
+{
+    height:40%;
+    width: 100%;
     display: flex;
     justify-content: center; /* 가운데 정렬 추가 */
     align-items: center;
@@ -357,7 +390,6 @@ flex-direction: column;
 .Ranking-Result_scorebox{
     display:flex;
     flex-direction: row;
-    padding: 30px;
 }
 
 .Ranking-Result_text{
@@ -366,26 +398,34 @@ flex-direction: column;
     font-weight: 800;
 }
 
-.Ranking-Result_score{
-    font-size:medium;
+.Ranking-Result_score_left{
+    font-size: 50px;
+    padding-right: 170px;
+    padding-top: 10px;
 }
 
-.Ranking-Result_score_winner_font{
-    font-size:xx-large;
+.Ranking-Result_score_right{
+    font-size: 50px;
+    padding-left: 170px;
+    padding-top: 10px;
+}
+
+.Ranking-Result_score_left_winner_LeftBox{
+    font-size: 72px;
+    padding-right: 170px;
     color: goldenrod;
 }
 
-.Ranking-Result_rightbox{
-    border: orchid solid 2px;
-    height:100%;
-    width: 30%;
-    display: flex;
-    justify-content: center; /* 가운데 정렬 추가 */
-    align-items: center;
-    display: flex;
-    flex-direction: column;
+.Ranking-Result_score_right_winner_RightBox{
+    font-size: 72px;
+    padding-right: 170px;
+    color: goldenrod;
 }
 
+.Ranking-Result_VS{
+    font-size:40px;
+    margin-top:20px;
+}
 
 .Ranking-Result_under{
     height: 20%;
