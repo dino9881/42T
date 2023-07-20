@@ -64,7 +64,8 @@ function Chat({channelInit}:ChatProps) {
                 setChannelName(response.data.chName);
             })
             .catch((error) => {
-                // 요청이 실패하면 에러 처리
+                navigate('/main');
+                alert("채널이 존재하지 않습니다.")
                 console.error("API 요청 실패:", error);
             });
 
