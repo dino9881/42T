@@ -262,11 +262,11 @@ export class SocketIOGateway
 
   @SubscribeMessage('first-enter')
   async handleFirstEnter(client: Socket, payload: Payload) {
-    const { channelName, } = payload;
+    const { channelName } = payload;
     client.join(channelName);
     client.to(channelName).emit('welcome', client['nickName']);
   }
-  
+
   @SubscribeMessage('enter-channel')
   async handleChannelEnter(client: Socket, payload: Payload) {
     const { channelName, nickName } = payload;
@@ -324,7 +324,11 @@ export class SocketIOGateway
     try {
       const user = await this.memberService.getOneByNick(nickName);
       const userSocket = this.getSocketByintraId(user.intraId);
-      this.channelService.channelInvite(channelName, {intraId: userSocket['intraId'], avatar: userSocket['avatar'] ,nickName: userSocket['nickName']});
+      this.channelService.channelInvite(channelName, {
+        intraId: userSocket['intraId'],
+        avatar: userSocket['avatar'],
+        nickName: userSocket['nickName'],
+      });
       // nickName 님이 channelName 에 초대하셨습니다 이런거
       userSocket?.emit('invite', client['nickName'], channelName);
     } catch (error) {
@@ -333,7 +337,7 @@ export class SocketIOGateway
       else client.emit('server-error');
     }
   }
-  
+
   // 채널 kick, ban, mute, admin
   @UseFilters(ConflictExceptionFilter)
   @SubscribeMessage('channel-kick')

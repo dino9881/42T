@@ -9,9 +9,6 @@ import {
   UseGuards,
   Res,
   Req,
-  UseInterceptors,
-  UploadedFile,
-  BadRequestException,
 } from '@nestjs/common';
 import { MemberService } from './member.service';
 import { Response, Request } from 'express';
@@ -22,7 +19,6 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiConflictResponse,
-  ApiConsumes,
   ApiCreatedResponse,
   ApiNotAcceptableResponse,
   ApiNotFoundResponse,
@@ -39,9 +35,6 @@ import { Public } from 'src/util/decorator/public.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { HttpStatusCode } from 'axios';
 import { MailService } from '../util/mail/mail.service';
-import { FileInterceptor } from '@nestjs/platform-express';
-import * as Multer from 'multer';
-import { multerOptions } from 'src/util/multer.options.factory';
 
 @ApiResponse({
   status: 500,
@@ -202,33 +195,6 @@ export class MemberController {
     @Body() updateinfo: UpdateMemberDto,
   ) {
     return this.memberService.updateAvatar(member, updateinfo);
-  }
-
-  @ApiTags('Member')
-  @ApiOperation({ summary: '멤버 아바타 업로드' })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-        },
-      },
-    },
-  })
-  @ApiCreatedResponse({ description: '성공' })
-  @Post('upload/avatar')
-  @UseInterceptors(FileInterceptor('file', multerOptions()))
-  uploadMemberAvatar(
-    @GetMember() member: MemberInfoDto,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    if (!file) {
-      throw new BadRequestException("file doesn't exist");
-    }
-    return this.memberService.updateAvatar(member, { avatar: file.path });
   }
 
   @ApiTags('Member')

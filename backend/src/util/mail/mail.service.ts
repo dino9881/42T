@@ -17,9 +17,9 @@ export class MailService {
         text: 'welcome to 42T',
         html: `<b>Hello User, this is you code. ${code}</b>`,
       })
-      .then((result) => {
-        console.log('mail-send');
-        console.log(result);
+      .then(() => {
+        console.log('mail-send code : ' + code);
+        // console.log(result);
         return;
       })
       .catch((error) => {
