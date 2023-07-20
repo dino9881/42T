@@ -2,12 +2,15 @@ import instance from "../refreshToken";
 import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { socket } from "../socket";
 
 interface PwInputProps {
     chIdx: number;
     chPwd: string;
     chUserCnt: number;
 }
+
+let isChanUser = false;
 
 function PwInput({ chIdx, chPwd, chUserCnt } : PwInputProps) {
     const navigate = useNavigate();
@@ -48,11 +51,22 @@ function PwInput({ chIdx, chPwd, chUserCnt } : PwInputProps) {
     }
 
     const handleButtonClick = () => {
+        if(!isChanUser){
+        instance
+            .get(`http://localhost:5001/channel/isChan/${chIdx}`)
+            .then((response) => {
+                isChanUser = response.data;
+            })
+            .catch((error) => {
+            });
+        }
         // 입력값이 4자리인지 확인
-        if(!chPwd)
-        {    instance
+        if(!chPwd){    
+        instance
             .post(`http://localhost:5001/channel/enter/${chIdx}`)
             .then((response) => {
+                if (!isChanUser)
+                    socket.emit("first-enter", {channelName: response.data.chName} );
                 navigate("/chat", { state: { chIdx } });
             })
             .catch((error) => {
@@ -67,7 +81,7 @@ function PwInput({ chIdx, chPwd, chUserCnt } : PwInputProps) {
                 //   403 밴 유저
                 //   404 없는 채널 번호
                 //   500 서버 에러
-        });
+            });
             return;
         }
     
@@ -80,9 +94,11 @@ function PwInput({ chIdx, chPwd, chUserCnt } : PwInputProps) {
         if (inputValue.length === 4) {
             pwCorrect().then((data: boolean) => {
                 if (data) {
-                  instance
+                instance
                     .post(`http://localhost:5001/channel/enter/${chIdx}`)
                     .then((response) => {
+                        if (!isChanUser)
+                            socket.emit("first-enter", {channelName: response.data.chName} );
                         navigate("/chat", { state: { chIdx } });
                     })
                     .catch((error) => {
@@ -97,11 +113,11 @@ function PwInput({ chIdx, chPwd, chUserCnt } : PwInputProps) {
                         //   403 밴 유저
                         //   404 없는 채널 번호
                         //   500 서버 에러
-                });
-            }else {
-                alert("비밀번호를 확인해주세요. ^^");
-            }
-        });
+                    });
+                }else {
+                    alert("비밀번호를 확인해주세요. ^^");
+                }
+            });
         } else {
             alert("비밀번호를 확인해주세요. ^^");
         }

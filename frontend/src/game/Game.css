@@ -54,3 +54,15 @@
 
     border-radius: 50%;
 }
+
+@keyframes blink {
+    0%{ opacity: 1; } /* 0초와 4초(100%)에 모두 보이도록 설정 */
+    20%, 80% { opacity: 0; } /* 2초(50%)에 숨김 */
+
+  }
+  
+  .ghost-canvas {
+    animation: blink 2s ease-in-out infinite; /* 재생 속도를 빠르게 하기 위해 4s를 2s로 변경 */
+    border: yellow;
+  }
+  
