@@ -104,7 +104,7 @@ function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
 
             instance.get(`http://localhost:5001/channel/ban/${channelIdx}`)
             .then((response) => {
-                console.log(response.data);
+                // console.log(response.data);
             setBanList(response.data);
             })
             .catch((error) => {
@@ -154,16 +154,18 @@ function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
             {/* <span>admin  : {chName}</span> */}
             <AdminUserList userList={userList} banList={banList}/>
             <div className="admin-setting-box">
-                <Setting setting="admin" chIdx={chIdx} userList={userList} banList={banList}  />
-                <Setting setting="mute" chIdx={chIdx} userList={userList} banList={banList} />
-                <Setting setting="kick" chIdx={chIdx} userList={userList} banList={banList} />
-                <Setting setting="ban" chIdx={chIdx}userList={userList} banList={banList} />
-                { isOwner && <PassSetting  channelIdx={chIdx} channelName={channelName} isPass={isPass} />}
+                <div>
+                    <Setting setting="admin" chIdx={chIdx} userList={userList} banList={banList}  />
+                    <Setting setting="mute" chIdx={chIdx} userList={userList} banList={banList} />
+                    <Setting setting="kick" chIdx={chIdx} userList={userList} banList={banList} />
+                    <Setting setting="ban" chIdx={chIdx}userList={userList} banList={banList} />
+                </div>
                 <form onSubmit={handleInvite}>
                     <input placeholder="닉네임" onChange={onChange} value={inviteName} type="text" autoComplete="off" ></input>
                     <button>초대하기</button>
                 </form>
-                <button onClick={handleOnclick}>설정완료</button>
+                { isOwner && <PassSetting  channelIdx={chIdx} channelName={channelName} isPass={isPass} />}
+                <button className="admin-setting-back" onClick={handleOnclick}>돌아가기</button>
             </div>
         </div>
     )
@@ -277,20 +279,23 @@ function Setting({setting, chIdx , userList} : SettingInfo ){
         setText("");
       };
 
-    return <div>
-        <h3>{setting}</h3>
-        <form onSubmit={onSubmit}>
-            <input
-                type="text"
-                onChange={onChange} 
-                value={text}
-                name="setting"
-                autoComplete="off"
-                placeholder="닉네임"
-            />
-             <button>제출</button>
-        </form>
-    </div>
+    return (
+        <div className="admin-option-box">
+            <h5>{setting}</h5>
+            <form className="admin-input-form" onSubmit={onSubmit}>
+                <input
+                    type="text"
+                    onChange={onChange} 
+                    value={text}
+                    name="setting"
+                    autoComplete="off"
+                    placeholder="닉네임"
+                    maxLength={12}
+                />
+                <button className="admin-input-button">{"+"}</button>
+            </form>
+        </div>
+    )
 }
 
 function PassSetting({channelIdx, isPass} : PassSettingProps)

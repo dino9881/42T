@@ -3,7 +3,7 @@ import { socket } from "../socket";
 import { useLocation, useNavigate } from "react-router-dom";
 import instance from "../refreshToken";
 import "./Game.css";
-
+import { history } from "../history";
 interface HeaderProps {
     player1: string;
     player1Avatar: string;
@@ -13,6 +13,7 @@ interface HeaderProps {
     p2Score: number;
     exitGame: () => void;
 }
+
 interface ScoreProps {
   p1Score: number;
   p2Score: number;
@@ -61,6 +62,7 @@ function Game() {
         player1: "player1",
         player2: "player2",
     };
+    var isNormal = 0;
     const canvasRef = useRef<HTMLCanvasElement>(null);
     let context: CanvasRenderingContext2D | null = null;
     const [currentPlayer, setCurrentPlayer] = useState<Player>("player1");
@@ -69,6 +71,11 @@ function Game() {
     const [player1Avatar, setPlayer1Avatar] = useState("");
     const [player2Avatar, setPlayer2Avatar] = useState("");
     const navigate = useNavigate();
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+        e.preventDefault();
+        exitGame();
+      };
 
     const exitGame = () => {
       socket.emit("exit-game", {roomName:roomName});
@@ -108,6 +115,13 @@ function Game() {
                 gameRender(payload, canvas);
           });
         }
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        const unlistenHistoryEvent = history.listen(({ action }) => {
+            if (action === "POP") {
+                exitGame();
+              }
+        })
     
 
       socket.on("game-score", (payload:ScoreProps) => {
@@ -115,13 +129,16 @@ function Game() {
         setP2Score(payload.p2Score);
       });
 
+      socket.on("game-exception" ,() => {
+        alert("error!")
+        navigate("/main");
+      } )
+
       socket.on("game-end", (payload:ScoreProps) => {
-        console.log("정상적으로 종료됨")
         navigate("/result", { state: { player1, player2, player1Avatar, player2Avatar, p1Score:payload.p1Score, p2Score:payload.p2Score} })
       });
 
       socket.on("game-sudden-end", (payload:ScoreProps) => {
-        console.log("상대가 나갔음")
         navigate("/result", { state: { player1, player2, player1Avatar, player2Avatar, p1Score:payload.p1Score, p2Score:payload.p2Score} })
       });
 
@@ -136,18 +153,20 @@ function Game() {
                     roomName,
                     mode,
                 });
+                // console.log(roomName);
                 //game-start할때 mode를 보내주기
             })
             .catch((error) => {
                 console.log(error);
             });
             return(() => {
-              socket.off("game-score");
-              socket.off("game-render");
-              socket.off("game-end");
-              socket.off("sudden-end");
-              if(p1Score < 5 && p2Score < 5)
-                socket.emit("exit-game", {roomName:roomName});
+            socket.off("game-score");
+            socket.off("game-render");
+            socket.off("game-end");
+            socket.off("sudden-end");
+            socket.off("game-exception");
+            unlistenHistoryEvent;
+            window.removeEventListener('beforeunload', handleBeforeUnload);
             })
     }, []);
 
