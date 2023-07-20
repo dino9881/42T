@@ -107,6 +107,12 @@ function Chat({channelInit}:ChatProps) {
             addMessage(newMessage, avatar);
         });
 
+        socket.on("delete", () => {
+            navigate('/main');
+            alert("방 폭파됨");
+            
+        });
+
         socket.on("kick", () => {
             navigate('/main');
             alert("너 퇴장당함");
@@ -129,6 +135,7 @@ function Chat({channelInit}:ChatProps) {
             socket.off("mute");
             socket.off("ban");
             socket.off("admin");
+            socket.off("delete");
           };
     }, [channelName, channelInit, location.state]);
 

@@ -35,6 +35,7 @@ function Channel({channelName, channelInit} : ChannelProps) {
         else if(error.response.status === 500)
             alert("서버에러 (뺵 잘못)");
       });
+
       socket.on("reload", () => { window.location.reload(); });
       socket.on("send-dm", (intraId: string) => {
         alert(intraId + " 님이 DM 을 보냈습니다.");

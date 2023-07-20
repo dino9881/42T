@@ -110,6 +110,12 @@ function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
             .catch((error) => {
             console.error("API 요청 실패:", error);
             });
+
+        socket.on("delete", () => {
+            navigate('/main');
+            alert("방 폭파됨");
+            
+        });
             
         socket.on("no-permissions", () => {
             alert("너 권한없음");
@@ -136,42 +142,47 @@ function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
             socket.off("ban");
             socket.off("no-permissions")
             socket.off("max-capacity")
+            socket.off("delete");
           };
 
         }, []);
 
           
 
-    return <div className="channel-admin">
-        <span>admin  : {chName}</span>
-        <AdminUserList userList={userList} banList={banList}/>
-        <div className="admin-setting-box">
-        <Setting setting="admin" chIdx={chIdx} userList={userList} banList={banList}  />
-        <Setting setting="mute" chIdx={chIdx} userList={userList} banList={banList} />
-        <Setting setting="kick" chIdx={chIdx} userList={userList} banList={banList} />
-        <Setting setting="ban" chIdx={chIdx}userList={userList} banList={banList} />
-        { isOwner && <PassSetting  channelIdx={chIdx} channelName={channelName} isPass={isPass} />}
-        <form onSubmit={handleInvite}>
-            <input placeholder="닉네임" onChange={onChange} value={inviteName} type="text" autoComplete="off" ></input>
-            <button>초대하기</button>
-        </form>
-        <button onClick={handleOnclick}>설정완료</button>
-      </div>
-    </div>
+    return (
+        <div className="channel-admin">
+            {/* <span>admin  : {chName}</span> */}
+            <AdminUserList userList={userList} banList={banList}/>
+            <div className="admin-setting-box">
+                <Setting setting="admin" chIdx={chIdx} userList={userList} banList={banList}  />
+                <Setting setting="mute" chIdx={chIdx} userList={userList} banList={banList} />
+                <Setting setting="kick" chIdx={chIdx} userList={userList} banList={banList} />
+                <Setting setting="ban" chIdx={chIdx}userList={userList} banList={banList} />
+                { isOwner && <PassSetting  channelIdx={chIdx} channelName={channelName} isPass={isPass} />}
+                <form onSubmit={handleInvite}>
+                    <input placeholder="닉네임" onChange={onChange} value={inviteName} type="text" autoComplete="off" ></input>
+                    <button>초대하기</button>
+                </form>
+                <button onClick={handleOnclick}>설정완료</button>
+            </div>
+        </div>
+    )
 }
 
 function AdminUserList({userList, banList} : AdminUserListProps){
       
-    return<div className="admin-list-box">
-        <div className="admin-user-box">
-        <h1>User List</h1>
-            {userList.map((info, index) => <UserInfo key={index} intraId={info.intraId} nickName={info.nickName}/>)}
+    return (
+        <div className="admin-list-box">
+            <div className="admin-user-box">
+            <h1>User List</h1>
+                {userList.map((info, index) => <UserInfo key={index} intraId={info.intraId} nickName={info.nickName}/>)}
+            </div>
+            <div className="admin-user-box">
+            <h1>Ban List</h1>
+                {banList.map((info, index) => <UserInfo key={index} intraId={info.intraId} nickName={info.nickName}/>)}
+            </div>
         </div>
-        <div className="admin-user-box">
-        <h1>Ban List</h1>
-            {banList.map((info, index) => <UserInfo key={index} intraId={info.intraId} nickName={info.nickName}/>)}
-        </div>
-    </div>
+    )
 }
 
 function Setting({setting, chIdx , userList} : SettingInfo ){

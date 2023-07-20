@@ -23,7 +23,7 @@ const SetNick = () => {
 
 	const myData:any = {
 		"intraId": location.state.intraId,
-		"avatar": "img/avatar.jpeg",
+		"avatar": "avatar/avatar.jpeg",
 	}
 
 	const onClick = () => {

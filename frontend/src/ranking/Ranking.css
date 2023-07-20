@@ -347,7 +347,7 @@ flex-direction: column;
     height: 200px;
 }
 
-.Ranking-Result_leftName{
+.Ranking-Result_Name{
     margin-top: 10px;
     font-size: 32px;
     font-weight: 700;
@@ -370,13 +370,6 @@ flex-direction: column;
     height: 200px;
 }
 
-.Ranking-Result_rightName{
-    margin-top: 10px;
-    font-size: 32px;
-    font-weight: 700;
-    color: #01A9DB;
-}
-
 .Ranking-Result_middle_resultbox
 {
     height:40%;
@@ -394,26 +387,29 @@ flex-direction: column;
 
 .Ranking-Result_text{
     font-size: 50px;
-    color: goldenrod;
+    /* color: #dd93e5; */
+    color: white;
     font-weight: 800;
+    text-shadow: -2px 0 black, 0 1px black, 1px 0 black, 0 -2px black;
 }
 
 .Ranking-Result_score_left{
     font-size: 50px;
     padding-right: 170px;
-    padding-top: 10px;
+    padding-top: 20px;
 }
 
 .Ranking-Result_score_right{
-    font-size: 50px;
+    font-size: 60px;
     padding-left: 170px;
-    padding-top: 10px;
+    padding-top: 15px;
 }
 
 .Ranking-Result_score_left_winner_LeftBox{
     font-size: 72px;
     padding-right: 170px;
-    color: goldenrod;
+    color: #f69173;
+    font-weight: 700;
 }
 
 .Ranking-Result_score_right_winner_RightBox{
@@ -424,21 +420,26 @@ flex-direction: column;
 
 .Ranking-Result_VS{
     font-size:40px;
-    margin-top:20px;
+    margin-top:40px;
 }
 
 .Ranking-Result_under{
-    height: 20%;
+    height: 5%;
     display: flex;
     flex-direction: row-reverse;
+    justify-content: center; /*가운데 정렬 추가 */
+    align-items: center;
 }
 
 .Ranking-Result_under_gotoMain{
+    margin-left: 20px;
+    margin-bottom: 10px;
     width: 100px;
     height: 30px;
 }
 
 .Ranking-Result_under_gotoRanking{
+    margin-bottom: 10px;
     width: 100px;
     height: 30px;
 }

@@ -17,11 +17,11 @@ function ChannelNew() {
 
     let publicAndPrivate = "";
 
-if (isPchecked) {
-  publicAndPrivate = "비밀방";
-} else {
-  publicAndPrivate = "공개방"; 
-}
+    if (isPchecked) 
+        publicAndPrivate = "비밀방";
+    else 
+        publicAndPrivate = "공개방"; 
+    
 
     const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
         if(event.key === "Enter") {
@@ -79,11 +79,36 @@ if (isPchecked) {
         // private => channel/create chanName, isPrivate: true
         // if { api 호출 response => closeNewMake, navaigate => error }
         // else { emit create-channel }
-        socket.emit("create-channel", {
-            channelName: title,
-            password: password,
-        });
 
+        if(isPchecked){
+        instance
+            .post("http://localhost:5001/channel/create", {chName:inputValue, isPrivate:true})
+            .then((response) => {
+                closeNewMake();
+                // navigate("/chat", { state: { chIdx:response.chIdx } });
+                console.log(response);    
+            })
+            .catch((error) => {
+                // 요청이 실패하면 에러 처리
+                if (error.response.status === 401)
+                            alert("Accesstoken 인증 실패.");
+                else if(error.response.status === 400)
+                    alert("잘못된 요청입니다.");    
+                else if(error.response.status === 403)
+                    alert("만들수 있는 방의 수를 초과.");    
+                else if(error.response.status === 404)
+                    alert("없는 채널 && 없는 멤버.");    
+                else if(error.response.status === 409)
+                    alert("중복된 이름.");    
+                else if(error.response.status === 500)
+                    alert("서버에러 (뺵 잘못)");
+            });
+        } else {
+            socket.emit("create-channel", {
+                channelName: title,
+                password: password,
+            });
+        }
         socket.on("new-channel", (payload: ChannelData) => {
             closeNewMake();
             return navigate("/chat", { state: { chIdx:payload.chIdx } });
