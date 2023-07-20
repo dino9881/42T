@@ -63,10 +63,11 @@ const RankingResult = () => {  // 프롭스 아직 안받는연습모드
     let winnerRightBox = "";
 
 
-    if(leftbox.score > rightbox.score)
+    if(leftbox.score > rightbox.score){
         resultWinner = rightbox.nickName;
-    else
+    }else{
         resultWinner = leftbox.nickName;
+    }
 
     if(leftbox.score > rightbox.score)
         winnerLeftBox = "_winner_LeftBox";
@@ -104,11 +105,11 @@ const RankingResult = () => {  // 프롭스 아직 안받는연습모드
             <div className="Ranking-Result_upper">
                 <div className="Ranking-Result_leftbox">
                     <img src={leftbox.avatar} alt ="leftbox 아바타"></img>
-                    <div className="Ranking-Result_leftName">{leftbox.nickName}</div>
+                    <div className="Ranking-Result_Name">{leftbox.nickName}</div>
                 </div>
                 <div className="Ranking-Result_rightbox">
                     <img src={rightbox.avatar} alt ="rightbox 아바타"></img>
-                    <div className="Ranking-Result_rightName">{rightbox.nickName}</div>
+                    <div className="Ranking-Result_Name">{rightbox.nickName}</div>
                 </div>
             </div>
             <div className="Ranking-Result_middle_resultbox"> 

@@ -1,28 +1,34 @@
 .channel-admin{
-    flex-direction: column;
-    border: solid black;
+    display: flex;
     height: 100%;
     width: 100%;
-    display: block
+    border: solid black;
+    align-items: center;
   }
   
   .admin-list-box{
-    float: left;
+    /* float: left; */
+    margin-left: 10px;
     height: 100%;
-    width: 40%;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
   }
   
   .admin-setting-box{
-    float: right;
-    border: solid red;
+    /* float: right; */
+    margin-left: 15px;
+    margin-top: 30px;
+    /* border: solid red; */
     height: 100%;
-    width: 40%;
+    width: 45%;
   }
   
   .admin-user-box{
-    border: solid blue;
+    border: 2px solid black;
     height: 45%;
-    margin-bottom: 5%;
+    /* margin-bottom: 5%; */
   }
   
   .user-info-box{

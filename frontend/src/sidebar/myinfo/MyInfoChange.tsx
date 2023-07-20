@@ -52,7 +52,11 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 				"nickName": changeData.nickName
 			})
 			.then(function (response) {
-				console.log(response);
+				instance.patch("http://localhost:5001/channel/update/nick/")
+				.then((res) => {
+					console.log(res);
+				})
+				// console.log(response);
 			})
 			.catch(function (error) {
 				console.log(error);
@@ -66,7 +70,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 				"avatar": changeData.avatar
 			})
 			.then(function (response) {
-				console.log(response);
+				// console.log(response);
 			})
 			.catch(function (error) {
 				console.log(error);
@@ -119,7 +123,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 						내사진
 					</button>
 				</div>
-				( 최대 40KB )<input type="file" accept="image/*" onChange={handleUpload} />
+				<input type="file" accept="image/*" onChange={handleUpload} />
 			</div>
 			<div className="my-info-change-nick-box">
 				<div>닉네임</div>

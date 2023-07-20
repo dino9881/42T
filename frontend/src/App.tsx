@@ -16,6 +16,7 @@ import Game from "./game/Game";
 import Custom from "./custom/Custom";
 import React from 'react'
 import RankingResult from "./ranking/RankingResult";
+import NotFound from "./NotFound";
 
 function App() {
     axios.defaults.withCredentials = true;
@@ -49,7 +50,7 @@ function App() {
                     <Route path="/rank" element={<Contents mainComponent={<Ranking/>} headerComponent={<Menu showBackButton={false} channelName={channelName} channelIdx={channelIdx}/>}/>}></Route>
                     <Route path="/game" element={<Game/>}></Route>
                     <Route path="/result" element={<Contents mainComponent={<RankingResult/>} headerComponent={<Menu showBackButton={false} channelName={channelName} channelIdx={channelIdx}/>}/>}></Route>
-
+                    <Route path="/*" element={<NotFound />} />
                 </Routes>
             <Background />
             </BrowserRouter>
