@@ -318,7 +318,7 @@ export class ChannelController {
   @ApiTags('Channel Private')
   @Post('/create')
   @ApiOperation({ summary: 'private 채널 생성할 때 사용', description: 'Create Channel' })
-  @ApiResponse({ status: 400, description: '잘못된 요청' })
+  @ApiResponse({ status: 403, description: ' 요청' })
   @ApiResponse({ status: 409, description: '중복 이름' })
   @ApiCreatedResponse({ type: CreateChannelDto })
   @ApiBody({ type: CreateChannelDto })
@@ -330,7 +330,7 @@ export class ChannelController {
   }
 
   @ApiTags('Channel Private')
-  @Get('private/')
+  @Get('private/all')
   @ApiCreatedResponse({ type: UpdateChannelDto })
   @ApiOperation({
     summary: '모든 Private 채널 조회',
@@ -341,7 +341,7 @@ export class ChannelController {
   }
 
   @ApiTags('Channel Private')
-  @Get('private/:idx')
+  @Post('private/:idx')
   @ApiOperation({
     summary: 'idx 채널이 private 채널 인지 조회',
     description: 'Is Private',
