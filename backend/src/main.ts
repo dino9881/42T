@@ -4,8 +4,6 @@ import { Logger } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { ValidationPipe } from '@nestjs/common';
-// import { createServer } from 'http';
-// import { Server } from 'socket.io';
 import { swaggerConfig } from './swagger';
 import { json, urlencoded } from 'body-parser';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
@@ -27,13 +25,6 @@ async function bootstrap() {
     };
     app.enableCors(corsOptions);
     swaggerConfig(app);
-
-    // const server = app.getHttpServer();
-    // const io = new Server(server);
-    // io.on('connection', (socket) => {
-    //   console.log('Some Socket connected');
-    //   console.log(socket.id);
-    // });
 
     app.use(json({ limit: '50mb' }));
     app.use(urlencoded({ limit: '50mb', extended: true }));

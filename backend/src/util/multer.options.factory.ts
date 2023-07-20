@@ -4,7 +4,6 @@ import * as multer from 'multer';
 import * as path from 'path';
 import * as fs from 'fs';
 
-// uploads 폴더가 존재하지 않으면 폴더를 생성하고, 존재하면 생성하지 않습니다.
 const mkdir = (directory: string) => {
   const logger = new Logger('Mkdir');
   const absolutePath = path.join(process.cwd(), directory);
@@ -32,7 +31,7 @@ const storage = (dirctory: string): multer.StorageEngine => {
         file.originalname,
         ext,
       )}${Date.now()}${ext}`;
-      console.log('File name:', fileName); // 로그 추가
+      console.log('File name:', fileName);
       done(null, fileName);
     },
   });
