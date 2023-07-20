@@ -165,7 +165,6 @@ export class MemberService {
       where: { intraId: id },
       data: { status: status },
     });
-    console.log(status);
     return;
   }
 

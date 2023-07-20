@@ -4,7 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { MemberService } from 'src/member/member.service';
 import { Socket } from 'socket.io';
 import { Interval } from '@nestjs/schedule';
-import { statusConstants } from 'src/util/constants';
+import { modeConstants, statusConstants } from 'src/util/constants';
 
 interface Ball {
   x: number;
@@ -29,6 +29,7 @@ interface GameRoom {
   player2: Socket;
   gameProps: GameProps;
   mode: number;
+  finish: boolean;
 }
 
 @Injectable()
@@ -67,8 +68,8 @@ export class GameService {
   }
 
   async joinQueue(member: Socket) {
-    const mem = this.queue.find((mem) => mem['intraId'] == member['intraId']);
     console.log('join-queue');
+    const mem = this.queue.find((mem) => mem['intraId'] == member['intraId']);
     if (mem == undefined) {
       this.queue.push(member);
       await this.checkQueue();
@@ -87,9 +88,9 @@ export class GameService {
 
   async makeGame(p1: Socket, p2: Socket, mode: number) {
     console.log('makeGame');
-    console.log(mode);
+    console.log('mode ' + mode);
     const roomName = 'G#' + p1['intraId'] + p2['intraId'];
-    console.log(roomName);
+    console.log('roomName ' + roomName);
     const payload = {
       player1: p1['nickName'],
       player2: p2['nickName'],
@@ -103,13 +104,6 @@ export class GameService {
   }
 
   async enterGame(players: Socket[], roomName: string, mode: number) {
-    // if (gameRoom.mode == 0) {
-    //   // easy mode : paddle speed 2 & ball speed 1
-    // } else if (gameRoom.mode == 1) {
-    //   // normal mode paddle speed 1 & ball speed 1
-    // } else if (gameRoom.mode == 2) {
-    //   // ghost mode : ball disappers sometime
-    // }
     this.gameRooms[roomName] = {
       player1: players[0],
       player2: players[1],
@@ -124,9 +118,10 @@ export class GameService {
         speed: 2,
       },
       mode: mode,
+      finish: false,
     };
     console.log('startGame');
-    console.log(mode);
+    console.log('mode ' + mode);
   }
 
   async emitBothPlayer(gameRoom: GameRoom, message: string, payload: any) {
@@ -135,12 +130,14 @@ export class GameService {
   }
 
   async checkGameEnd(gameRoom: GameRoom, roomName: string) {
+    if (this.gameRooms[roomName] == undefined || gameRoom.finish == true)
+      return;
     if (gameRoom.gameProps.p1Score == 5 || gameRoom.gameProps.p2Score == 5) {
+      gameRoom.finish = true;
       this.emitBothPlayer(gameRoom, 'game-end', {
         p1Score: gameRoom.gameProps.p1Score,
         p2Score: gameRoom.gameProps.p2Score,
       });
-      console.log('here');
       let game;
       if (gameRoom.gameProps.p1Score == 5) {
         game = {
@@ -157,19 +154,22 @@ export class GameService {
           loserScore: gameRoom.gameProps.p1Score,
         };
       }
-      console.log('game' + game);
       await this.addHistory(game);
       gameRoom.player1.leave(roomName);
       gameRoom.player2.leave(roomName);
-      console.log('gameRooms' + this.gameRooms);
       delete this.gameRooms[roomName];
-      console.log('gameRooms' + this.gameRooms);
-      // delete가 맞나?
     }
   }
 
   async playerExit(player: Socket, roomName: string) {
+    console.log('playerExit');
+    if (
+      this.gameRooms[roomName] == undefined ||
+      this.gameRooms[roomName].finish == true
+    )
+      return;
     const gameRoom = this.gameRooms[roomName];
+    gameRoom.finish = true;
     let game;
     if (gameRoom.player1['intraId'] == player['intraId']) {
       gameRoom.gameProps.p1Score = 0;
@@ -190,19 +190,14 @@ export class GameService {
         loserScore: gameRoom.gameProps.p2Score,
       };
     }
-    console.log('game' + game);
     this.emitBothPlayer(gameRoom, 'game-sudden-end', {
       p1Score: gameRoom.gameProps.p1Score,
       p2Score: gameRoom.gameProps.p2Score,
     });
     await this.addHistory(game);
-
     gameRoom.player1.leave(roomName);
     gameRoom.player2.leave(roomName);
-    console.log('gameRooms' + this.gameRooms);
-
     delete this.gameRooms[roomName];
-    console.log('gameRooms' + this.gameRooms);
   }
 
   async checkBallMove(gameRoom: GameRoom, roomName: string) {
@@ -308,5 +303,14 @@ export class GameService {
     this.queue = this.queue.filter(
       (mem) => mem['intraId'] != member['intraId'],
     );
+  }
+
+  checkRoomName(roomName: string) {
+    if (
+      this.gameRooms[roomName] == undefined ||
+      this.gameRooms[roomName].finish == true
+    )
+      return false;
+    return true;
   }
 }
