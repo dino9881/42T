@@ -1,12 +1,21 @@
 import React, { useRef, useEffect, useState } from "react";
 import { socket } from "../socket";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import instance from "../refreshToken";
 import "./Game.css";
 
 interface HeaderProps {
     player1: string;
+    player1Avatar: string;
     player2: string;
+    player2Avatar: string;
+    p1Score: number;
+    p2Score: number;
+    exitGame: () => void;
+}
+interface ScoreProps {
+  p1Score: number;
+  p2Score: number;
 }
 
 type Player = "player1" | "player2";
@@ -55,12 +64,41 @@ function Game() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     let context: CanvasRenderingContext2D | null = null;
     const [currentPlayer, setCurrentPlayer] = useState<Player>("player1");
+    const [p1Score, setP1Score] = useState(0);
+    const [p2Score, setP2Score] = useState(0);
+    const [player1Avatar, setPlayer1Avatar] = useState("");
+    const [player2Avatar, setPlayer2Avatar] = useState("");
+    const navigate = useNavigate();
+
+    const exitGame = () => {
+      socket.emit("exit-game", {roomName:roomName});
+      navigate('/main');
+    }
 
     useEffect(() => {
+      instance
+      .get(`http://localhost:5001/member/search/${player1}`)
+      .then((response) => {
+          const player1Avatar = response.data.avatar;
+          setPlayer1Avatar(player1Avatar);
+      })
+      .catch((error) => {
+          console.log(error);
+      });
+    instance
+      .get(`http://localhost:5001/member/search/${player2}`)
+      .then((response) => {
+          const player2Avatar = response.data.avatar;
+          setPlayer2Avatar(player2Avatar);
+      })
+      .catch((error) => {
+          console.log(error);
+      });
         const canvas = canvasRef.current;
         if (canvas) {
             canvas.width = width;
             canvas.height = height;
+            canvas.focus();
 
             gameRender(
                 { x1: 10, y1: 300, x2: 1270, y2: 300, bx: 640, by: 300 },
@@ -68,8 +106,25 @@ function Game() {
             );
             socket.on("game-render", (payload: GameProps) => {
                 gameRender(payload, canvas);
-            });
+          });
         }
+    
+
+      socket.on("game-score", (payload:ScoreProps) => {
+        setP1Score(payload.p1Score);
+        setP2Score(payload.p2Score);
+      });
+
+      socket.on("game-end", (payload:ScoreProps) => {
+        console.log("정상적으로 종료됨")
+        navigate("/result", { state: { player1, player2, player1Avatar, player2Avatar, p1Score:payload.p1Score, p2Score:payload.p2Score} })
+      });
+
+      socket.on("game-sudden-end", (payload:ScoreProps) => {
+        console.log("상대가 나갔음")
+        navigate("/result", { state: { player1, player2, player1Avatar, player2Avatar, p1Score:payload.p1Score, p2Score:payload.p2Score} })
+      });
+
 
         instance
             .get("http://localhost:5001/auth/me")
@@ -86,6 +141,14 @@ function Game() {
             .catch((error) => {
                 console.log(error);
             });
+            return(() => {
+              socket.off("game-score");
+              socket.off("game-render");
+              socket.off("game-end");
+              socket.off("sudden-end");
+              if(p1Score < 5 && p2Score < 5)
+                socket.emit("exit-game", {roomName:roomName});
+            })
     }, []);
 
     const move = (event: React.KeyboardEvent<HTMLCanvasElement>) => {
@@ -102,12 +165,17 @@ function Game() {
             }
         }
     };
-
+    const getMode = () => {
+        if (mode === 2)
+        return "ghost-canvas";
+        else 
+        return "game-canvas"
+    }
     return (
         <div className="game">
-            <GameHeader player1={player1} player2={player2} />
+            <GameHeader player1={player1} p1Score={p1Score} player2={player2} p2Score={p2Score} player1Avatar={player1Avatar} player2Avatar={player2Avatar} exitGame={exitGame}/>
             <canvas
-                className="game-canvas"
+                className={getMode()}
                 ref={canvasRef}
                 onKeyDown={move}
                 tabIndex={0}
@@ -116,39 +184,22 @@ function Game() {
     );
 }
 
-function GameHeader({ player1, player2 }: HeaderProps) {
-    const [player1Avatar, setPlayer1Avatar] = useState("");
-    const [player2Avatar, setPlayer2Avatar] = useState("");
+function GameHeader({ player1, player2, p1Score, p2Score, player1Avatar, player2Avatar, exitGame }: HeaderProps) {
 
-    instance
-        .get(`http://localhost:5001/member/search/${player1}`)
-        .then((response) => {
-            const player1Avatar = response.data.avatar;
-            setPlayer1Avatar(player1Avatar);
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-    instance
-        .get(`http://localhost:5001/member/search/${player2}`)
-        .then((response) => {
-            const player2Avatar = response.data.avatar;
-            setPlayer2Avatar(player2Avatar);
-        })
-        .catch((error) => {
-            console.log(error);
-        });
 
     return (
         <div className="game-header">
             <div className="game-header-p1">
-                {player1}
+                {player1}{p1Score}
                 <img className="game-player1-avatar" src={player1Avatar}></img>
             </div>
             <div className="game-vs">VS</div>
             <div className="game-header-p2">
-                {player2}
+              {p2Score}{player2}
                 <img className="game-player2-avatar" src={player2Avatar}></img>
+            </div>
+            <div>
+              <button onClick={exitGame}>도망가기</button>
             </div>
         </div>
     );

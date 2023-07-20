@@ -13,6 +13,15 @@ function ChannelNew() {
     const [inputValue, setInputValue] = useState("");
     const [isCloseNewMake, setCloseNewMake] = useState(true);
     const [isChecked, setIsChecked] = useState(false);
+    const [isPchecked, setIsPchecked] = useState(false);
+
+    let publicAndPrivate = "";
+
+if (isPchecked) {
+  publicAndPrivate = "비밀방";
+} else {
+  publicAndPrivate = "공개방"; 
+}
 
     const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
         if(event.key === "Enter") {
@@ -32,6 +41,14 @@ function ChannelNew() {
         }
     }
 
+    const handlePrivateboxChange = (e : ChangeEvent<HTMLInputElement>) => {
+        setIsPchecked(e.target.checked);
+        if(e.target.checked){
+            setIsChecked(false);
+            setInputValue("");
+        }
+    }
+
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         // 숫자 이외의 문자 제거
@@ -47,6 +64,11 @@ function ChannelNew() {
         
         if(!title) {
             alert("방제목을 확인해주세요.");
+            return;
+        }
+        
+        if (title.includes("#")) {
+            alert("방제목에 #을 넣을수 없습니다.");
             return;
         }
 
@@ -96,12 +118,19 @@ return (
         <img src="/channel/x_image.png" alt="Close" width={28} height={28}/>
         </button>
         <div className="chan-new_namebox">
-            <div className="chan-new_name">방 제목</div>
-            <input onKeyDown={handleKeyPress} type="text" name="title_inputbox" className="chan-new_input_title" maxLength={20}></input>
+            <div className="chan-new_nameAndcheckbox">
+                <div className="chan-new_name">방 제목</div>
+                    <input id="toggle" type="checkbox" checked={isPchecked} onChange={handlePrivateboxChange} hidden/>
+                <label htmlFor="toggle" className="toggleSwitch">
+                    <span className="toggleButton"></span>
+                </label>
+                <div className="chan-new_publicAndPrivate">{publicAndPrivate}</div>
+            </div>
+            <input onKeyDown={handleKeyPress} type="text" name="title_inputbox" className="chan-new_input_title" maxLength={20} autoComplete='off'></input>
         </div>    
         <div className="chan-new_pwbox">
             <div className="chan-new_pwcheck">
-                <input type="checkbox" className="chan-new_make_checkbox" name="make_password" value="1"  checked={isChecked} onChange={handleCheckboxChange}></input>
+                <input disabled={isPchecked} type="checkbox" className="chan-new_make_checkbox" name="make_password" value="1"  checked={isChecked} onChange={handleCheckboxChange}></input>
                 <div className="chan-new_pw">비밀 번호</div>
             </div>
             <input placeholder="비밀번호를 입력해주세요." type="password" name="password_input" className="chan-new_input_password" value={inputValue} maxLength={4}  disabled={!isChecked} onChange={handleInputChange}></input>
