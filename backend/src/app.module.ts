@@ -9,8 +9,6 @@ import { MailModule } from './util/mail/mail.module';
 import { MemberService } from './member/member.service';
 import { SocketIOModule } from './socketIO/socketio.module';
 import { APP_PIPE } from '@nestjs/core';
-import { MulterModule } from '@nestjs/platform-express';
-import { multerOptions } from './util/multer.options.factory';
 import appConfig from './config/app.config';
 import { ScheduleModule } from '@nestjs/schedule';
 
@@ -29,9 +27,6 @@ import { ScheduleModule } from '@nestjs/schedule';
     }),
     MailModule,
     ScheduleModule.forRoot(),
-    MulterModule.registerAsync({
-      useFactory: multerOptions,
-    }),
   ],
   providers: [
     {
