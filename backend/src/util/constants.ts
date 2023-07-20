@@ -23,14 +23,14 @@ export class gameConstants {
   public static readonly Y1 = 300;
   public static readonly X2 = 1270;
   public static readonly Y2 = 300;
-  public static readonly BALL_X = 640;
-  public static readonly BALL_Y = 300;
-  public static readonly BALL_DX = 2;
-  public static readonly BALL_DY = -2;
-  public static readonly SPEED = 2;
+  public static readonly BALL = { x: 640, y: 300, dx: 4, dy: -4 };
   public static readonly PADDLE_SIZE = 100;
   public static readonly PADDLE_WIDTH = 10;
+  public static readonly PADDLE_SPEED = 40;
+  public static readonly BALL_SPEED = 2;
   public static readonly BALL_SIZE = 15;
+  public static readonly WINNER_RANK = 5;
+  public static readonly LOSER_RANK = 3;
 }
 
 // Channel
