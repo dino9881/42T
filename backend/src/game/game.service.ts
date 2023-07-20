@@ -1,35 +1,15 @@
-import { ConflictException, HttpException, Injectable } from '@nestjs/common';
-import { CreateGameDto } from './dto/create-game.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { MemberService } from 'src/member/member.service';
+import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { Interval } from '@nestjs/schedule';
-import { statusConstants } from 'src/util/constants';
-
-interface Ball {
-  x: number;
-  y: number;
-  dx: number;
-  dy: number;
-}
-
-interface GameProps {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-  ball: Ball;
-  p1Score: number;
-  p2Score: number;
-  speed: number;
-}
-
-interface GameRoom {
-  player1: Socket;
-  player2: Socket;
-  gameProps: GameProps;
-  mode: number;
-}
+import { PrismaService } from 'src/prisma/prisma.service';
+import { MemberService } from 'src/member/member.service';
+import { CreateGameDto } from './dto/create-game.dto';
+import {
+  gameConstants,
+  modeConstants,
+  statusConstants,
+} from 'src/util/constants';
+import { GameRoom, GameProps } from './game.Interface';
 
 @Injectable()
 export class GameService {
@@ -45,12 +25,18 @@ export class GameService {
 
   async addHistory(game: CreateGameDto) {
     await this.prisma.gameHistory.create({ data: game });
-    await this.memberService.updateRank(game.winnerId, 5);
+    await this.memberService.updateRank(
+      game.winnerId,
+      gameConstants.WINNER_RANK,
+    );
     await this.memberService.updateWinCnt(game.winnerId);
-    await this.memberService.updateStatus(game.winnerId, 1);
-    await this.memberService.updateRank(game.loserId, 3);
+    await this.memberService.updateStatus(
+      game.winnerId,
+      statusConstants.ONLINE,
+    );
+    await this.memberService.updateRank(game.loserId, gameConstants.LOSER_RANK);
     await this.memberService.updateLoseCnt(game.loserId);
-    await this.memberService.updateStatus(game.loserId, 1);
+    await this.memberService.updateStatus(game.loserId, statusConstants.ONLINE);
     return;
   }
 
@@ -81,7 +67,7 @@ export class GameService {
       const p1 = this.queue.shift();
       const p2 = this.queue.shift();
       //queue대기자는 normal mode
-      await this.makeGame(p1, p2, 1);
+      await this.makeGame(p1, p2, modeConstants.NORMAL);
     }
   }
 
@@ -89,7 +75,6 @@ export class GameService {
     console.log('makeGame');
     console.log(mode);
     const roomName = 'G#' + p1['intraId'] + p2['intraId'];
-    console.log(roomName);
     const payload = {
       player1: p1['nickName'],
       player2: p2['nickName'],
@@ -103,25 +88,18 @@ export class GameService {
   }
 
   async enterGame(players: Socket[], roomName: string, mode: number) {
-    // if (gameRoom.mode == 0) {
-    //   // easy mode : paddle speed 2 & ball speed 1
-    // } else if (gameRoom.mode == 1) {
-    //   // normal mode paddle speed 1 & ball speed 1
-    // } else if (gameRoom.mode == 2) {
-    //   // ghost mode : ball disappers sometime
-    // }
     this.gameRooms[roomName] = {
       player1: players[0],
       player2: players[1],
       gameProps: {
-        x1: 10,
-        y1: 300,
-        x2: 1270,
-        y2: 300,
-        ball: { x: 640, y: 300, dx: 4, dy: -4 },
+        x1: gameConstants.X1,
+        y1: gameConstants.Y1,
+        x2: gameConstants.X2,
+        y2: gameConstants.Y2,
+        ball: gameConstants.BALL,
         p1Score: 0,
         p2Score: 0,
-        speed: 2,
+        speed: gameConstants.BALL_SPEED,
       },
       mode: mode,
     };
@@ -140,22 +118,7 @@ export class GameService {
         p1Score: gameRoom.gameProps.p1Score,
         p2Score: gameRoom.gameProps.p2Score,
       });
-      let game;
-      if (gameRoom.gameProps.p1Score == 5) {
-        game = {
-          winnerId: gameRoom.player1['intraId'],
-          winnerScore: gameRoom.gameProps.p1Score,
-          loserId: gameRoom.player2['intraId'],
-          loserScore: gameRoom.gameProps.p2Score,
-        };
-      } else {
-        game = {
-          winnerId: gameRoom.player2['intraId'],
-          winnerScore: gameRoom.gameProps.p2Score,
-          loserId: gameRoom.player1['intraId'],
-          loserScore: gameRoom.gameProps.p1Score,
-        };
-      }
+      const game = this.makeGameHistory(gameRoom);
       await this.addHistory(game);
       gameRoom.player1.leave(roomName);
       gameRoom.player2.leave(roomName);
@@ -164,32 +127,40 @@ export class GameService {
     }
   }
 
-  async playerExit(player: Socket, roomName: string) {
-    const gameRoom = this.gameRooms[roomName];
+  makeGameHistory(gameRoom: GameRoom): CreateGameDto {
     let game;
-    if (gameRoom.player1['intraId'] == player['intraId']) {
-      gameRoom.gameProps.p1Score = 0;
-      gameRoom.gameProps.p2Score = 5;
-      game = {
-        winnerId: gameRoom.player2['intraId'],
-        winnerScore: gameRoom.gameProps.p2Score,
-        loserId: gameRoom.player1['intraId'],
-        loserScore: gameRoom.gameProps.p1Score,
-      };
-    } else {
-      gameRoom.gameProps.p1Score = 5;
-      gameRoom.gameProps.p2Score = 0;
+    if (gameRoom.gameProps.p1Score == 5) {
       game = {
         winnerId: gameRoom.player1['intraId'],
         winnerScore: gameRoom.gameProps.p1Score,
         loserId: gameRoom.player2['intraId'],
         loserScore: gameRoom.gameProps.p2Score,
       };
+    } else {
+      game = {
+        winnerId: gameRoom.player2['intraId'],
+        winnerScore: gameRoom.gameProps.p2Score,
+        loserId: gameRoom.player1['intraId'],
+        loserScore: gameRoom.gameProps.p1Score,
+      };
+      return game;
+    }
+  }
+
+  async playerExit(player: Socket, roomName: string) {
+    const gameRoom = this.gameRooms[roomName];
+    if (gameRoom.player1['intraId'] == player['intraId']) {
+      gameRoom.gameProps.p1Score = 0;
+      gameRoom.gameProps.p2Score = 5;
+    } else {
+      gameRoom.gameProps.p1Score = 5;
+      gameRoom.gameProps.p2Score = 0;
     }
     this.emitBothPlayer(gameRoom, 'game-sudden-end', {
       p1Score: gameRoom.gameProps.p1Score,
       p2Score: gameRoom.gameProps.p2Score,
     });
+    const game = this.makeGameHistory(gameRoom);
     await this.addHistory(game);
     gameRoom.player1.leave(roomName);
     gameRoom.player2.leave(roomName);
@@ -214,22 +185,16 @@ export class GameService {
           ballY > gameRoom.gameProps.y2 - 100 &&
           ballY < gameRoom.gameProps.y2 + 100)
       ) {
-        // gameRoom.gameProps.speed *= 1.1;
-        gameRoom.gameProps.ball.dx = -dx * 1.2;
+        gameRoom.gameProps.ball.dx = -dx;
+        if (gameRoom.mode == 0) gameRoom.gameProps.ball.dx *= 1.1;
       } else {
         console.log('someone lose');
         if (ballX > 1200) {
           gameRoom.gameProps.p1Score += 1;
-          gameRoom.gameProps.ball.x = 640;
-          gameRoom.gameProps.ball.y = 300;
-          gameRoom.gameProps.ball.dx = 4;
-          gameRoom.gameProps.ball.dy = -4;
+          gameRoom.gameProps.ball = gameConstants.BALL;
         } else if (ballX < 0) {
           gameRoom.gameProps.p2Score += 1;
-          gameRoom.gameProps.ball.x = 640;
-          gameRoom.gameProps.ball.y = 300;
-          gameRoom.gameProps.ball.dx = -4;
-          gameRoom.gameProps.ball.dy = 4;
+          gameRoom.gameProps.ball = gameConstants.BALL;
         }
         // gameRoom Player들에게 점수 emit
         this.emitBothPlayer(gameRoom, 'game-score', {
@@ -273,10 +238,10 @@ export class GameService {
     //game render
     if (this.gameRooms[roomName].player1['intraId'] == player['intraId']) {
       console.log(player['intraId']);
-      this.gameRooms[roomName].gameProps.y1 -= 40;
+      this.gameRooms[roomName].gameProps.y1 -= gameConstants.PADDLE_SPEED;
     } else {
       console.log(player['intraId']);
-      this.gameRooms[roomName].gameProps.y2 -= 40;
+      this.gameRooms[roomName].gameProps.y2 -= gameConstants.PADDLE_SPEED;
     }
     this.checkLimit(this.gameRooms[roomName].gameProps);
   }
@@ -286,10 +251,10 @@ export class GameService {
     //game render
     if (this.gameRooms[roomName].player1['intraId'] == player['intraId']) {
       console.log(player['intraId']);
-      this.gameRooms[roomName].gameProps.y1 += 40;
+      this.gameRooms[roomName].gameProps.y1 += gameConstants.PADDLE_SPEED;
     } else {
       console.log(player['intraId']);
-      this.gameRooms[roomName].gameProps.y2 += 40;
+      this.gameRooms[roomName].gameProps.y2 += gameConstants.PADDLE_SPEED;
     }
     this.checkLimit(this.gameRooms[roomName].gameProps);
   }
