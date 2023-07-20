@@ -16,15 +16,58 @@
     justify-content: space-around;
   }
   
+  .admin-setting-back {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color:transparent;
+    border-radius: 10px;
+  }
+
   .admin-setting-box{
     /* float: right; */
     margin-left: 15px;
-    margin-top: 30px;
+    /* margin-top: 30px; */
     /* border: solid red; */
-    height: 100%;
+    height: 95%;
     width: 45%;
+    position: relative;
+  }
+
+  .admin-option-box {
+    width: 45%;
+    height: 70px;
+    display: inline-block;
+    margin-right: 12px;
+    margin-bottom: 10px;
+  }
+
+  .admin-setting-box input{
+    width: 100%;
+    height: 30px;
+  	background-color:transparent;
+    border-radius: 10px;
+    padding-left: 10px;
+    padding-right: 23px;
   }
   
+  .admin-input-form {
+    position: relative;
+  }
+
+  .admin-input-button {
+    position: absolute;
+    right: 4px;
+    top: 2px;
+    border-radius: 30%;
+    width: 25px;
+    height: 25px;
+    border: none;
+  	background-color:transparent;
+    font-family: sans-serif;
+  }
+
+
   .admin-user-box{
     border: 2px solid black;
     height: 45%;
@@ -32,7 +75,8 @@
   }
   
   .user-info-box{
-    border: solid black;
+    /* border: solid black; */
+    border-bottom: solid rgb(105, 105, 105);
     display: flex;
     margin-bottom: 1px;
   }
@@ -40,7 +84,4 @@
   .user-info-intra{
     margin-left: 10%;
     width: 30%;
-  }
-  .admin-pass-box{
-    
   }
