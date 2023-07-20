@@ -122,6 +122,11 @@ export class SocketIOGateway
   @SubscribeMessage('game-start')
   handleGameStart(client: Socket, payload: Payload) {
     const { roomName, mode } = payload;
+    //check roomName is valid
+    if (roomName == '' || roomName == undefined) {
+      client.emit('game-exception', { roomName });
+      return;
+    }
     console.log(
       `${client['nickName']}(${client['intraId']}) 님이 게임을 시작했습니다.`,
     );
@@ -148,7 +153,7 @@ export class SocketIOGateway
       mode !== modeConstants.NORMAL &&
       mode !== modeConstants.HARD
     ) {
-      client.emit('game-mode-error', { mode });
+      client.emit('game-exception', { mode });
       return;
     }
     try {
@@ -178,7 +183,7 @@ export class SocketIOGateway
       mode !== modeConstants.NORMAL &&
       mode !== modeConstants.HARD
     ) {
-      client.emit('game-mode-error', { mode });
+      client.emit('game-exception', { mode });
       return;
     }
     try {
@@ -221,18 +226,31 @@ export class SocketIOGateway
   @SubscribeMessage('player-w')
   handlePlayerW(client: Socket, payload: Payload) {
     const { roomName } = payload;
+    if (this.gameService.checkRoomName(roomName) == false) {
+      client.emit('game-exception', { roomName });
+      return;
+    }
     this.gameService.playerW(client, roomName);
   }
 
   @SubscribeMessage('player-s')
   handlePlayerS(client: Socket, payload: Payload) {
     const { roomName } = payload;
+    if (this.gameService.checkRoomName(roomName) == false) {
+      client.emit('game-exception', { roomName });
+      return;
+    }
     this.gameService.playerS(client, roomName);
   }
 
   @SubscribeMessage('exit-game')
   handleGameExit(client: Socket, payload: Payload) {
+    console.log('Socket - exitGame called');
     const { roomName } = payload;
+    if (this.gameService.checkRoomName(roomName) == false) {
+      client.emit('game-exception', { roomName });
+      return;
+    }
     this.gameService.playerExit(client, roomName);
   }
 

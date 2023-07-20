@@ -31,6 +31,13 @@ export class gameConstants {
   public static readonly BALL_SIZE = 15;
   public static readonly WINNER_RANK = 5;
   public static readonly LOSER_RANK = 3;
+  public static readonly GAMEPROPS = {
+    x1: gameConstants.X1,
+    y1: gameConstants.Y1,
+    x2: gameConstants.X2,
+    y2: gameConstants.Y2,
+    ball: gameConstants.BALL,
+  };
 }
 
 // Channel

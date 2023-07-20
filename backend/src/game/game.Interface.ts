@@ -23,4 +23,5 @@ export interface GameRoom {
   player2: Socket;
   gameProps: GameProps;
   mode: number;
+  finish: boolean;
 }
