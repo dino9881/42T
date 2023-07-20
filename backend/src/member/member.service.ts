@@ -3,6 +3,7 @@ import {
   ConflictException,
   Inject,
   Injectable,
+  NotAcceptableException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -196,6 +197,8 @@ export class MemberService {
     member: MemberInfoDto,
     nickName: string,
   ): Promise<MemberInfoDto> {
+    if (nickName == memberConstants.ADMIN)
+      throw new NotAcceptableException('Cannot Search Admin');
     const friend = await this.getOneByNick(nickName);
     const isFriend = await this.isFriend(member, friend);
     const isBan = await this.isBan(member, friend);
@@ -203,8 +206,6 @@ export class MemberService {
   }
 
   async getCurrentHashedRefreshToken(refreshToken: string) {
-    // 토큰 값을 그대로 저장하기 보단, 암호화를 거쳐 데이터베이스에 저장한다.
-    // bcrypt는 단방향 해시 함수이므로 암호화된 값으로 원래 문자열을 유추할 수 없다.
     const saltOrRounds = 10;
     const currentRefreshToken = await bcrypt.hash(refreshToken, saltOrRounds);
     return currentRefreshToken;
@@ -212,7 +213,6 @@ export class MemberService {
 
   async getCurrentRefreshTokenExp() {
     const currentDate = new Date();
-    // Date 형식으로 데이터베이스에 저장하기 위해 문자열을 숫자 타입으로 변환 (paresInt)
     const currentRefreshTokenExp = new Date(
       currentDate.getTime() + this.jwt.accessExpire,
     );
@@ -237,30 +237,25 @@ export class MemberService {
     const member: Member = await this.getOne(intraId);
     // user에 currentRefreshToken이 없다면 null을 반환 (즉, 토큰 값이 null일 경우)
     // user가 한번도 auth/login을 호출한적이 없다는 뜻 => auth/login을 호출하도록 유도
-    if (!member.currentRefreshToken) {
-      return null;
-    }
-    // 유저 테이블 내에 정의된 암호화된 refresh_token값과 요청 시 body에 담아준 refresh_token값 비교
+    if (!member.currentRefreshToken) return null;
     const isRefreshTokenMatching = await bcrypt.compare(
       refreshToken,
       member.currentRefreshToken,
     );
-    // 만약 isRefreshTokenMatching이 true라면 user 객체를 반환
-    if (isRefreshTokenMatching) {
-      return member;
-    }
+    if (isRefreshTokenMatching) return member;
     throw new UnauthorizedException('Invalid Refresh Token');
   }
 
   async addFriend(member: MemberInfoDto, friendNick: string) {
+    if (friendNick == memberConstants.ADMIN)
+      throw new NotAcceptableException('Cannot Add Admin');
     const friend = await this.getOneByNick(friendNick);
     const isFriend = await this.isFriend(member, friend);
-    if (isFriend) {
+    if (isFriend)
       throw new ConflictException(
         'Already Friend',
         `IntraId : ${friend.intraId}`,
       );
-    }
     await this.prisma.member.update({
       where: { intraId: member.intraId },
       data: { friend: { connect: { intraId: friend.intraId } } },
@@ -271,12 +266,11 @@ export class MemberService {
   async deleteFriend(member: MemberInfoDto, friendNick: string) {
     const friend = await this.getOneByNick(friendNick);
     const isFriend = await this.isFriend(member, friend);
-    if (!isFriend) {
+    if (!isFriend)
       throw new NotFoundException(
         'Cannot Find Friend',
         `IntraId : ${friend.intraId}`,
       );
-    }
     await this.prisma.member.update({
       where: { intraId: member.intraId },
       data: { friend: { disconnect: { intraId: friend.intraId } } },
@@ -313,7 +307,6 @@ export class MemberService {
         banned: { where: { intraId: banMember } },
       },
     });
-    // console.log(isBan[0]);
     return isBan[0]?.bannedOf.length > 0 || isBan[0]?.banned.length > 0;
   }
 
@@ -326,18 +319,17 @@ export class MemberService {
   }
 
   async banMember(member: MemberInfoDto, nickName: string) {
+    if (nickName == memberConstants.ADMIN)
+      throw new NotAcceptableException('Cannot Ban Admin');
     const banMember = await this.getOneByNick(nickName);
     const isFriend = await this.isFriend(member, banMember);
-    if (isFriend) {
-      await this.deleteFriend(member, nickName);
-    }
+    if (isFriend) await this.deleteFriend(member, nickName);
     const isBan = await this.isBan(member, banMember);
-    if (isBan) {
+    if (isBan)
       throw new ConflictException(
         'Already Banned Member',
         `IntraId : ${banMember.intraId}`,
       );
-    }
     await this.prisma.member.update({
       where: { intraId: member.intraId },
       data: { banned: { connect: { intraId: banMember.intraId } } },
@@ -348,12 +340,11 @@ export class MemberService {
   async unbanMember(member: MemberInfoDto, nickName: string) {
     const unbanMember = await this.getOneByNick(nickName);
     const isBan = await this.isBan(member, unbanMember);
-    if (!isBan) {
+    if (!isBan)
       throw new NotFoundException(
         'Cannot Find Ban Member',
         `IntraId : ${unbanMember.intraId}`,
       );
-    }
     await this.prisma.member.update({
       where: { intraId: member.intraId },
       data: { banned: { disconnect: { intraId: unbanMember.intraId } } },

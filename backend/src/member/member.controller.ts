@@ -24,6 +24,7 @@ import {
   ApiConflictResponse,
   ApiConsumes,
   ApiCreatedResponse,
+  ApiNotAcceptableResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -239,6 +240,7 @@ export class MemberController {
   })
   @ApiOkResponse({ description: '성공', type: MemberInfoDto })
   @ApiNotFoundResponse({ description: '멤버를 찾지 못함' })
+  @ApiNotAcceptableResponse({ description: '검색할 멤버가 admin' })
   @Get('search/:nickName')
   searchMember(
     @GetMember() member: MemberInfoDto,
@@ -266,6 +268,7 @@ export class MemberController {
   @ApiCreatedResponse({ description: '친구 추가 성공' })
   @ApiConflictResponse({ description: '이미 친구로 등록된 멤버' })
   @ApiNotFoundResponse({ description: '친구로 등록할 멤버를 찾지 못함' })
+  @ApiNotAcceptableResponse({ description: '친구로 등록할 멤버가 admin' })
   @Post('friend/add/:nickName')
   addFriend(
     @GetMember() member: MemberInfoDto,
@@ -313,6 +316,7 @@ export class MemberController {
     description: '차단할 멤버 닉네임',
   })
   @ApiCreatedResponse({ description: '차단 성공' })
+  @ApiNotAcceptableResponse({ description: '차단할 멤버가 admin' })
   @ApiConflictResponse({ description: '이미 차단된 멤버' })
   @ApiNotFoundResponse({ description: '차단할 멤버를 찾지 못함' })
   @Post('ban/add/:nickName')
