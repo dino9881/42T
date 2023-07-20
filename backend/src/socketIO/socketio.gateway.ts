@@ -324,7 +324,7 @@ export class SocketIOGateway
     try {
       const user = await this.memberService.getOneByNick(nickName);
       const userSocket = this.getSocketByintraId(user.intraId);
-      this.channelService.channelInvite(channelName, {intraId: userSocket['intraId'], avatar: userSocket['avatar'] ,nickName: userSocket['nickName']});
+      this.channelService.channelInvite(channelName, {intraId: user.intraId, avatar: user.avatar ,nickName: user.nickName});
       // nickName 님이 channelName 에 초대하셨습니다 이런거
       userSocket?.emit('invite', client['nickName'], channelName);
     } catch (error) {
