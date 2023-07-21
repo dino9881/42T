@@ -64,7 +64,7 @@ const FriendInfoSimple: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, 
 				<div className='friend-info-button'>
 					<div className="friend-button">
 						<button className="dm-button" onClick={handleButtonClick}>dm</button>
-						{currstate !== 0 ? (<button className="vs-button" onClick={handleButtonClick}>1vs1</button>)
+						{currstate !== 0 ? (<button className="vs-button" onClick={handleVsClick}>1vs1</button>)
 						:( <button className="vs-button" disabled>1vs1</button> )}
 					</div>
 					<div className='small-square'>

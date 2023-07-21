@@ -2,6 +2,7 @@ import React, { useState, ChangeEvent, KeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import instance from "../refreshToken";
 import { socket } from "../socket";
+import './Channel.css';
 
 interface ChannelData{
     chIdx: number;
@@ -82,11 +83,10 @@ function ChannelNew() {
 
         if(isPchecked){
         instance
-            .post("http://localhost:5001/channel/create", {chName:inputValue, isPrivate:true})
+            .post("http://localhost:5001/channel/create", {chName:title, isPrivate:true})
             .then((response) => {
                 closeNewMake();
-                // navigate("/chat", { state: { chIdx:response.chIdx } });
-                console.log(response);    
+                navigate("/chat", { state: { chIdx:response.data.chIdx }});
             })
             .catch((error) => {
                 // 요청이 실패하면 에러 처리
@@ -131,6 +131,7 @@ function ChannelNew() {
             socket.off("new-channel");
             socket.off("duplicate-chanName");
             socket.off("server-error");
+            socket.off("duplicate-chanName");
         };
             
     };

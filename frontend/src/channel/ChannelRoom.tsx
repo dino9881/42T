@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PwInput from "./PwInput";
 import instance from "../refreshToken";
+import './Channel.css';
 
 interface ChannelData {
     chIdx: number;

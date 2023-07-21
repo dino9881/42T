@@ -1,6 +1,8 @@
 import React , { useState, useEffect } from "react";
 import './Ranking.css';
-import { start } from "repl";
+import Fireworks from "./RankingConfetti";
+
+
 
 interface RankingResultProps{
     gameResult: GameResult[];
@@ -10,13 +12,6 @@ interface GameResult{
     nickName: string;
     avatar: string;
     score: number;
-}
-
-interface dummy1{
-    leftbox: GameResult;
-}
-interface dummy2{
-    rightbox: GameResult;
 }
 
 declare global {
@@ -31,15 +26,15 @@ declare global {
 const RankingResult = () => {  // 프롭스 아직 안받는연습모드
     useEffect(() => {
         const script = document.createElement('script');
-        script.src = 'https://tistory4.daumcdn.net/tistory/3134841/skin/images/confetti_v2.js'; // 'path/to'에는 confetti_v2.js 파일의 경로를 지정합니다.
+        script.src = 'https://tistory4.daumcdn.net/tistory/3134841/skin/images/confetti_v2.js';  //'path/to'에는 confetti_v2.js 파일의 경로를 지정합니다.
+        // script.src = "./confetti.js";
         script.async = true;
         document.body.appendChild(script);
-    
-
         const startButton = document.getElementById('startButton');
         if(startButton){
             startButton.click();
         }
+
         const timeout = setTimeout(() => {
             const stopButton = document.getElementById('stopButton');
             if (stopButton) {
@@ -98,10 +93,7 @@ const RankingResult = () => {  // 프롭스 아직 안받는연습모드
                 }
                 `}
             </style>
-            <div className="buttonContainer">
-                <button className="canvasBtn" id="stopButton">Stop Confetti</button>
-                <button className="canvasBtn" id="startButton">Drop Confetti</button>
-            </div>
+            <Fireworks></Fireworks>
             <div className="Ranking-Result_upper">
                 <div className="Ranking-Result_leftbox">
                     <img src={leftbox.avatar} alt ="leftbox 아바타"></img>

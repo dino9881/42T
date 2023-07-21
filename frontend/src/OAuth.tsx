@@ -13,7 +13,7 @@ const OAuth: React.FC = () => {
 	const navigate = useNavigate();
 
 	const code = query.code;
-	console.log(code);
+	// console.log(code);
 
 	axios.post("http://localhost:5001/auth/code", { code: code })
 		.then(function (response) {
@@ -21,9 +21,9 @@ const OAuth: React.FC = () => {
 			const intraId: string = response.data;
 			axios.post("http://localhost:5001/auth/login", { intraId: response.data, })
 				.then((res) => {
-					console.log(res);
+					// console.log(res);
 					const token = res.data.access_token;
-					console.log(token);
+					// console.log(token);
 					localStorage.setItem("jwtToken", token); // 지금은 access token인데 refresh token으로 바껴야함
 					if (token) {
 						instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;

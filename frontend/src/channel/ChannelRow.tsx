@@ -1,4 +1,5 @@
 import ChannelRoom from "./ChannelRoom";
+import './Channel.css';
 
 interface ChannelData {
     chIdx: number;

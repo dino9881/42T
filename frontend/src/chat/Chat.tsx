@@ -4,6 +4,7 @@ import { socket } from "../socket";
 import { useLocation, useNavigate } from "react-router-dom";
 import './Chat.css';
 import instance from "../refreshToken";
+import adminimg from '../../public/admin.jpg'
 
 interface MessageText {
     nickName: string;
@@ -36,6 +37,9 @@ function Chat({channelInit}:ChatProps) {
     const [avatar, setAvatar] = useState("");
     const [channelName, setChannelName] = useState("");
     const [msgList, setMsgList] = useState<MessageItem[]>(() => initialData());
+    const [isDM, setIsDM]  = useState(true);
+
+
     const navigate = useNavigate();
 	
     
@@ -55,17 +59,18 @@ function Chat({channelInit}:ChatProps) {
         // console.log(state)
         if (state && state.chIdx) {
             instance
-            .get(`http://localhost:5001/channel/name/${state.chIdx}`)
+            .get(`http://localhost:5001/channel/${state.chIdx}`)
             .then((response) => {
                 // 요청이 성공하면 데이터를 상태로 설정
                 channelInit(response.data.chName, state.chIdx);
                 localStorage.setItem('chName', response.data.chName);
                 localStorage.setItem('chIdx', state.chIdx.toString());
                 setChannelName(response.data.chName);
+                setIsDM(response.data.isDM);
             })
             .catch((error) => {
                 navigate('/main');
-                alert("채널이 존재하지 않습니다.")
+                alert("비정상 접근")
                 console.error("API 요청 실패:", error);
             });
 
@@ -97,7 +102,7 @@ function Chat({channelInit}:ChatProps) {
         }
 
         socket.on("welcome", (nickName) => {
-            const newMessage = {nickName: "System", message: `${nickName} : 이 입장했습니다.` };
+            const newMessage = {nickName: "System", message: `${nickName} : 이 입장했습니다.` , avatar:"./admin.jpg"};
             addMessage(newMessage, "");
         });
 
@@ -166,8 +171,8 @@ function Chat({channelInit}:ChatProps) {
     return (  
         <div className="chat">
             <div className="chat-header-box">
-                <img className="out_of_channel_button" src="out_of_channel.svg" alt="out_of_channel" onClick={exitChannel} style={{ cursor: 'pointer' }} />
-                <span>채널 나가기</span>
+                {!isDM && <img className="out_of_channel_button" src="out_of_channel.svg" alt="out_of_channel" onClick={exitChannel} style={{ cursor: 'pointer' }} />}
+                {!isDM &&<span>채널 나가기</span>}
             </div>
             <div className="chat-scroll" id="chat-scroll">
                 {msgList && msgList.map((message, index) => (
