@@ -176,7 +176,7 @@ export class GameService {
     if (ballX < 15 || ballX > 1280 - 15) {
       // ball의 다음위치가 paddle에 맞았는지 확인
       if (
-        ballX < 5 &&
+        ballX < 15 &&
         ballY > gameRoom.gameProps.y1 - 100 &&
         ballY < gameRoom.gameProps.y1 + 100
       ) {
