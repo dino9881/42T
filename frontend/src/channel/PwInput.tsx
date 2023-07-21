@@ -13,7 +13,7 @@ interface PwInputProps {
 
 let isChanUser = false;
 
-function PwInput({ chIdx, chPwd, chUserCnt } : PwInputProps) {
+function PwInput({ chIdx, chPwd = "", chUserCnt } : PwInputProps) {
     const navigate = useNavigate();
     const [inputValue, setInputValue] = useState("");
 
@@ -24,32 +24,32 @@ function PwInput({ chIdx, chPwd, chUserCnt } : PwInputProps) {
         setInputValue(filteredValue);
     };
 
-    const pwCorrect = () : Promise<boolean> => {
-        // console.log("chIdx : " + chIdx);
-        // console.log("chPwd : " + inputValue);
-        return instance
-            .post(`http://localhost:5001/channel/check/${chIdx}` ,{ 
-                chPwd: inputValue 
-            })
-            .then((response) => {
-                const data = response.data;
-                // console.log(data);
-                return data;
-            })
-            .catch((error) => {
-                // 요청이 실패하면 에러 처리
-                console.error("API 요청 실패:", error);
-				if (error.response.status === 403)
-					alert("당신은 벤 유저 입니다 ^^ (못들어감).");
-				else if(error.response.status === 404)
-					alert("없는 채널번호...;;");    
-				else if(error.response.status === 500)
-					alert("서버에러 (뺵 잘못)");
-                //   403 밴 유저
-                //   404 없는 채널 번호
-                //   500 서버 에러
-            });
-    }
+    // const pwCorrect = () : Promise<boolean> => {
+    //     // console.log("chIdx : " + chIdx);
+    //     // console.log("chPwd : " + inputValue);
+    //     return instance
+    //         .post(`http://localhost:5001/channel/check/${chIdx}` ,{ 
+    //             chPwd: inputValue 
+    //         })
+    //         .then((response) => {
+    //             const data = response.data;
+    //             // console.log(data);
+    //             return data;
+    //         })
+    //         .catch((error) => {
+    //             // 요청이 실패하면 에러 처리
+    //             console.error("API 요청 실패:", error);
+	// 			if (error.response.status === 403)
+	// 				alert("당신은 벤 유저 입니다 ^^ (못들어감).");
+	// 			else if(error.response.status === 404)
+	// 				alert("없는 채널번호...;;");    
+	// 			else if(error.response.status === 500)
+	// 				alert("서버에러 (뺵 잘못)");
+    //             //   403 밴 유저
+    //             //   404 없는 채널 번호
+    //             //   500 서버 에러
+    //         });
+    // }
 
     const handleButtonClick = () => {
         if(!isChanUser){
@@ -62,9 +62,10 @@ function PwInput({ chIdx, chPwd, chUserCnt } : PwInputProps) {
             });
         }
         // 입력값이 4자리인지 확인
-        if(!chPwd){    
+        if(!chPwd || inputValue.length === 4){   
         instance
-            .post(`http://localhost:5001/channel/enter/${chIdx}`)
+            // .post("http://localhost:5001/channel/create", {chName:title, isPrivate:true})
+            .post("http://localhost:5001/channel/enter/${chIdx},", {chPwd})
             .then((response) => {
                 if (!isChanUser)
                     socket.emit("first-enter", {channelName: response.data.chName} );
@@ -73,7 +74,12 @@ function PwInput({ chIdx, chPwd, chUserCnt } : PwInputProps) {
             .catch((error) => {
                 // 요청이 실패하면 에러 처리
                 console.error("API 요청 실패:", error);
-				if (error.response.status === 403)
+                if(error.response.status === 400)
+                {
+                    alert("비밀번호를 확인해주세요");
+                    window.location.reload();
+                }
+				else if (error.response.status === 403)
 					alert("당신은 벤 유저 입니다 ^^ (못들어감).");
 				else if(error.response.status === 404)
 					alert("없는 채널번호...;;");    
@@ -91,38 +97,38 @@ function PwInput({ chIdx, chPwd, chUserCnt } : PwInputProps) {
             alert("이미 인원이 다 찼습니다.");
             return;
         }
-
-        if (inputValue.length === 4) {
-            pwCorrect().then((data: boolean) => {
-                if (data) {
-                instance
-                    .post(`http://localhost:5001/channel/enter/${chIdx}`)
-                    .then((response) => {
-                        if (!isChanUser)
-                            socket.emit("first-enter", {channelName: response.data.chName} );
-                        navigate("/chat", { state: { chIdx } });
-                    })
-                    .catch((error) => {
-                        // 요청이 실패하면 에러 처리
-                        console.error("API 요청 실패:", error);
-                        if (error.response.status === 403)
-                            alert("당신은 벤 유저 입니다 ^^ (못들어감).");
-                        else if(error.response.status === 404)
-                            alert("없는 채널번호...;;");    
-                        else if(error.response.status === 500)
-                            alert("서버에러 (뺵 잘못)");
-                        //   403 밴 유저
-                        //   404 없는 채널 번호
-                        //   500 서버 에러
-                    });
-                }else {
-                    alert("비밀번호를 확인해주세요. ^^");
-                }
-            });
-        } else {
-            alert("비밀번호를 확인해주세요. ^^");
-        }
     };
+    //     if (inputValue.length === 4) {
+    //         pwCorrect().then((data: boolean) => {
+    //             if (data) {
+    //             instance
+    //                 .post(`http://localhost:5001/channel/enter/${chIdx}`, {chPwd})
+    //                 .then((response) => {
+    //                     if (!isChanUser)
+    //                         socket.emit("first-enter", {channelName: response.data.chName} );
+    //                     navigate("/chat", { state: { chIdx } });
+    //                 })
+    //                 .catch((error) => {
+    //                     // 요청이 실패하면 에러 처리
+    //                     console.error("API 요청 실패:", error);
+    //                     if (error.response.status === 403)
+    //                         alert("당신은 벤 유저 입니다 ^^ (못들어감).");
+    //                     else if(error.response.status === 404)
+    //                         alert("없는 채널번호...;;");    
+    //                     else if(error.response.status === 500)
+    //                         alert("서버에러 (뺵 잘못)");
+    //                     //   403 밴 유저
+    //                     //   404 없는 채널 번호
+    //                     //   500 서버 에러
+    //                 });
+    //             }else {
+    //                 alert("비밀번호를 확인해주세요. ^^");
+    //             }
+    //         });
+    //     } else {
+    //         alert("비밀번호를 확인해주세요. ^^");
+    //     }
+    // };
 
     return (
         <div className="chan-pw_inputbox">
