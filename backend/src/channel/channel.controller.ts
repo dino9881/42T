@@ -172,8 +172,8 @@ export class ChannelController {
     description: 'Enter channel By Idx',
   })
   @ApiParam({ name: 'idx', example: '3', description: 'Channnel Idx' })
-  enterChannel(@GetMember() member: MemberInfoDto, @Param('idx') idx: string) {
-    return this.channelService.enter(+idx, member);
+  enterChannel(@GetMember() member: MemberInfoDto, @Param('idx') idx: string, @Body() updateChannelDto: UpdateChannelDto) {
+    return this.channelService.enter(+idx, member, updateChannelDto);
   }
 
   @ApiTags('Channel User')
