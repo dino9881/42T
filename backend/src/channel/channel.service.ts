@@ -235,10 +235,15 @@ export class ChannelService {
 
   // channel users
 
-  async enter(idx: number, member: MemberInfoDto) {
+  async enter(idx: number, member: MemberInfoDto, updateChannelDto: UpdateChannelDto) {
     const { intraId, avatar, nickName } = member;
     const channel = await this.findOneById(idx);
 
+    // pwd check
+    if (channel.chPwd) { 
+      if (!await this.checkPassword(idx, updateChannelDto))
+        throw new BadRequestException('wrong password');
+    }
     // user check
     if (this.channelUsers[idx].find((user) => user.intraId === member.intraId))
       return channel;
