@@ -292,7 +292,7 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 						</button>
 						{channels.length !== 0 && (
 							<div className="menu-drop-down-channel-list-text">
-								{"< "}channel{" >"}
+								{"< "}channels{" >"}
 							</div>
 						)}
 						{channels &&
