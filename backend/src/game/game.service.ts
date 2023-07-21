@@ -4,33 +4,12 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { MemberService } from 'src/member/member.service';
 import { Socket } from 'socket.io';
 import { Interval } from '@nestjs/schedule';
-import { modeConstants, statusConstants } from 'src/util/constants';
-
-interface Ball {
-  x: number;
-  y: number;
-  dx: number;
-  dy: number;
-}
-
-interface GameProps {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-  ball: Ball;
-  p1Score: number;
-  p2Score: number;
-  speed: number;
-}
-
-interface GameRoom {
-  player1: Socket;
-  player2: Socket;
-  gameProps: GameProps;
-  mode: number;
-  finish: boolean;
-}
+import {
+  gameConstants,
+  modeConstants,
+  statusConstants,
+} from 'src/util/constants';
+import { GameRoom, GameProps } from './game.Interface';
 
 @Injectable()
 export class GameService {
@@ -82,7 +61,7 @@ export class GameService {
       const p1 = this.queue.shift();
       const p2 = this.queue.shift();
       //queue대기자는 normal mode
-      await this.makeGame(p1, p2, 1);
+      await this.makeGame(p1, p2, modeConstants.NORMAL);
     }
   }
 
@@ -108,14 +87,10 @@ export class GameService {
       player1: players[0],
       player2: players[1],
       gameProps: {
-        x1: 10,
-        y1: 300,
-        x2: 1270,
-        y2: 300,
-        ball: { x: 640, y: 300, dx: 4, dy: -4 },
+        ...gameConstants.GAMEPROPS,
         p1Score: 0,
         p2Score: 0,
-        speed: 2,
+        speed: gameConstants.BALL_SPEED,
       },
       mode: mode,
       finish: false,
@@ -129,6 +104,23 @@ export class GameService {
     gameRoom.player2.emit(message, payload);
   }
 
+  makeGameHistory(gameRoom: GameRoom) {
+    if (gameRoom.gameProps.p1Score == 5) {
+      return {
+        winnerId: gameRoom.player1['intraId'],
+        winnerScore: gameRoom.gameProps.p1Score,
+        loserId: gameRoom.player2['intraId'],
+        loserScore: gameRoom.gameProps.p2Score,
+      };
+    }
+    return {
+      winnerId: gameRoom.player2['intraId'],
+      winnerScore: gameRoom.gameProps.p2Score,
+      loserId: gameRoom.player1['intraId'],
+      loserScore: gameRoom.gameProps.p1Score,
+    };
+  }
+
   async checkGameEnd(gameRoom: GameRoom, roomName: string) {
     if (this.gameRooms[roomName] == undefined || gameRoom.finish == true)
       return;
@@ -138,22 +130,7 @@ export class GameService {
         p1Score: gameRoom.gameProps.p1Score,
         p2Score: gameRoom.gameProps.p2Score,
       });
-      let game;
-      if (gameRoom.gameProps.p1Score == 5) {
-        game = {
-          winnerId: gameRoom.player1['intraId'],
-          winnerScore: gameRoom.gameProps.p1Score,
-          loserId: gameRoom.player2['intraId'],
-          loserScore: gameRoom.gameProps.p2Score,
-        };
-      } else {
-        game = {
-          winnerId: gameRoom.player2['intraId'],
-          winnerScore: gameRoom.gameProps.p2Score,
-          loserId: gameRoom.player1['intraId'],
-          loserScore: gameRoom.gameProps.p1Score,
-        };
-      }
+      const game = this.makeGameHistory(gameRoom);
       await this.addHistory(game);
       gameRoom.player1.leave(roomName);
       gameRoom.player2.leave(roomName);
@@ -170,30 +147,18 @@ export class GameService {
       return;
     const gameRoom = this.gameRooms[roomName];
     gameRoom.finish = true;
-    let game;
     if (gameRoom.player1['intraId'] == player['intraId']) {
       gameRoom.gameProps.p1Score = 0;
       gameRoom.gameProps.p2Score = 5;
-      game = {
-        winnerId: gameRoom.player2['intraId'],
-        winnerScore: gameRoom.gameProps.p2Score,
-        loserId: gameRoom.player1['intraId'],
-        loserScore: gameRoom.gameProps.p1Score,
-      };
     } else {
       gameRoom.gameProps.p1Score = 5;
       gameRoom.gameProps.p2Score = 0;
-      game = {
-        winnerId: gameRoom.player1['intraId'],
-        winnerScore: gameRoom.gameProps.p1Score,
-        loserId: gameRoom.player2['intraId'],
-        loserScore: gameRoom.gameProps.p2Score,
-      };
     }
     this.emitBothPlayer(gameRoom, 'game-sudden-end', {
       p1Score: gameRoom.gameProps.p1Score,
       p2Score: gameRoom.gameProps.p2Score,
     });
+    const game = this.makeGameHistory(gameRoom);
     await this.addHistory(game);
     gameRoom.player1.leave(roomName);
     gameRoom.player2.leave(roomName);
@@ -207,34 +172,40 @@ export class GameService {
     const ballX = gameRoom.gameProps.ball.x + dx;
     const ballY = gameRoom.gameProps.ball.y + dy;
     // ball의 다음위치가 위아래 벽에 맞았는지 확인
-    if (ballY < 15 || ballY > 600 - 15) gameRoom.gameProps.ball.dy = -dy;
-    if (ballX < 25 || ballX > 1280 - 25) {
+    if (ballY < 5 || ballY > 600 - 5) gameRoom.gameProps.ball.dy = -dy;
+    if (ballX < 15 || ballX > 1280 - 15) {
       // ball의 다음위치가 paddle에 맞았는지 확인
       if (
-        (ballX < 25 &&
-          ballY > gameRoom.gameProps.y1 - 100 &&
-          ballY < gameRoom.gameProps.y1 + 100) ||
-        (ballX > 1280 - 25 &&
-          ballY > gameRoom.gameProps.y2 - 100 &&
-          ballY < gameRoom.gameProps.y2 + 100)
+        ballX < 5 &&
+        ballY > gameRoom.gameProps.y1 - 100 &&
+        ballY < gameRoom.gameProps.y1 + 100
+      ) {
+        if (gameRoom.mode == modeConstants.NORMAL) {
+          gameRoom.gameProps.ball.dx = -dx * 1.2;
+        } else if (gameRoom.mode == modeConstants.EASY) {
+          gameRoom.gameProps.ball.dx = -dx;
+        }
+        gameRoom.gameProps.ball.x = 15;
+      } else if (
+        ballX > 1280 - 15 &&
+        ballY > gameRoom.gameProps.y2 - 100 &&
+        ballY < gameRoom.gameProps.y2 + 100
       ) {
         // gameRoom.gameProps.speed *= 1.1;
-        gameRoom.gameProps.ball.dx = -dx * 1.2;
+        if (gameRoom.mode == modeConstants.NORMAL) {
+          gameRoom.gameProps.ball.dx = -dx * 1.2;
+        } else if (gameRoom.mode == modeConstants.EASY) {
+          gameRoom.gameProps.ball.dx = -dx;
+        }
+        gameRoom.gameProps.ball.x = 1280 - 15;
       } else {
         console.log('someone lose');
-        if (ballX > 1200) {
-          gameRoom.gameProps.p1Score += 1;
-          gameRoom.gameProps.ball.x = 640;
-          gameRoom.gameProps.ball.y = 300;
-          gameRoom.gameProps.ball.dx = 4;
-          gameRoom.gameProps.ball.dy = -4;
-        } else if (ballX < 0) {
-          gameRoom.gameProps.p2Score += 1;
-          gameRoom.gameProps.ball.x = 640;
-          gameRoom.gameProps.ball.y = 300;
-          gameRoom.gameProps.ball.dx = -4;
-          gameRoom.gameProps.ball.dy = 4;
-        }
+        gameRoom.gameProps.ball.x = 640;
+        gameRoom.gameProps.ball.y = 300;
+        gameRoom.gameProps.ball.dx = 4;
+        gameRoom.gameProps.ball.dy = -4;
+        if (ballX > 1200) gameRoom.gameProps.p1Score += 1;
+        else if (ballX < 0) gameRoom.gameProps.p2Score += 1;
         // gameRoom Player들에게 점수 emit
         this.emitBothPlayer(gameRoom, 'game-score', {
           p1Score: gameRoom.gameProps.p1Score,
