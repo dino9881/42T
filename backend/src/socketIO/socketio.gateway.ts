@@ -20,7 +20,7 @@ import { MemberService } from '../member/member.service';
 import { GameService } from '../game/game.service';
 import { WsGuard } from '../auth/ws.guard';
 import { ConflictExceptionFilter } from './ConflictExceptionFilter';
-import { modeConstants, statusConstants } from 'src/util/constants';
+import { modeConstants, statusConstants, memberConstants } from 'src/util/constants';
 
 interface Payload {
   channelName: string;
@@ -282,7 +282,7 @@ export class SocketIOGateway
   async handleFirstEnter(client: Socket, payload: Payload) {
     const { channelName } = payload;
     client.join(channelName);
-    client.to(channelName).emit('welcome', client['nickName']);
+    client.to(channelName).emit('welcome', client['nickName'], memberConstants.ADMIN + '.jpg');
   }
 
   @SubscribeMessage('enter-channel')
