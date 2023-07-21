@@ -46,7 +46,7 @@ export class ChannelService {
 
   async isDuplicateName(chName: string) {
     const channels = await this.findChannelAll();
-    if (channels.find(chan => chan.chName === chName))
+    if (channels && channels.find(chan => chan.chName === chName))
       return true;
     return false;
   }
@@ -312,7 +312,7 @@ export class ChannelService {
   async isChanUsers(chanName: string, nickName: string) {
     const channel = await this.findOneByName(chanName);
     const users = this.channelUsers[channel.chIdx];
-    if (users.find((user) => user.nickName === nickName)) return true;
+    if (users && users.find((user) => user.nickName === nickName)) return true;
     return false;
   }
 
@@ -369,7 +369,7 @@ export class ChannelService {
         return true;
     } else {
       const banUsers = await this.getChannelBanUsers(channel.chIdx);
-      if (banUsers.find(users => users.intraId === intraId))
+      if (banUsers && banUsers.find(users => users.intraId === intraId))
         return true;
     }
     return false;
