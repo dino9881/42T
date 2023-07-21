@@ -3,6 +3,7 @@ import {
   ConflictException,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
@@ -56,6 +57,8 @@ export class ChannelService {
     }
     const { chName, chPwd, isDM, isPrivate } = createChannelDto;
 
+    if (chName === undefined)
+      throw new BadRequestException('Bad request');
     // member check
     await this.memberService.getOne(member.intraId);
     // operator check
@@ -464,10 +467,10 @@ export class ChannelService {
       { intraId: user1, avatar: '', nickName: '' },
       { intraId: user2, avatar: '', nickName: '' },
     ];
-
     this.banUsers[createData.chIdx] = [];
     this.messageList[createData.chIdx] = [];
     this.mutedUsers[createData.chIdx] = [];
+    this.administrators[createData.chIdx] = [];
     return createData;
   }
   
