@@ -18,6 +18,7 @@ import React from 'react'
 import RankingResult from "./ranking/RankingResult";
 import NotFound from "./NotFound";
 
+
 function App() {
     axios.defaults.withCredentials = true;
     const [channelName, setChannelName] = useState<string>(() => {
@@ -49,7 +50,7 @@ function App() {
                     <Route path="/admin" element={<Contents mainComponent={<ChannelAdmin channelName={channelName} channelIdx={channelIdx}/>} headerComponent={<Menu showBackButton={true} channelName={channelName} channelIdx={channelIdx}/>}/>}></Route>
                     <Route path="/rank" element={<Contents mainComponent={<Ranking/>} headerComponent={<Menu showBackButton={false} channelName={channelName} channelIdx={channelIdx}/>}/>}></Route>
                     <Route path="/game" element={<Game/>}></Route>
-                    <Route path="/result" element={<Contents mainComponent={<RankingResult/>} headerComponent={<Menu showBackButton={false} channelName={channelName} channelIdx={channelIdx}/>}/>}></Route>
+                    <Route path="/result" element={<Contents mainComponent={<RankingResult />} headerComponent={<Menu showBackButton={false} channelName={channelName} channelIdx={channelIdx}/>}/>}></Route>
                     <Route path="/*" element={<NotFound />} />
                 </Routes>
             <Background />

@@ -186,7 +186,7 @@ flex-direction: column;
 }
 
 .ranking-etc_ranktext{
-    margin-right: 5px;
+    /* margin-right: 5px; */
     width:40px;
     display: flex;
     align-items: center;
@@ -343,8 +343,8 @@ flex-direction: column;
 
 .Ranking-Result_leftbox img{
     border: solid white 4px;
-    width: 200px;
-    height: 200px;
+    width: 160px;
+    height: 180px;
 }
 
 .Ranking-Result_Name{
@@ -366,8 +366,8 @@ flex-direction: column;
 
 .Ranking-Result_rightbox img{
     border: solid white 4px;
-    width: 200px;
-    height: 200px;
+    width: 160px;
+    height: 180px;
 }
 
 .Ranking-Result_middle_resultbox
@@ -382,45 +382,58 @@ flex-direction: column;
 
 .Ranking-Result_scorebox{
     display:flex;
+    align-items: flex-start;
+    height:40%;
     flex-direction: row;
 }
 
-.Ranking-Result_text{
-    font-size: 50px;
-    /* color: #dd93e5; */
-    color: white;
-    font-weight: 800;
-    text-shadow: -2px 0 black, 0 1px black, 1px 0 black, 0 -2px black;
-}
 
 .Ranking-Result_score_left{
-    font-size: 50px;
-    padding-right: 170px;
-    padding-top: 20px;
+    line-height: 1; 
+    font-size: 60px;
+    padding-right: 195px;
+    padding-top: 10px;                  
 }
 
 .Ranking-Result_score_right{
+    line-height: 1; 
     font-size: 60px;
-    padding-left: 170px;
-    padding-top: 15px;
+    padding-left: 195px;
+    padding-top: 10px;
 }
 
 .Ranking-Result_score_left_winner_LeftBox{
+    line-height: 1; 
     font-size: 72px;
-    padding-right: 170px;
+    padding-right: 195px;
     color: #f69173;
     font-weight: 700;
 }
 
 .Ranking-Result_score_right_winner_RightBox{
+    line-height: 1; 
     font-size: 72px;
-    padding-right: 170px;
-    color: goldenrod;
+    padding-right: 195px;
+    color: #f69173;
+    font-weight: 700;
+}
+
+.Ranking-Result_text{
+    font-size: 50px;
+    color: white;
+    font-weight: 800;    
+    text-shadow: -2px 0 black, 0 1px black, 1px 0 black, 0 -2px black;
 }
 
 .Ranking-Result_VS{
-    font-size:40px;
-    margin-top:40px;
+    font-size: 40px;
+    padding-bottom: 50px;
+    font-weight: 700;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* 필요한 경우 다른 스타일을 추가로 설정할 수 있습니다. */
 }
 
 .Ranking-Result_under{
@@ -432,14 +445,16 @@ flex-direction: column;
 }
 
 .Ranking-Result_under_gotoMain{
+    font-size: 20px;
     margin-left: 20px;
-    margin-bottom: 10px;
-    width: 100px;
-    height: 30px;
+    /* margin-bottom: 10px; */
+    width: 150px;
+    height: 50px;
 }
 
 .Ranking-Result_under_gotoRanking{
-    margin-bottom: 10px;
-    width: 100px;
-    height: 30px;
+    font-size: 20px;
+    /* margin-bottom: 10px; */
+    width: 150px;
+    height: 50px;
 }
