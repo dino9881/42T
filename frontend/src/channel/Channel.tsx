@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ChannelRow from "./ChannelRow";
 import { socket } from "../socket";
 import instance from "../refreshToken";
+import './Channel.css';
 
 interface ChannelProps{
   channelName:string

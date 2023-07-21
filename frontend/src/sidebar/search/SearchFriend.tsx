@@ -38,9 +38,11 @@ const SearchFriend: React.FC<SearchFriendProps> = ({ intraId, friendStatus, onCl
 				nickName={userData.nickName}
 				rank={userData.rank}
 				avatar={userData.avatar}
-				onClose={onClose}
 				intraId={intraId}
+				winCnt={userData.winCnt}
+				loseCnt={userData.loseCnt}
 				friendStatus={friendStatus}
+				onClose={onClose}
 			/>
 			)}
 			{userData && friendStatus === 1 && (

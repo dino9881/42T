@@ -443,3 +443,9 @@ flex-direction: column;
     width: 100px;
     height: 30px;
 }
+
+.App {
+    font-family: sans-serif;
+    text-align: center;
+  }
+  

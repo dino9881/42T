@@ -11,9 +11,11 @@ interface FriendInfoProps {
   nickName: string;
   rank: number;
   avatar: string;
+  winCnt: number;
+  loseCnt: number;
 }
 
-const IsNotFriend: React.FC<FriendInfoProps & SearchFriendProps> = ({ nickName, rank, avatar, onClose }) => {
+const IsNotFriend: React.FC<FriendInfoProps & SearchFriendProps> = ({ nickName, rank, avatar, winCnt, loseCnt, onClose }) => {
 	const [myData, setMyData] = useState<any>(null);
 
 	useEffect(() => {
@@ -69,7 +71,11 @@ const IsNotFriend: React.FC<FriendInfoProps & SearchFriendProps> = ({ nickName, 
 				차단
 				</button>
 			</div>
-			<div className="small-square">전적</div>
+			<div className='small-square'>
+				<span style={{color: "blue"}}>{winCnt}</span>
+				/
+				<span style={{color: "red"}}>{loseCnt}</span>
+			</div>
 			</div>
 		</div>
 		</div>

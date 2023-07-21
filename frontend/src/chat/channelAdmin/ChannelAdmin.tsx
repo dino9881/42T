@@ -38,6 +38,8 @@ function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
         const [inviteName, setInviteName] = useState("");
         const navigate = useNavigate();
         const [isOwner , setOwner] = useState(false);
+        const [isPrivate , setIsPrivate] = useState(false);
+
         const [isPass , setIsPass] = useState(false);
         
         const chName = channelName;
@@ -74,7 +76,6 @@ function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
           }
 
         useEffect(() => {
-
             instance.get(`http://localhost:5001/auth/me`)
             .then((response) => {
                 const intraId = response.data.intraId;
@@ -84,10 +85,24 @@ function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
                         setOwner(true);
                     if (response.data.chPwd)
                         setIsPass(true);
+                    if (response.data.isPrivate)
+                        setIsPrivate(true);
                 })
                 .catch((error) => {
+                    navigate('/main');
+                    alert("채널 없어짐");
                 console.error("API 요청 실패:", error);
                 });
+                // instance.post(`http://localhost:5001/channel/private/${chIdx}`)
+                // .then((response) => {
+                //     setIsPrivate(response.data);
+                // })
+                // .catch((error) => {
+                //     navigate('/main');
+                //     alert("채널 없어짐");
+                // console.error("API 요청 실패:", error);
+                // });
+
             })
             .catch((error) => {
             console.error("API 요청 실패:", error);
@@ -158,13 +173,15 @@ function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
                     <Setting setting="admin" chIdx={chIdx} userList={userList} banList={banList}  />
                     <Setting setting="mute" chIdx={chIdx} userList={userList} banList={banList} />
                     <Setting setting="kick" chIdx={chIdx} userList={userList} banList={banList} />
-                    <Setting setting="ban" chIdx={chIdx}userList={userList} banList={banList} />
+                    <Setting setting="ban" chIdx={chIdx} userList={userList} banList={banList} />
+                    {/* <Setting setting="invite" chIdx={chIdx} userList={userList} banList={banList} /> */}
                 </div>
-                <form onSubmit={handleInvite}>
+                <form className="admin-option-box channel-admin-invite" onSubmit={handleInvite}>
+                    <h5>초대하기</h5>
                     <input placeholder="닉네임" onChange={onChange} value={inviteName} type="text" autoComplete="off" ></input>
-                    <button>초대하기</button>
+                    <button className="channel-admin-invite-button">{"+"}</button>
                 </form>
-                { isOwner && <PassSetting  channelIdx={chIdx} channelName={channelName} isPass={isPass} />}
+                { isOwner && !isPrivate && <PassSetting channelIdx={chIdx} channelName={channelName} isPass={isPass} />}
                 <button className="admin-setting-back" onClick={handleOnclick}>돌아가기</button>
             </div>
         </div>
@@ -341,7 +358,7 @@ function PassSetting({channelIdx, isPass} : PassSettingProps)
         setPass("");
     };
     return <div className="admin-pass-box">
-        <h1>채널 비밀번호 설정</h1>
+        <h2>채널 비밀번호 설정</h2>
         <form onSubmit={onSubmit}>
             <input
                 placeholder="비밀번호를 입력해주세요."

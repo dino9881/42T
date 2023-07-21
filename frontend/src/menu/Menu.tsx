@@ -68,6 +68,7 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 	const [privateChannels, setPrivateChannels] = useState<PrivateChannel[]>(
 		[]
 	);
+	const [showSetting, setShowSetting] = useState(true);
 	const [dms, setDms] = useState<Dm[]>([]);
 	const location = useLocation();
 	const state = location.state as { chIdx: number };
@@ -94,7 +95,8 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 			.get(`http://localhost:5001/channel/name/${state.chIdx}`)
 			.then(async (response) => {
 				// 요청이 성공하면 데이터를 상태로 설정
-				if (response.data.chName[0] === "#") {
+				if (response.data.chName[0] === "#" && intraId) {
+					setShowSetting(false);
 					let name: string = await ChannelName(
 						response.data.chName
 							.replace(/#/g, "")
@@ -159,6 +161,10 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 
 	const handleCancelClick = () => {
 		setShowWaiting(false);
+		socket.emit("game-queue-exit", {
+			intraId: intraId,
+			nickName: nickName,
+		});
 		setShowCancel(false);
 	};
 
@@ -338,10 +344,12 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 				)}
 			</div>
 			{showBackButton ? (
+				showSetting &&
 				<button
 					className="menu-channel-new-box"
 					onClick={handleSettingButton}
 					style={{ fontSize: "20px" }}
+					disabled={!showSetting}
 				>
 					Setting
 				</button>
@@ -353,10 +361,10 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 					new
 				</button>
 			)}
-
 			<button
 				className="menu-grin-button menu-start-button"
 				onClick={handleStartClick}
+				disabled={showWaiting}
 			>
 				{showWaiting ? "Waiting" : "START"}
 			</button>
@@ -374,9 +382,6 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 					Rank
 				</button>{" "}
 			</Link>
-			<button className="menu-grin-button menu-custom-button">
-				custom
-			</button>
 			{showNewChat && <ChannelNew />}
 			{isGameApply && (
 				<GameApply

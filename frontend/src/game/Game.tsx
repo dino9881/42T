@@ -30,29 +30,6 @@ interface GameProps {
     by: number;
 }
 
-function gameRender(
-    { x1, y1, x2, y2, bx, by }: GameProps,
-    canvas: HTMLCanvasElement
-) {
-    let context: CanvasRenderingContext2D | null = null;
-    context = canvas.getContext("2d");
-    context?.clearRect(0, 0, 1280, 720);
-    if (context) {
-        context.moveTo(x1, y1 - 100);
-        context.lineTo(x1, y1 + 100);
-        context.moveTo(x2, y2 - 100);
-        context.lineTo(x2, y2 + 100);
-        context.lineWidth = 10;
-        context.stroke();
-
-        context.beginPath();
-        context.arc(bx, by, 15, 0, 2 * Math.PI);
-        context.fillStyle = "#000000";
-        context.fill();
-
-        context.stroke();
-    }
-}
 
 function Game() {
     const width = 1280;
@@ -77,6 +54,24 @@ function Game() {
         exitGame();
       };
 
+      function gameRender(
+        { x1, y1, x2, y2, bx, by }: GameProps
+    ) {
+        if (context) {
+            context.fillStyle = "#ffffff"
+            context.fillRect(0, 0, 1280, 720);
+            context.moveTo(x1, y1 - 100);
+            context.lineTo(x1, y1 + 100);
+            context.moveTo(x2, y2 - 100);
+            context.lineTo(x2, y2 + 100);
+            context.lineWidth = 10;
+            context.stroke();
+            context.beginPath();
+            context.arc(bx, by, 5, 0, 2 * Math.PI, false);
+            context.fillStyle = "#000000";
+        }
+    }
+    
     const exitGame = () => {
       socket.emit("exit-game", {roomName:roomName});
       navigate('/main');
@@ -106,13 +101,13 @@ function Game() {
             canvas.width = width;
             canvas.height = height;
             canvas.focus();
+            context = canvas.getContext("2d");
 
             gameRender(
-                { x1: 10, y1: 300, x2: 1270, y2: 300, bx: 640, by: 300 },
-                canvas
+                { x1: 10, y1: 300, x2: 1270, y2: 300, bx: 640, by: 300 }
             );
             socket.on("game-render", (payload: GameProps) => {
-                gameRender(payload, canvas);
+                gameRender(payload);
           });
         }
 

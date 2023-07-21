@@ -46,6 +46,7 @@
     width: 100%;
     height: 30px;
   	background-color:transparent;
+    border: 1px solid black;
     border-radius: 10px;
     padding-left: 10px;
     padding-right: 23px;
@@ -84,4 +85,43 @@
   .user-info-intra{
     margin-left: 10%;
     width: 30%;
+  }
+
+  .admin-pass-box {
+    position: absolute;
+    /* bottom: 50px; */
+    /* left: 10px; */
+  }
+
+  .admin-pass-box input {
+    width: 70%;
+    border-radius: 0;
+  }
+
+  .admin-pass-box button {
+    /* border-radius: 10px; */
+    border: 1px solid black;
+    background-color:transparent;
+    font-family: sans-serif;
+    position: absolute;
+    top: 46px;
+    right: 20px;
+    height: 30px;
+  }
+
+  .channel-admin-invite {
+    /* font-size: 20px; */
+    position: relative;
+  }
+
+  .channel-admin-invite-button {
+    position: absolute;
+    right: 4px;
+    top: 34px;
+    border-radius: 30%;
+    width: 25px;
+    height: 25px;
+    border: none;
+    background-color:transparent;
+    font-family: sans-serif;
   }

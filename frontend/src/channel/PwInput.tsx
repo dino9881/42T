@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { socket } from "../socket";
+import './Channel.css';
 
 interface PwInputProps {
     chIdx: number;
