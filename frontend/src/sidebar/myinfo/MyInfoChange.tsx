@@ -30,10 +30,28 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 	};
 
 	const onReset = () => {
-		setChangeData(prevData => ({
-			...prevData,
-			nickName: text
-		}));
+		if (changeData.nickName === text) {
+			alert("기존 닉네임 입니다.")
+			return
+		}
+		else if (changeData.nickName === "admin") {
+			alert("사용할 수 없는 닉네임 입니다.")
+			return
+		}
+		else {
+			instance.get(`http://localhost:5001/member/search/${text}`)
+			.then((res) => {
+				alert("사용할 수 없는 닉네임 입니다.")
+			})
+			.catch(function (error) {
+				if (error.response.status === 404) {
+					setChangeData(prevData => ({
+						...prevData,
+						nickName: text
+					}));
+				}
+			});
+		}
 	};
 
 	const onKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -56,7 +74,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 				.then((res) => {
 					console.log(res);
 				})
-				// console.log(response);
+				console.log(response);
 			})
 			.catch(function (error) {
 				console.log(error);
@@ -135,7 +153,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 					value={text}
 					maxLength={12}
 				/>
-				<button className="my-info-change-nick-submit" onClick={onReset}>제출</button>
+				<button className="my-info-change-nick-submit" onClick={onReset}>확인</button>
 				</div>
 			<button className="my-info-change-set-button" onClick={handleModifyClick}>수정</button>
 		</div>

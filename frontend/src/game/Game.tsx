@@ -83,59 +83,60 @@ function Game() {
       .then((response) => {
           const player1Avatar = response.data.avatar;
           setPlayer1Avatar(player1Avatar);
-      })
-      .catch((error) => {
-          console.log(error);
-      });
-    instance
-      .get(`http://localhost:5001/member/search/${player2}`)
-      .then((response) => {
-          const player2Avatar = response.data.avatar;
-          setPlayer2Avatar(player2Avatar);
-      })
-      .catch((error) => {
-          console.log(error);
-      });
-        const canvas = canvasRef.current;
-        if (canvas) {
-            canvas.width = width;
-            canvas.height = height;
-            canvas.focus();
-            context = canvas.getContext("2d");
-
-            gameRender(
-                { x1: 10, y1: 300, x2: 1270, y2: 300, bx: 640, by: 300 }
-            );
-            socket.on("game-render", (payload: GameProps) => {
-                gameRender(payload);
+          instance
+          .get(`http://localhost:5001/member/search/${player2}`)
+          .then((response) => {
+              const player2Avatar = response.data.avatar;
+              setPlayer2Avatar(player2Avatar);
+              socket.on("game-end", (payload:ScoreProps) => {
+                navigate("/result", { state: { player1, player2, player1Avatar, player2Avatar, p1Score:payload.p1Score, p2Score:payload.p2Score} })
+                });
+            
+                socket.on("game-sudden-end", (payload:ScoreProps) => {
+                navigate("/result", { state: { player1, player2, player1Avatar, player2Avatar, p1Score:payload.p1Score, p2Score:payload.p2Score} })
+                });
+          })
+          .catch((error) => {
+              console.log(error);
           });
-        }
+      })
+      .catch((error) => {
+          console.log(error);
+      });
+   
 
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        const unlistenHistoryEvent = history.listen(({ action }) => {
-            if (action === "POP") {
-                exitGame();
-              }
-        })
+    const canvas = canvasRef.current;
+    if (canvas) {
+        canvas.width = width;
+        canvas.height = height;
+        canvas.focus();
+        context = canvas.getContext("2d");
+
+        gameRender(
+            { x1: 10, y1: 300, x2: 1270, y2: 300, bx: 640, by: 300 }
+        );
+        socket.on("game-render", (payload: GameProps) => {
+            gameRender(payload);
+        });
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    const unlistenHistoryEvent = history.listen(({ action }) => {
+        if (action === "POP") {
+            exitGame();
+            }
+    })
     
+    socket.on("game-score", (payload:ScoreProps) => {
+    setP1Score(payload.p1Score);
+    setP2Score(payload.p2Score);
+    });
 
-      socket.on("game-score", (payload:ScoreProps) => {
-        setP1Score(payload.p1Score);
-        setP2Score(payload.p2Score);
-      });
+    socket.on("game-exception" ,() => {
+    alert("error!")
+    navigate("/main");
+    } )
 
-      socket.on("game-exception" ,() => {
-        alert("error!")
-        navigate("/main");
-      } )
-
-      socket.on("game-end", (payload:ScoreProps) => {
-        navigate("/result", { state: { player1, player2, player1Avatar, player2Avatar, p1Score:payload.p1Score, p2Score:payload.p2Score} })
-      });
-
-      socket.on("game-sudden-end", (payload:ScoreProps) => {
-        navigate("/result", { state: { player1, player2, player1Avatar, player2Avatar, p1Score:payload.p1Score, p2Score:payload.p2Score} })
-      });
 
 
         instance
@@ -199,8 +200,6 @@ function Game() {
 }
 
 function GameHeader({ player1, player2, p1Score, p2Score, player1Avatar, player2Avatar, exitGame }: HeaderProps) {
-
-
     return (
         <div className="game-header">
             <div className="game-header-p1">

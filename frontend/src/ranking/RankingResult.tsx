@@ -31,6 +31,7 @@ const RankingResult = ({ }) => {
     console.log(location.state.player2Avatar);
     console.log(location.state.p1Score);
     console.log(location.state.p2Score);
+    console.log(location.state);
 
 
     const gameResult: GameResult = {
