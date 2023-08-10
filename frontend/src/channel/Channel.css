@@ -59,26 +59,35 @@
   }
   
   .chan-hostinfo {
+    padding-right: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
   }
   
   .chan-hostimg {
-    margin : 10px;
+    /* margin : 10px; */
     border:solid 1px gray;
     width: 65px;
     height: 70px;
     display: inline-block;
     justify-content: center;
-    overflow: hidden; /* 추가: 내부 컨텐츠가 넘치는 경우를 막기 위해 */
+    overflow: hidden; /*추가: 내부 컨텐츠가 넘치는 경우를 막기 위해 */
   }
+
+  /* .chan-hostimg-background {
+    background-repeat: no-repeat;
+    background-position: top center;
+    background-size: cover;
+  } */
   
+  /* max-width: 100%;
+  max-height: 100%; */
+  /* width: 100%; */
   .chan-hostimg img {
-    max-width: 100%;
-    max-height: 100%;
+    height: 100%;
     width: 100%;
-    object-fit: cover /* 추가: 이미지가 부모 요소에 딱 맞게 표시되도록 설정 */
+    object-fit: cover;   /* 추가: 이미지가 부모 요소에 딱 맞게 표시되도록 설정 */
   }
   
   .chan-hostname {
@@ -137,7 +146,7 @@
     display: flex;
     width: 40px;
     margin-left: 210px;
-    margin-top: 60px;
+    margin-top: 50px;
     text-align: center; 
     justify-content: center; /* axis들을 가로 가운데 정렬 */
     position: absolute;

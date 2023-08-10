@@ -61,7 +61,6 @@ function RankList(props: { ranking: RankData[] }) {
           return (
             <div key={index} className="ranking-etc_rank">
               <div className={`ranking-etc_ranktext${addRankText}`}>{rankText}</div>
-              {/* <img src="" alt={`${currentRank}위 로고? 그림`} /> */}
               <img className={`ranking-etc_rank_avatar${addRankText}`} src={rank.avatar} alt={`${currentRank}위 아바타사진`} />
               <div className="ranking-etc_namebox">
                 <div>닉넴: {rank.nickName}</div>

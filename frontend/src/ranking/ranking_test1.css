@@ -27,7 +27,7 @@
 }
 
 .ranking-2rk img{
-    border: solid white 2px;
+    border: solid black 2px;
     /* height: 65%;
     width: 100%; */
     height: 160px;
@@ -114,7 +114,7 @@
 }
 
 .ranking-1rk img{
-    border: solid white 2px;
+    border: solid black 2px;
     /* height: 65%;
     width: 100%; */
     height: 160px;
@@ -166,7 +166,7 @@
 }
 
 .ranking-3rk img{
-    border: solid white 2px;
+    border: solid black 2px;
     /* height: 65%;
     width: 100%; */
     height: 160px;
@@ -176,29 +176,19 @@
 /* ranking Etc */
 
 .ranking-etc{
-display: flex;
-justify-content: flex-start;
-align-items: center;
-/* position: fixed; */
-position: relative; /* 변경된 부분 */
-height: 100%;
-width: 40%;
-transform: translate(-50, -50%);
-/* background: url("../public/img/bg.jpg") no-repeat center center; */
-flex-direction: column;
-/* z-index: 1; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    flex-direction: column;
 }
 
 .ranking-etc_rank{
-    max-width: 290px;
-    max-height: 58px;
+    /* max-width: 290px;
+    max-height: 52px;  eeeee*/
     display: flex;
-    /* align-items: center; */  
-}
-
-.ranking-etc_rank img{
-    width: 56px;
-    height: 56px;
+    align-items: center;  
 }
 
 .ranking-etc_ranktext{
@@ -207,6 +197,8 @@ flex-direction: column;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: x-large; /*eeeee*/
+    font-weight: 800; /*eeeee*/
 }
 
 .ranking-etc_ranktext_1st{
@@ -248,38 +240,35 @@ flex-direction: column;
 
 .ranking-etc_rank_avatar 
 {
-    border: solid gray 2px;
-    border-bottom: none;
-    border-top: none;
+    border: solid black 1px;
     display: flex;
     justify-content: center; /* 수평 가운데 정렬 */
     align-items: center; /* 수직 가운데 정렬 */
-    height: 100%;
-    width: 100%;
+    height: 100px;
+    width: 100px;
 }
 
 .ranking-etc_rank_avatar img{
     max-height: 100%;
-    max-width: 50px;
-    width: auto;
-    object-fit: cover;
+    max-width: 100%;
+    object-fit: contain;
+    width: auto; /* 이 줄을 추가하세요 */
+    height: auto; /* 이 줄을 추가하세요 */
 }
 
 .ranking-etc_rank_avatar_1st 
 {
-    border: solid gray 2px;
-    border-bottom: none;
-    border-top: none;
+    border: solid black 1px;
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100%;
+    width: 100%; 
 }
 
 .ranking-etc_rank_avatar_2nd 
 {
-    border: solid gray 2px;
-    border-bottom: none;
-    border-top: none;    
+    border: solid black 1px;
     display: flex;
     justify-content: center; /* 수평 가운데 정렬 */
     align-items: center; /* 수직 가운데 정렬 */
@@ -287,9 +276,8 @@ flex-direction: column;
 
 .ranking-etc_rank_avatar_3rd 
 {
-    border: solid gray 2px;
-    border-bottom: none;
-    border-top: none;    display: flex;
+    border: solid black 1px;
+    display: flex;
     justify-content: center; /* 수평 가운데 정렬 */
     align-items: center; /* 수직 가운데 정렬 */
 }
@@ -301,8 +289,6 @@ flex-direction: column;
     margin-top: 10px;
     font-size: xx-large;
     font-weight: 800;
-    /* align-items: center;
-    justify-content: center; 가운데 정렬 추가 */
     text-align: center;
 
 }
@@ -326,8 +312,14 @@ flex-direction: column;
     border: gray solid 1px;
     display: flex;
     flex-direction: row;
-    position: relative; /* 부모 요소를 기준으로 자식 요소의 위치를 조정하기 위해 position을 설정합니다. */
+    /* position: relative; 부모 요소를 기준으로 자식 요소의 위치를 조정하기 위해 position을 설정합니다. */
 
+}
+
+.ranking-etc_rank img{
+    width: 60px;
+    height: 58px;
+    /* padding-bottom : px; */
 }
 
 .ranking-etc_emptyrank {
@@ -338,10 +330,9 @@ flex-direction: column;
 
 .ranking-etc_namebox{
     /* border: solid purple 2px; */
-    margin-top: 5px;
-    display: flex;
-    flex-direction: column;
-    margin-left: 50px;
+    margin-left: 10px;
+    font-size: large;
+    font-weight: 600;
 }
 
 
