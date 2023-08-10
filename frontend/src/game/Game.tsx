@@ -203,12 +203,22 @@ function GameHeader({ player1, player2, p1Score, p2Score, player1Avatar, player2
     return (
         <div className="game-header">
             <div className="game-header-p1">
-                {player1}{p1Score}
                 <img className="game-player1-avatar" src={player1Avatar}></img>
+                <div className="game-header-p1name">
+                    {player1}
+                </div>
+                <div className="game-header-p1score">
+                    {p1Score}
+                </div>
             </div>
             <div className="game-vs">VS</div>
             <div className="game-header-p2">
-              {p2Score}{player2}
+            <div className="game-header-p2score">
+                    {p2Score}
+            </div>
+            <div className="game-header-p2name">
+                    {player2}
+            </div>
                 <img className="game-player2-avatar" src={player2Avatar}></img>
             </div>
             <div>

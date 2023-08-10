@@ -103,6 +103,9 @@
     height: 80%;
   
   }
+  .chat-scroll::-webkit-scrollbar{
+    display:none;
+  }
 
   .out_of_channel_button {
     margin-right: 8px;
