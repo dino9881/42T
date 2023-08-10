@@ -412,8 +412,8 @@ function GameApply({
 				{playerNickName} 님이 게임({gameMode})을 신청했습니다.
 			</div>
 			<div>
-				<button onClick={handleAcceptButton}>수락</button>
-				<button onClick={handleRefuseButton}>거절</button>
+				<button className="game-apply-button1" onClick={handleAcceptButton}>수락</button>
+				<button className="game-apply-button2" onClick={handleRefuseButton}>거절</button>
 			</div>
 		</div>
 	);
