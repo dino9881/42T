@@ -102,7 +102,7 @@ function Chat({channelInit}:ChatProps) {
         }
 
         socket.on("welcome", (nickName, avatar) => {
-            const newMessage = {nickName: "System", message: `${nickName} : 이 입장했습니다.` , avatar: avatar};
+            const newMessage = {nickName: "System", message: `${nickName} 님이 입장했습니다.` , avatar: avatar};
             addMessage(newMessage, "");
         });
 
