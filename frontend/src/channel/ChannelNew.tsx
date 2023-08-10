@@ -128,6 +128,7 @@ function ChannelNew() {
         });
 
         return () => {
+            socket.off("max-channel");
             socket.off("new-channel");
             socket.off("duplicate-chanName");
             socket.off("server-error");
