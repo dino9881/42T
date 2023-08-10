@@ -65,7 +65,7 @@ function PwInput({ chIdx, chPwd = "", chUserCnt } : PwInputProps) {
         if(!chPwd || inputValue.length === 4){   
         instance
             // .post("http://localhost:5001/channel/create", {chName:title, isPrivate:true})
-            .post("http://localhost:5001/channel/enter/${chIdx},", {chPwd})
+            .post(`http://localhost:5001/channel/enter/${chIdx}`, {chPwd})
             .then((response) => {
                 if (!isChanUser)
                     socket.emit("first-enter", {channelName: response.data.chName} );
