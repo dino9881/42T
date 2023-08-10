@@ -38,12 +38,12 @@ function Channel({channelName, channelInit} : ChannelProps) {
       });
 
       socket.on("reload", () => { window.location.reload(); });
-      socket.on("send-dm", (intraId: string) => {
-        alert(intraId + " 님이 DM 을 보냈습니다.");
-      });
-      socket.on("invite", (intraId: string, chanName: string) => {
-        alert(intraId + " 님이 " + chanName + "에 초대하셨습니다.")
-      });
+      // socket.on("send-dm", (intraId: string) => {
+      //   alert(intraId + " 님이 DM 을 보냈습니다.");
+      // });
+      // socket.on("invite", (intraId: string, chanName: string) => {
+      //   alert(intraId + " 님이 " + chanName + "에 초대하셨습니다.")
+      // });
     return () => {socket.off("reload")};
   }, []);
   

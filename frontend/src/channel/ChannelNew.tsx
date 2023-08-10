@@ -122,11 +122,11 @@ function ChannelNew() {
         socket.on("max-channel", () => {
             alert("만들 수 있는 방의 수를 초과했습니다.");
         });
-
+        
         socket.on("server-error", () => {
             alert("server error");
         });
-
+        
         return () => {
             socket.off("max-channel");
             socket.off("new-channel");
@@ -160,7 +160,7 @@ return (
                 <input disabled={isPchecked} type="checkbox" className="chan-new_make_checkbox" name="make_password" value="1"  checked={isChecked} onChange={handleCheckboxChange}></input>
                 <div className="chan-new_pw">비밀 번호</div>
             </div>
-            <input placeholder="비밀번호를 입력해주세요." type="password" name="password_input" className="chan-new_input_password" value={inputValue} maxLength={4}  disabled={!isChecked} onChange={handleInputChange}></input>
+            <input placeholder="비밀번호는 숫자만 4자리" type="password" name="password_input" className="chan-new_input_password" value={inputValue} maxLength={4}  disabled={!isChecked} onChange={handleInputChange}></input>
         </div>
         <div className="chan-new_make_do_box">
             <button onClick={makeNewChannel} className="chan-new_make_button">만들기</button>
