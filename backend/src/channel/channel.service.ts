@@ -8,7 +8,6 @@ import {
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
 import { ChannelUserDto } from './dto/channel-user.dto';
 import * as bcrypt from 'bcrypt';
 import { MemberInfoDto } from 'src/member/dto/member-info.dto';
@@ -57,7 +56,7 @@ export class ChannelService {
     }
     const { chName, chPwd, isDM, isPrivate } = createChannelDto;
 
-    if (chName === undefined)
+    if (chName === undefined || chName === "")
       throw new BadRequestException('Bad request');
     // member check
     await this.memberService.getOne(member.intraId);
@@ -388,10 +387,7 @@ export class ChannelService {
   }
 
   async getMessageList(idx: number, member: MemberInfoDto) {
-    // ban check
-    const channel = await this.findOneById(idx);
-    if (await this.isBan(channel.chName, member.intraId))
-      return null;
+    await this.findOneById(idx);
     return this.messageList[idx];
   }
 
