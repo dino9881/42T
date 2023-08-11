@@ -78,40 +78,32 @@ function Game() {
     }
 
     useEffect(() => {
-        if (!state)
-        {
-            alert("게임 실행 불가");
-            navigate('/main');
-        }
-        else{
-
-            instance
-            .get(`http://localhost:5001/member/search/${player1}`)
-            .then((response) => {
-                const player1Avatar = response.data.avatar;
-                setPlayer1Avatar(player1Avatar);
-                instance
-                .get(`http://localhost:5001/member/search/${player2}`)
-                .then((response) => {
-                    const player2Avatar = response.data.avatar;
-                    setPlayer2Avatar(player2Avatar);
-                    socket.on("game-end", (payload:ScoreProps) => {
-                        navigate("/result", { state: { player1, player2, player1Avatar, player2Avatar, p1Score:payload.p1Score, p2Score:payload.p2Score} })
-                    });
-                    
-                    socket.on("game-sudden-end", (payload:ScoreProps) => {
-                        navigate("/result", { state: { player1, player2, player1Avatar, player2Avatar, p1Score:payload.p1Score, p2Score:payload.p2Score} })
-                    });
-                })
-                .catch((error) => {
-                    console.log(error);
+      instance
+      .get(`http://localhost:5001/member/search/${player1}`)
+      .then((response) => {
+          const player1Avatar = response.data.avatar;
+          setPlayer1Avatar(player1Avatar);
+          instance
+          .get(`http://localhost:5001/member/search/${player2}`)
+          .then((response) => {
+              const player2Avatar = response.data.avatar;
+              setPlayer2Avatar(player2Avatar);
+              socket.on("game-end", (payload:ScoreProps) => {
+                navigate("/result", { state: { player1, player2, player1Avatar, player2Avatar, p1Score:payload.p1Score, p2Score:payload.p2Score} })
                 });
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-        }
             
+                socket.on("game-sudden-end", (payload:ScoreProps) => {
+                navigate("/result", { state: { player1, player2, player1Avatar, player2Avatar, p1Score:payload.p1Score, p2Score:payload.p2Score} })
+                });
+          })
+          .catch((error) => {
+              console.log(error);
+          });
+      })
+      .catch((error) => {
+          console.log(error);
+      });
+   
 
     const canvas = canvasRef.current;
     if (canvas) {
@@ -211,12 +203,22 @@ function GameHeader({ player1, player2, p1Score, p2Score, player1Avatar, player2
     return (
         <div className="game-header">
             <div className="game-header-p1">
-                {player1}{p1Score}
                 <img className="game-player1-avatar" src={player1Avatar}></img>
+                <div className="game-header-p1name">
+                    {player1}
+                </div>
+                <div className="game-header-p1score">
+                    {p1Score}
+                </div>
             </div>
             <div className="game-vs">VS</div>
             <div className="game-header-p2">
-              {p2Score}{player2}
+            <div className="game-header-p2score">
+                    {p2Score}
+            </div>
+            <div className="game-header-p2name">
+                    {player2}
+            </div>
                 <img className="game-player2-avatar" src={player2Avatar}></img>
             </div>
             <div>
