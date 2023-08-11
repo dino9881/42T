@@ -88,25 +88,24 @@
   }
 
   .admin-pass-box {
-    position: absolute;
+    /* position: absolute; */
+    height: 20%;
+    width: 100%;
     /* bottom: 50px; */
     /* left: 10px; */
   }
 
   .admin-pass-box input {
-    width: 70%;
-    border-radius: 0;
+    width: 40%;
+    border-radius: 10px;
   }
 
   .admin-pass-box button {
-    /* border-radius: 10px; */
+    border-radius: 10px;
     border: 1px solid black;
     background-color:transparent;
-    font-family: sans-serif;
-    position: absolute;
-    top: 46px;
-    right: 20px;
     height: 30px;
+    /* font-family: sans-serif; */
   }
 
   .channel-admin-invite {
@@ -124,4 +123,23 @@
     border: none;
     background-color:transparent;
     font-family: sans-serif;
+  }
+
+  .admin-pass-form {
+    position: relative;
+  }
+
+  .chan-admin-modify-button {
+    position: absolute;
+    right: 190px;
+  }
+
+  .chan-admin-delete-button {
+    position: absolute;
+    right: 151px;
+  }
+
+  .chan-admin-create-button {
+    position: absolute;
+    right: 190px;
   }

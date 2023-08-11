@@ -19,47 +19,40 @@
 {
     height: 100%;
     width: 50%;
-    justify-items: center;
-    align-items: center;
-    display: flex;
-}
-.game-player1-avatar{
-    border: 1px solid black;
-    width: 96px;
-    height: 96px; 
-    border-radius: 50%;
-    margin-top: 6px;
-    margin-left: 150px;
-}
-.game-header-p1name{
-    margin-left: 70px;
-    margin-right: 70px;
+    /* border: 1px solid black; */
+    float: right;
+    text-align: right;
+    margin-right: 50px;
+
 }
 .game-header-p2
 {
     height: 100%;
     width:  50%;
-    display: flex;
-    justify-items: center;
-    align-items: center;
-    display: flex;
+    /* border: 1px solid black; */
+    padding: 0px 30px;
+    margin-left: 50px;
 }
 
-
-.game-player2-avatar{
-    margin-top: 6px;
+.game-player1-avatar{
     border: 1px solid black;
     width: 96px;
     height: 96px; 
+    margin-right: 20px;
     border-radius: 50%;
+    margin-left: 50px;
+    margin-top: 6px;
 }
 
-.game-header-p2name{
-    margin-right: 70px;
-}
-.game-header-p2score{
-    margin-left: 70px;
-    margin-right: 70px;
+.game-player2-avatar{
+    margin-top: 6px;
+    
+    border: 1px solid black;
+    width: 96px;
+    height: 96px; 
+    margin-left: 50px;
+
+    border-radius: 50%;
 }
 
 @keyframes blink {
@@ -72,5 +65,4 @@
     animation: blink 2s ease-in-out infinite; /* 재생 속도를 빠르게 하기 위해 4s를 2s로 변경 */
     border: yellow;
   }
-  
   
