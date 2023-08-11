@@ -27,13 +27,10 @@ const SetNick = () => {
 	}
 
 	const onClick = () => {
-		console.log(location.state.intraId);
-		console.log(text);
-
 		myData.nickName = text
 		axios.post('http://localhost:5001/member/create', myData)
 		.then(function (response) {
-			console.log(response);
+			// console.log(response);
 			axios.post("http://localhost:5001/auth/login", { intraId: myData.intraId })
 				.then((res) => {
 					const token = res.data.access_token;
@@ -44,9 +41,10 @@ const SetNick = () => {
 				})
 		})
 		.catch(function (error) {
-			console.log(error);
+			if (error.response.status === 409) {
+				alert("사용할 수 없는 닉네임입니다.")
+			}
 		});
-		
 	};
 
 

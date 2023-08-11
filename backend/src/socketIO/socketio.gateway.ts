@@ -300,8 +300,10 @@ export class SocketIOGateway
       const members = await this.memberService.getAll();
       client.to(channelName).emit('delete');
       members.map((users) => {
-        if (users.intraId !== 'admin')
+        if (users.intraId !== 'admin') {
+          this.getSocketByintraId(users.intraId)?.emit('leave-channel');
           this.getSocketByintraId(users.intraId)?.emit('reload');
+        }
       });
     }
     console.log(`${nickName} leave channel : ${channelName}`);
