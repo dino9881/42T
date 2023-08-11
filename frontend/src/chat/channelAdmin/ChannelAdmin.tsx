@@ -12,6 +12,7 @@ interface UserInfos {
 interface SettingInfo {
     setting : string,
     chIdx : number,
+    ownerId : string,
     userList:UserInfos[],
     banList:UserInfos[],
 }
@@ -38,6 +39,8 @@ function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
         const [inviteName, setInviteName] = useState("");
         const navigate = useNavigate();
         const [isOwner , setOwner] = useState(false);
+        const [ownerId , setOwnerID] = useState("");
+
         const [isPrivate , setIsPrivate] = useState(false);
 
         const [isPass , setIsPass] = useState(false);
@@ -87,6 +90,7 @@ function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
                         setIsPass(true);
                     if (response.data.isPrivate)
                         setIsPrivate(true);
+                    setOwnerID(response.data.ownerId);
                 })
                 .catch((error) => {
                     navigate('/main');
@@ -170,10 +174,10 @@ function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
             <AdminUserList userList={userList} banList={banList}/>
             <div className="admin-setting-box">
                 <div>
-                    <Setting setting="admin" chIdx={chIdx} userList={userList} banList={banList}  />
-                    <Setting setting="mute" chIdx={chIdx} userList={userList} banList={banList} />
-                    <Setting setting="kick" chIdx={chIdx} userList={userList} banList={banList} />
-                    <Setting setting="ban" chIdx={chIdx} userList={userList} banList={banList} />
+                    <Setting ownerId={ownerId} setting="admin" chIdx={chIdx} userList={userList} banList={banList}  />
+                    <Setting ownerId={ownerId} setting="mute" chIdx={chIdx} userList={userList} banList={banList} />
+                    <Setting ownerId={ownerId} setting="kick" chIdx={chIdx} userList={userList} banList={banList} />
+                    <Setting ownerId={ownerId} setting="ban" chIdx={chIdx} userList={userList} banList={banList} />
                     {/* <Setting setting="invite" chIdx={chIdx} userList={userList} banList={banList} /> */}
                 </div>
                 <form className="admin-option-box channel-admin-invite" onSubmit={handleInvite}>
@@ -204,7 +208,7 @@ function AdminUserList({userList, banList} : AdminUserListProps){
     )
 }
 
-function Setting({setting, chIdx , userList} : SettingInfo ){
+function Setting({setting, chIdx , userList, ownerId} : SettingInfo ){
     const [text, setText] = useState('');
     const navigate = useNavigate();
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -227,6 +231,12 @@ function Setting({setting, chIdx , userList} : SettingInfo ){
                 // });
                 // navigate('/main');
                 // alert('관리자가 변경되어 main 페이지로 이동합니다.');
+                if (targetIntraId.intraId === ownerId)
+                {
+                    alert("관리자를 건드리지 마시오")
+                    setText("");
+                    return;
+                }
                 socket.emit("channel-admin", { chIdx: chIdx, intraId: targetIntraId.intraId });
                 alert('실행 완료');
             }
@@ -246,6 +256,12 @@ function Setting({setting, chIdx , userList} : SettingInfo ){
                 // .catch((error) => {
                 //     console.error("API 요청 실패:", error);
                 // });
+                if (targetIntraId.intraId === ownerId)
+                {
+                    alert("관리자를 건드리지 마시오");
+                    setText("");
+                    return;
+                }
                 socket.emit("channel-mute", { chIdx: chIdx, intraId: targetIntraId.intraId, nickName: targetIntraId.nickName });
                 alert('실행 완료');
             }
@@ -265,6 +281,12 @@ function Setting({setting, chIdx , userList} : SettingInfo ){
                 // .catch((error) => {
                 //     console.error("API 요청 실패:", error);
                 // });
+                if (targetIntraId.intraId === ownerId)
+                {
+                    setText("");
+                    alert("관리자를 건드리지 마시오")
+                    return;
+                }
                 socket.emit("channel-kick", { chIdx: chIdx, intraId: targetIntraId.intraId });
                 alert('실행 완료');
 
@@ -286,6 +308,12 @@ function Setting({setting, chIdx , userList} : SettingInfo ){
                 //     console.error("API 요청 실패:", error);
                 // });
                 // window.location.reload();
+                if (targetIntraId.intraId === ownerId)
+                {
+                    setText("");
+                    alert("관리자를 건드리지 마시오")
+                    return;
+                }
                 socket.emit("channel-ban", { chIdx: chIdx, intraId: targetIntraId.intraId });
                 alert('실행 완료');
                 window.location.reload();
