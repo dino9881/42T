@@ -33,7 +33,7 @@ const OAuth: React.FC = () => {
 					navigate("/main");
 				})
 				.catch((error) => {
-					console.log(error);
+					// console.log(error);
 					if (error.response.status === 404) {
 						navigate("/login/nick", {
 							state: { intraId: intraId },

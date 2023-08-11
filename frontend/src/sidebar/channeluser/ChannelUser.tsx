@@ -12,9 +12,14 @@ interface User {
 const ChannelUser = () => {
 	const { pathname } = useLocation();
 	const [usersList, setUsersList] = useState<User[]>([]);
+	const [isCurrentChannel, setIsCurrentChannel] = useState(true);
 
 	useEffect(() => {
 		const idx = localStorage.getItem('chIdx');
+		if (idx === "0") {
+			setIsCurrentChannel(false);
+			return;
+		}
 		instance.get(`http://localhost:5001/channel/${idx}`)
 		.then((response) => {
 			if(response.data.isDM === false) {
@@ -34,9 +39,13 @@ const ChannelUser = () => {
 
 	return (
 		<div className="list-scroll">
-			{usersList && usersList.map((usersList, index) => (
-				<ChannelUserForm key={index} nickName={usersList.nickName}/>
-		))}
+			{!isCurrentChannel ? (
+				<div>현재 채팅 채널이 아닙니다.</div>
+			) : (
+				usersList.map((usersList, index) => (
+					<ChannelUserForm key={index} nickName={usersList.nickName}/>
+				))
+			)}
 		</div>
 	);
 };
