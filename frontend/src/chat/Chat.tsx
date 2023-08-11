@@ -102,8 +102,9 @@ function Chat({channelInit}:ChatProps) {
         }
 
         socket.on("welcome", (nickName, avatar) => {
+            console.log(avatar);
             const newMessage = {nickName: "System", message: `${nickName} 님이 입장했습니다.` , avatar: avatar};
-            addMessage(newMessage, "");
+            addMessage(newMessage, avatar);
         });
 
         socket.on("send-message", (payload:MessageItem) => {
@@ -154,7 +155,7 @@ function Chat({channelInit}:ChatProps) {
         const message = {nickName: messageText.nickName, message: messageText.message, avatar: avatar };
         setMsgList((prevMsgList) => [...prevMsgList, message]);
       };
-
+ 
       const addMyMessage = (messageText: MessageText) => {
         const message = {nickName: messageText.nickName, message: messageText.message,  avatar: avatar };
         setMsgList((prevMsgList) => [...prevMsgList, message]);
