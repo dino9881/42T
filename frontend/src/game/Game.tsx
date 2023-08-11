@@ -78,32 +78,40 @@ function Game() {
     }
 
     useEffect(() => {
-      instance
-      .get(`http://localhost:5001/member/search/${player1}`)
-      .then((response) => {
-          const player1Avatar = response.data.avatar;
-          setPlayer1Avatar(player1Avatar);
-          instance
-          .get(`http://localhost:5001/member/search/${player2}`)
-          .then((response) => {
-              const player2Avatar = response.data.avatar;
-              setPlayer2Avatar(player2Avatar);
-              socket.on("game-end", (payload:ScoreProps) => {
-                navigate("/result", { state: { player1, player2, player1Avatar, player2Avatar, p1Score:payload.p1Score, p2Score:payload.p2Score} })
+        if (!state)
+        {
+            alert("게임 실행 불가");
+            navigate('/main');
+        }
+        else{
+
+            instance
+            .get(`http://localhost:5001/member/search/${player1}`)
+            .then((response) => {
+                const player1Avatar = response.data.avatar;
+                setPlayer1Avatar(player1Avatar);
+                instance
+                .get(`http://localhost:5001/member/search/${player2}`)
+                .then((response) => {
+                    const player2Avatar = response.data.avatar;
+                    setPlayer2Avatar(player2Avatar);
+                    socket.on("game-end", (payload:ScoreProps) => {
+                        navigate("/result", { state: { player1, player2, player1Avatar, player2Avatar, p1Score:payload.p1Score, p2Score:payload.p2Score} })
+                    });
+                    
+                    socket.on("game-sudden-end", (payload:ScoreProps) => {
+                        navigate("/result", { state: { player1, player2, player1Avatar, player2Avatar, p1Score:payload.p1Score, p2Score:payload.p2Score} })
+                    });
+                })
+                .catch((error) => {
+                    console.log(error);
                 });
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        }
             
-                socket.on("game-sudden-end", (payload:ScoreProps) => {
-                navigate("/result", { state: { player1, player2, player1Avatar, player2Avatar, p1Score:payload.p1Score, p2Score:payload.p2Score} })
-                });
-          })
-          .catch((error) => {
-              console.log(error);
-          });
-      })
-      .catch((error) => {
-          console.log(error);
-      });
-   
 
     const canvas = canvasRef.current;
     if (canvas) {

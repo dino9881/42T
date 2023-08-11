@@ -107,6 +107,12 @@ function Chat({channelInit}:ChatProps) {
             addMessage(newMessage, avatar);
         });
 
+        socket.on("leave-channel", (nickName, avatar) => {
+            console.log(avatar);
+            const newMessage = {nickName: "System", message: `${nickName} 님이 채널을 나갔습니다.` , avatar: avatar};
+            addMessage(newMessage, avatar);
+        });
+
         socket.on("send-message", (payload:MessageItem) => {
             const {nickName, message, avatar}=payload;
             const newMessage = {nickName: nickName, message: message};
@@ -142,6 +148,8 @@ function Chat({channelInit}:ChatProps) {
             socket.off("ban");
             socket.off("admin");
             socket.off("delete");
+            socket.off("leave-channel");
+
           };
     }, [channelName, channelInit, location.state]);
 
