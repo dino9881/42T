@@ -359,7 +359,7 @@ function PassSetting({channelIdx, isPass} : PassSettingProps)
     };
     return <div className="admin-pass-box">
         <h2>채널 비밀번호 설정</h2>
-        <form onSubmit={onSubmit}>
+        <form className="admin-pass-form" onSubmit={onSubmit}>
             <input
                 placeholder="비밀번호를 입력해주세요."
                 type="text"
@@ -368,9 +368,9 @@ function PassSetting({channelIdx, isPass} : PassSettingProps)
                 autoComplete="off"
                 maxLength={4}
                 />
-           {isPass && <button onClick={() => {setOption("modify")}}> 수정 </button>}
-           {!isPass && <button onClick={() => {setOption("create")}}> 생성 </button>}
-           {isPass &&<button onClick={() => {setOption("delete")}}> 삭제 </button>}
+           {isPass && <button className="chan-admin-modify-button" onClick={() => {setOption("modify")}}> 수정 </button>}
+           {!isPass && <button className="chan-admin-create-button" onClick={() => {setOption("create")}}> 생성 </button>}
+           {isPass &&<button className="chan-admin-delete-button" onClick={() => {setOption("delete")}}> 삭제 </button>}
         </form>
     </div>
 }
