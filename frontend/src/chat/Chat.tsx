@@ -103,7 +103,7 @@ function Chat({channelInit}:ChatProps) {
 
         socket.on("welcome", (nickName, avatar) => {
             const newMessage = {nickName: "System", message: `${nickName} 님이 입장했습니다.` , avatar: avatar};
-            addMessage(newMessage, "");
+            addMessage(newMessage, avatar);
         });
 
         socket.on("leave-channel", (nickName, avatar) => {
