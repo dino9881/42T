@@ -166,6 +166,7 @@ export class ChannelController {
 
   @ApiTags('Channel User')
   @Post('/enter/:idx')
+  @ApiResponse({ status: 400, description: '잘못된 요청' })
   @ApiResponse({ status: 403, description: '밴 유저 or max' })
   @ApiOperation({
     summary: 'idx 채널에 들어가기',
