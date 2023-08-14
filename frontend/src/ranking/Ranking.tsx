@@ -74,7 +74,10 @@ const RankingComponent = () => {
 								<div className="ranking-3rk_emptyimg"/>
 								<div className="ranking-3rk_emptyrank"/>
 							</>)}
-							<div className="ranking-3rk_box">3 위</div>
+							{ranking.length > 1  && ( 
+							<>
+								<div className="ranking-3rk_box">3 위</div>
+							</>)}
 						</div>
 					</div>
 				</div>
