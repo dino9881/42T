@@ -1,7 +1,7 @@
 import React , { useState, useEffect } from "react";
-import './Ranking.css';
-import { useLocation, useNavigate } from "react-router-dom";
-import Fireworks from "./RankingConfetti";
+import './Game.css';
+import { useLocation } from "react-router-dom";
+import Fireworks from "./GameConfetti";
 
 interface GameResult{
     player1: string,
@@ -21,18 +21,7 @@ declare global {
 
 const RankingResult = ({ }) => {
     
-	const navigate = useNavigate();
     const location = useLocation();
-
-    // props 잘 받아오는지 체크 현재 사진이 잘 안담겨져 옴 7/21 22시
-    console.log(location.state.player1);
-    console.log(location.state.player2);
-    console.log(location.state.player1Avatar);
-    console.log(location.state.player2Avatar);
-    console.log(location.state.p1Score);
-    console.log(location.state.p2Score);
-    console.log(location.state);
-
 
     const gameResult: GameResult = {
         player1: location.state.player1,
@@ -95,7 +84,6 @@ const RankingResult = ({ }) => {
             <div className="Ranking-Result_middle_resultbox"> 
                     <div className="Ranking-Result_scorebox">
                         <div className={`Ranking-Result_score_left${winnerLeftBox}`}>{gameResult.p1Score}</div>
-                        {/* <div className="Ranking-Result_VS">VS</div> vs 연하게 css 효과주기 */}
                         <div className={`Ranking-Result_score_right${winnerRightBox}`}>{gameResult.p2Score}</div>
                     </div>
                     <div className="Ranking-Result_text" > {resultWinner} 님 승리 !</div>

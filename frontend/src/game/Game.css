@@ -73,3 +73,141 @@
     border: yellow;
   }
   
+
+  /* Game-Result */
+
+.Ranking-Result{
+    height:100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.Ranking-Result_upper{
+    height: 5;
+    display: flex;
+    flex-direction: row;
+}
+
+.Ranking-Result_leftbox{
+    width: 50%;
+    height:100%;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    flex-direction: column;
+}
+
+.Ranking-Result_leftbox img{
+    border: solid white 4px;
+    width: 180px;
+    height: 180px;
+}
+
+.Ranking-Result_Name{
+    margin-top: 10px;
+    font-size: 32px;
+    font-weight: 700;
+    color: #6E6E6E;
+}
+
+.Ranking-Result_rightbox{
+    height:100%;
+    width: 50%;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.Ranking-Result_rightbox img{
+    border: solid white 4px;
+    width: 180px;
+    height: 180px;
+}
+
+.Ranking-Result_middle_resultbox
+{
+    height:40%;
+    width: 100%;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    flex-direction: column;  
+}
+
+.Ranking-Result_scorebox{
+    display:flex;
+    align-items: flex-start;
+    height:40%;
+    flex-direction: row;
+}
+
+
+.Ranking-Result_score_left{
+    line-height: 1; 
+    font-size: 60px;
+    padding-right: 195px;
+    padding-top: 10px;                  
+}
+
+.Ranking-Result_score_right{
+    line-height: 1; 
+    font-size: 60px;
+    padding-left: 195px;
+    padding-top: 10px;
+}
+
+.Ranking-Result_score_left_winner_LeftBox{
+    line-height: 1; 
+    font-size: 72px;
+    padding-right: 195px;
+    color: #f69173;
+    font-weight: 700;
+}
+
+.Ranking-Result_score_right_winner_RightBox{
+    line-height: 1; 
+    font-size: 72px;
+    padding-left: 195px;
+    color: #f69173;
+    font-weight: 700;
+}
+
+.Ranking-Result_text{
+    font-size: 50px;
+    color: white;
+    font-weight: 800;    
+    text-shadow: -2px 0 black, 0 1px black, 1px 0 black, 0 -2px black;
+}
+
+.Ranking-Result_VS{
+    font-size: 40px;
+    padding-bottom: 50px;
+    font-weight: 700;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.Ranking-Result_under{
+    height: 5%;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center; 
+    align-items: center;
+}
+
+.Ranking-Result_under_gotoMain{
+    font-size: 20px;
+    margin-left: 20px;
+    width: 150px;
+    height: 50px;
+}
+
+.Ranking-Result_under_gotoRanking{
+    font-size: 20px;
+    width: 150px;
+    height: 50px;
+}
