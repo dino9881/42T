@@ -204,10 +204,7 @@
       height: 30px;
       margin-left: 10px;
       margin-right: 10px;
-      background-color: hidden;
-      background: url("../../public/img/bg.jpg") no-repeat center center;
-      background-size: contain; /* 이미지를 버튼에 맞게 조정 */
-      padding: 0;
+      visibility:hidden;
   }
   
   .chan-empty_right_button{
@@ -215,9 +212,7 @@
       height: 30px;
       margin-left: 10px;
       margin-right: 10px;
-      background: url("../../public/img/bg.jpg") no-repeat center center;
-      background-size: contain; /* 이미지를 버튼에 맞게 조정 */
-      padding: 0;
+      visibility:hidden;
   }
   
   .chan-left_button, .chan-right_button img{

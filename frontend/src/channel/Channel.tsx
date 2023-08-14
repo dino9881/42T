@@ -76,7 +76,6 @@ function Channel({channelName, channelInit} : ChannelProps) {
                         <ChannelRow
                             key={index}
                             channelData1={channel}
-                            // channelData2={channelData[index + 1]}
                             channelData2={paginatedChannels[index + 1]}
                         />
                     );
@@ -86,14 +85,12 @@ function Channel({channelName, channelInit} : ChannelProps) {
           {channelData.length > 0 && (
       <div className="chan-left-right_button">
         <button
-          className={`chan-left_button ${currentPage === 1 ? "chan-empty_left_button" : ""}`}
+          className={`${currentPage === 1 ? "chan-empty_left_button" : "chan-left_button"}`}
           onClick={goToPreviousPage}
-          disabled={currentPage === 1} // 첫 번째 페이지면 비활성화
         ></button>
         <button
-          className={`chan-right_button ${currentPage === Math.ceil(channelData.length / 8) ? "chan-empty_right_button" : ""}`}
+          className={`${(currentPage === Math.ceil(channelData.length / 8) ) ? "chan-empty_right_button" : "chan-right_button"}`}
           onClick={goToNextPage}
-          disabled={currentPage === Math.ceil(channelData.length / 8) || paginatedChannels.length < 8} // 마지막 페이지면 비활성화
           ></button>
       </div>
     )}
