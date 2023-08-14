@@ -49,10 +49,10 @@ const RankingResult = ({ }) => {
 
 
     const gotoMain = () => {
-        window.location.href = "http://localhost:3000/main";
+        window.location.href = `${process.env.REACT_APP_FRONT_URL}/main`;
       };
     const gotoRanking = () => {
-        window.location.href = "http://localhost:3000/rank";
+        window.location.href = `${process.env.REACT_APP_FRONT_URL}/rank`;
       };
 
     return(

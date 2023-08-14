@@ -79,10 +79,10 @@ function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
           }
 
         useEffect(() => {
-            instance.get(`http://localhost:5001/auth/me`)
+            instance.get(`${process.env.REACT_APP_BACK_URL}/auth/me`)
             .then((response) => {
                 const intraId = response.data.intraId;
-                instance.get(`http://localhost:5001/channel/${chIdx}`)
+                instance.get(`${process.env.REACT_APP_BACK_URL}/channel/${chIdx}`)
                 .then((response) => {
                     if (response.data.ownerId === intraId)
                         setOwner(true);
@@ -97,7 +97,7 @@ function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
                     alert("채널 없어짐");
                 console.error("API 요청 실패:", error);
                 });
-                // instance.post(`http://localhost:5001/channel/private/${chIdx}`)
+                // instance.post(`${process.env.REACT_APP_BACK_URL}/channel/private/${chIdx}`)
                 // .then((response) => {
                 //     setIsPrivate(response.data);
                 // })
@@ -113,7 +113,7 @@ function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
             });
 
 
-        instance.get(`http://localhost:5001/channel/users/${channelIdx}`)
+        instance.get(`${process.env.REACT_APP_BACK_URL}/channel/users/${channelIdx}`)
             .then((response) => {
             setUserList(response.data);
             })
@@ -121,7 +121,7 @@ function ChannelAdmin({channelName, channelIdx} :ChannelAdminProps){
             console.error("API 요청 실패:", error);
             });
 
-            instance.get(`http://localhost:5001/channel/ban/${channelIdx}`)
+            instance.get(`${process.env.REACT_APP_BACK_URL}/channel/ban/${channelIdx}`)
             .then((response) => {
                 // console.log(response.data);
             setBanList(response.data);
@@ -222,7 +222,7 @@ function Setting({setting, chIdx , userList, ownerId} : SettingInfo ){
             if (targetIntraId)
             {
                 // instance
-                // .post(`http://localhost:5001/channel/${chIdx}`, {intraId : targetIntraId, nickName: text})
+                // .post(`${process.env.REACT_APP_BACK_URL}/channel/${chIdx}`, {intraId : targetIntraId, nickName: text})
                 // .then((response) => {
                 //     console.log(response.data);
                 // })
@@ -249,7 +249,7 @@ function Setting({setting, chIdx , userList, ownerId} : SettingInfo ){
             if (targetIntraId)
             {
                 // instance
-                // .post(`http://localhost:5001/channel/mute/${chIdx}`, {intraId : targetIntraId, nickName: text})
+                // .post(`${process.env.REACT_APP_BACK_URL}/channel/mute/${chIdx}`, {intraId : targetIntraId, nickName: text})
                 // .then((response) => {
                 //     console.log(response.data);
                 // })
@@ -274,7 +274,7 @@ function Setting({setting, chIdx , userList, ownerId} : SettingInfo ){
             if (targetIntraId)
             {
                 // instance
-                // .post(`http://localhost:5001/channel/kick/${chIdx}`, {intraId : targetIntraId, nickName: text})
+                // .post(`${process.env.REACT_APP_BACK_URL}/channel/kick/${chIdx}`, {intraId : targetIntraId, nickName: text})
                 // .then((response) => {
                 //     console.log(response.data);
                 // })
@@ -300,7 +300,7 @@ function Setting({setting, chIdx , userList, ownerId} : SettingInfo ){
             if (targetIntraId)
             {
                 // instance
-                // .post(`http://localhost:5001/channel/ban/save/${chIdx}`, {intraId : targetIntraId, nickName: text})
+                // .post(`${process.env.REACT_APP_BACK_URL}/channel/ban/save/${chIdx}`, {intraId : targetIntraId, nickName: text})
                 // .then((response) => {
                 //     console.log(response.data);
                 // })
@@ -372,7 +372,7 @@ function PassSetting({channelIdx, isPass} : PassSettingProps)
         }
         else return;
         instance
-        .patch(`http://localhost:5001/channel/${channelIdx}`, {chPwd:pass})
+        .patch(`${process.env.REACT_APP_BACK_URL}/channel/${channelIdx}`, {chPwd:pass})
         .then((response) => {
             if (option === "modify" || option === "create")
                 alert (`${pass} 로 패스워드 ${option} 성공 `)

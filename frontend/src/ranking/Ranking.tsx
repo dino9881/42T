@@ -22,7 +22,7 @@ const RankingComponent = () => {
 	const [ranking, setRanking] = useState<RankData[]>([]);
 	useEffect(() => {
 		instance
-			.get("http://localhost:5001/member/rank")
+			.get(`${process.env.REACT_APP_BACK_URL}/member/rank`)
 			.then((response) => {
 				setRanking(response.data.data);
 			})
@@ -70,11 +70,14 @@ const RankingComponent = () => {
 							</>
 							)
 							: (
-							<>
+								<>
 								<div className="ranking-3rk_emptyimg"/>
 								<div className="ranking-3rk_emptyrank"/>
 							</>)}
-							<div className="ranking-3rk_box">3 위</div>
+							{ranking.length > 1  && ( 
+							<>
+								<div className="ranking-3rk_box">3 위</div>
+							</>)}
 						</div>
 					</div>
 				</div>

@@ -41,7 +41,7 @@ const CheckEmail: React.FC<EmailProps> = ({ myData, onClose, onEmail }) => {
 	}, [isTimerRunning, timeLeft]);
 
 	useEffect(() => {
-		instance.get("http://localhost:5001/member/mail/send").then(() => {
+		instance.get(`${process.env.REACT_APP_BACK_URL}/member/mail/send`).then(() => {
 		})
 	}, []);
 
@@ -49,7 +49,7 @@ const CheckEmail: React.FC<EmailProps> = ({ myData, onClose, onEmail }) => {
 		setTimeLeft(MINUTES_IN_MS);
 		setIsTimerEnded(false);
 		setIsTimerRunning(true);
-		instance.get("http://localhost:5001/member/mail/send").then(() => {
+		instance.get(`${process.env.REACT_APP_BACK_URL}/member/mail/send`).then(() => {
 		})
 	};
 	
@@ -61,7 +61,7 @@ const CheckEmail: React.FC<EmailProps> = ({ myData, onClose, onEmail }) => {
 		if (isTimerEnded) {
 		console.log("제출 할 수 없음");
 		} else {
-			instance.post("http://localhost:5001/member/mail/verify",
+			instance.post(`${process.env.REACT_APP_BACK_URL}/member/mail/verify`,
 			{ 
 				"code": verificationCode
 			})

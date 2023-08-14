@@ -48,7 +48,7 @@ function Chat({channelInit}:ChatProps) {
     }
     
     useEffect(() => {
-        instance.get('http://localhost:5001/auth/me').then((response) => {
+        instance.get(`${process.env.REACT_APP_BACK_URL}/auth/me`).then((response) => {
             // console.log(response);
             setNickname(response.data.nickName);
             setAvatar(response.data.avatar);
@@ -59,7 +59,7 @@ function Chat({channelInit}:ChatProps) {
         // console.log(state)
         if (state && state.chIdx) {
             instance
-            .get(`http://localhost:5001/channel/${state.chIdx}`)
+            .get(`${process.env.REACT_APP_BACK_URL}/channel/${state.chIdx}`)
             .then((response) => {
                 // 요청이 성공하면 데이터를 상태로 설정
                 channelInit(response.data.chName, state.chIdx);
@@ -75,7 +75,7 @@ function Chat({channelInit}:ChatProps) {
             });
 
             instance
-            .get(`http://localhost:5001/channel/message/${state.chIdx}`)
+            .get(`${process.env.REACT_APP_BACK_URL}/channel/message/${state.chIdx}`)
             .then((response) => {
                 // 요청이 성공하면 데이터를 상태로 설정
                 // console.log(response.data)
@@ -87,7 +87,7 @@ function Chat({channelInit}:ChatProps) {
             });
             
             instance
-            .get(`http://localhost:5001/channel/message/${state.chIdx}`)
+            .get(`${process.env.REACT_APP_BACK_URL}/channel/message/${state.chIdx}`)
             .then((response) => {
                 // 요청이 성공하면 데이터를 상태로 설정
                 // console.log(response.data);

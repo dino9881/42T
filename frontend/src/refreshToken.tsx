@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-	baseURL: "http://localhost:5001",
+	baseURL: `${process.env.REACT_APP_BACK_URL}`,
 });
 
 instance.interceptors.request.use((config) => {
@@ -25,7 +25,7 @@ instance.interceptors.response.use((response) => {
 			// if (isTokenExpired()) await tokenRefresh();
 			try {
 				
-				const refresh = await axios.post("http://localhost:5001/auth/refresh");
+				const refresh = await axios.post(`${process.env.REACT_APP_BACK_URL}/auth/refresh`);
 				// console.log(refresh);
 				if (refresh.data?.access_token){
 					// console.log(response.data.access_token)
@@ -42,7 +42,7 @@ instance.interceptors.response.use((response) => {
 					return response;
 				}
 			}catch(error){
-				window.location.href = "http://localhost:3000";
+				window.location.href = `${process.env.REACT_APP_FRONT_URL}`;
 				// console.log("333")
 				return error;
 			}

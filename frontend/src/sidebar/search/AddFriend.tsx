@@ -17,7 +17,7 @@ const AddFriend = () => {
 			alert("검색 가능한 닉네임이 아닙니다.")
 			return ;
 		}
-		instance.get(`http://localhost:5001/member/search/${text}`)
+		instance.get(`${process.env.REACT_APP_BACK_URL}/member/search/${text}`)
 		.then((response) => {
 			if (response.data.isFriend === true){
 				setFriendStatus(1);

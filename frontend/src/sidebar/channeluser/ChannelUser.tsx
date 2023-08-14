@@ -19,10 +19,10 @@ const ChannelUser = () => {
 			setIsCurrentChannel(false);
 			return;
 		}
-		instance.get(`http://localhost:5001/channel/${idx}`)
+		instance.get(`${process.env.REACT_APP_BACK_URL}/channel/${idx}`)
 		.then((response) => {
 			if(response.data.isDM === false) {
-				instance.get(`http://localhost:5001/channel/users/${idx}`)
+				instance.get(`${process.env.REACT_APP_BACK_URL}/channel/users/${idx}`)
 				.then((response) => {
 					setUsersList(response.data);
 				})

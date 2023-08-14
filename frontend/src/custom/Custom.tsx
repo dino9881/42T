@@ -17,7 +17,7 @@ const Custom: React.FC<CustomProps> = ({ nickName, onClose }) => {
 	};
 
 	const handleSubmit = () => {
-		instance.get('http://localhost:5001/auth/me').then((response) => {
+		instance.get(`${process.env.REACT_APP_BACK_URL}/auth/me`).then((response) => {
 			var mode;
 			if (selectedCheckbox === "checkbox1")
 			mode = 0

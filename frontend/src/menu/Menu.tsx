@@ -90,7 +90,7 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 	};
 	if (state && state.chIdx) {
 		instance
-			.get(`http://localhost:5001/channel/name/${state.chIdx}`)
+			.get(`${process.env.REACT_APP_BACK_URL}/channel/name/${state.chIdx}`)
 			.then(async (response) => {
 				// 요청이 성공하면 데이터를 상태로 설정
 				if (response.data.chName[0] === "#" && intraId) {
@@ -114,7 +114,7 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 
 	function getChannel() {
 		instance
-			.get("http://localhost:5001/channel/my/all")
+			.get(`${process.env.REACT_APP_BACK_URL}/channel/my/all`)
 			.then((response) => {
 				setChannels(response.data);
 			})
@@ -125,7 +125,7 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 
 	function getPrivateChannel() {
 		instance
-			.get("http://localhost:5001/channel/my/private")
+			.get(`${process.env.REACT_APP_BACK_URL}/channel/my/private`)
 			.then((response) => {
 				setPrivateChannels(response.data);
 			})
@@ -136,7 +136,7 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 
 	function getDm() {
 		return instance
-			.get("http://localhost:5001/channel/my/dm")
+			.get(`${process.env.REACT_APP_BACK_URL}/channel/my/dm`)
 			.then((response) => {
 				return response;
 			})
@@ -167,7 +167,7 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 	const ChannelName = async (chName: string) => {
 		try {
 			const response = await instance.get(
-				`http://localhost:5001/member/${chName}`
+				`${process.env.REACT_APP_BACK_URL}/member/${chName}`
 			);
 
 			return response.data.nickName;
@@ -207,7 +207,7 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 
 	const handleSettingButton = () => {
 		instance
-			.post(`http://localhost:5001/channel/author/${channelIdx}`)
+			.post(`${process.env.REACT_APP_BACK_URL}/channel/author/${channelIdx}`)
 			.then((response) => {
 				if (response.data !== true) {
 					alert("관리자만 접속할 수 있습니다!");
@@ -245,7 +245,7 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 		});
 
 		instance
-			.get("http://localhost:5001/auth/me")
+			.get(`${process.env.REACT_APP_BACK_URL}/auth/me`)
 			.then((response) => {
 				setIntraId(response.data.intraId);
 				setNickName(response.data.nickName);

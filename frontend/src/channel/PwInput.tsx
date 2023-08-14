@@ -27,7 +27,7 @@ function PwInput({ chIdx, chPwd = "", chUserCnt } : PwInputProps) {
     const handleButtonClick = () => {
         if(!isChanUser){
         instance
-            .get(`http://localhost:5001/channel/isChan/${chIdx}`)
+            .get(`${process.env.REACT_APP_BACK_URL}/channel/isChan/${chIdx}`)
             .then((response) => {
                 isChanUser = response.data;
             })
@@ -50,8 +50,8 @@ function PwInput({ chIdx, chPwd = "", chUserCnt } : PwInputProps) {
         if(!inputValue || inputValue.length === 4){   
         console.log(inputValue);
         instance
-            // .post("http://localhost:5001/channel/create", {chName:title, isPrivate:true})
-            .post(`http://localhost:5001/channel/enter/${chIdx}`, {chPwd:inputValue})
+            // .post("${process.env.REACT_APP_BACK_URL}/channel/create", {chName:title, isPrivate:true})
+            .post(`${process.env.REACT_APP_BACK_URL}/channel/enter/${chIdx}`, {chPwd:inputValue})
             .then((response) => {
                 if (!isChanUser)
                     socket.emit("first-enter", {channelName: response.data.chName} );
@@ -88,7 +88,7 @@ function PwInput({ chIdx, chPwd = "", chUserCnt } : PwInputProps) {
     //         pwCorrect().then((data: boolean) => {
     //             if (data) {
     //             instance
-    //                 .post(`http://localhost:5001/channel/enter/${chIdx}`, {chPwd})
+    //                 .post(`${process.env.REACT_APP_BACK_URL}/channel/enter/${chIdx}`, {chPwd})
     //                 .then((response) => {
     //                     if (!isChanUser)
     //                         socket.emit("first-enter", {channelName: response.data.chName} );

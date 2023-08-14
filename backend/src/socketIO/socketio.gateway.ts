@@ -40,7 +40,7 @@ interface Payload {
 @Injectable()
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:3000',
+    origin: `http://${process.env.HOST}:3000`,
   },
 })
 export class SocketIOGateway

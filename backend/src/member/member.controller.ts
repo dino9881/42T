@@ -9,6 +9,7 @@ import {
   UseGuards,
   Res,
   Req,
+  Inject,
 } from '@nestjs/common';
 import { MemberService } from './member.service';
 import { Response, Request } from 'express';
@@ -35,6 +36,8 @@ import { Public } from 'src/util/decorator/public.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { HttpStatusCode } from 'axios';
 import { MailService } from '../util/mail/mail.service';
+import appConfig from 'src/config/app.config';
+import { ConfigType } from '@nestjs/config';
 
 @ApiResponse({
   status: 500,
@@ -48,6 +51,8 @@ export class MemberController {
   constructor(
     private readonly memberService: MemberService,
     private readonly mailerService: MailService,
+    @Inject(appConfig.KEY)
+    private app: ConfigType<typeof appConfig>,
   ) {}
 
   @ApiTags('Two-Factor-Autentication')
@@ -60,7 +65,7 @@ export class MemberController {
     res.cookie('code', code, {
       httpOnly: true,
       path: '/',
-      domain: 'localhost',
+      domain: this.app.host,
       maxAge: 5 * 60 * 1000, // 5min
       signed: true,
     });

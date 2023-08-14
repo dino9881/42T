@@ -24,7 +24,7 @@ const FriendList = () => {
 	const [bans, setBans] = useState<Ban[]>([]);
 
 	function getFriend() {
-		instance.get("http://localhost:5001/member/friend/list")
+		instance.get(`${process.env.REACT_APP_BACK_URL}/member/friend/list`)
 			.then((response) => {
 				setFriends(response.data);
 			})
@@ -34,7 +34,7 @@ const FriendList = () => {
 	}
 
 	function getBan() {
-		instance.get("http://localhost:5001/member/ban/list")
+		instance.get(`${process.env.REACT_APP_BACK_URL}/member/ban/list`)
 			.then((response) => {
 				setBans(response.data);
 			})
