@@ -34,7 +34,6 @@ const MyInfo = () => {
 
 	const handleEmail = () => {
 		setEmail(!isEmail);
-		// console.log("onEmail", isEmail);
 	}
 
 	return (
@@ -67,7 +66,6 @@ const MyInfo = () => {
 			</div>
 			{showChangeForm && <CheckEmail myData={myData} onClose={handleCloseForm} onEmail={handleEmail}/>}
 			{isEmail && <MyInfoChange myData={myData} onClose={handleEmail} />}
-			{/* {showChangeForm && <MyInfoChange myData={myData} onClose={handleEmail} />} */}
 		</div>
 	);
 };

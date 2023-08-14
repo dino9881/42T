@@ -15,7 +15,7 @@ import ChannelAdmin from "./chat/channelAdmin/ChannelAdmin";
 import Game from "./game/Game";
 import Custom from "./custom/Custom";
 import React from 'react'
-import RankingResult from "./ranking/RankingResult";
+import RankingResult from "./game/GameResult";
 import NotFound from "./NotFound";
 
 

@@ -29,9 +29,6 @@ const Custom: React.FC<CustomProps> = ({ nickName, onClose }) => {
             socket.emit("game-apply", {intraId : response.data.intraId, nickName : response.data.nickName  , player2: nickName, mode : mode });
 			setSubmitChecker(1);
 		});
-		// 제출 버튼 동작 처리
-		console.log("선택된 체크박스:", selectedCheckbox);
-		// 추가로 원하는 동작 수행
 	};
 
 	useEffect(() => {

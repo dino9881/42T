@@ -58,30 +58,6 @@ export default function Fireworks() {
     return () => clearTimeout(timerId);
   }, [nextTickAnimation]);
 
-
-  // const startAnimation = useCallback(() => {
-  //   if (!intervalId) {
-  //     setIntervalId(setInterval(nextTickAnimation, 400));
-  //   }
-  // }, [intervalId, nextTickAnimation]);
-
-  // const pauseAnimation = useCallback(() => {
-  //   if (intervalId) {
-  //     clearInterval(intervalId);
-  //     setIntervalId(undefined);
-  //   }
-  // }, [intervalId]);
-
-  // const stopAnimation = useCallback(() => {
-  //   if (intervalId) {
-  //     clearInterval(intervalId);
-  //     setIntervalId(undefined);
-  //   }
-  //   if (refAnimationInstance.current) {
-  //     refAnimationInstance.current.reset();
-  //   }
-  // }, [intervalId]);
-
   useEffect(() => {
     return () => {
       if (intervalId) {

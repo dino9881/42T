@@ -31,7 +31,6 @@ const InfoScore: React.FC<InfoScoreProps> = ({ intraId, nickName, rank, state })
 
   const handleDelete = () => {
     instance.delete(`http://localhost:5001/member/friend/delete/${nickName}`).then(()=>{
-      // console.log(res);
 		window.location.reload();
     })
   };

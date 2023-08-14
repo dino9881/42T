@@ -6,7 +6,6 @@ import MyChannelList from "./MyChannelList";
 import instance from "../refreshToken";
 import MyDmList from "./MyDmList";
 import "./Menu.css";
-import { error } from "console";
 
 type MenuProps = {
 	showBackButton: boolean;
@@ -49,7 +48,6 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 		operatorId: string;
 	}
 
-	// const Menu = ({ showBackButton}: MenuProps) => {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [toggleImgSrc, setToggleImgSrc] = useState("toggle_down.svg");
 	const [intraId, setIntraId] = useState("");
@@ -118,7 +116,6 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 		instance
 			.get("http://localhost:5001/channel/my/all")
 			.then((response) => {
-				// console.log(response.data);
 				setChannels(response.data);
 			})
 			.catch((error) => {
@@ -130,7 +127,6 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 		instance
 			.get("http://localhost:5001/channel/my/private")
 			.then((response) => {
-				// console.log(response.data);
 				setPrivateChannels(response.data);
 			})
 			.catch((error) => {
@@ -140,13 +136,13 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 
 	function getDm() {
 		return instance
-			.get("http://localhost:5001/channel/my/dm") // Return the promise here
+			.get("http://localhost:5001/channel/my/dm")
 			.then((response) => {
-				return response; // Return the response
+				return response;
 			})
 			.catch((error) => {
 				console.log(error);
-				throw error; // Re-throw the error to handle it later if needed
+				throw error;
 			});
 	}
 
@@ -213,7 +209,6 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 		instance
 			.post(`http://localhost:5001/channel/author/${channelIdx}`)
 			.then((response) => {
-				// console.log(response.data)
 				if (response.data !== true) {
 					alert("관리자만 접속할 수 있습니다!");
 					navigate("/chat", {
