@@ -156,7 +156,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 					onChange={onChange}
 					onKeyPress={onKeyPress}
 					value={text}
-					maxLength={12}
+					maxLength={8}
 				/>
 				<button className="my-info-change-nick-submit" onClick={onReset}>확인</button>
 				</div>

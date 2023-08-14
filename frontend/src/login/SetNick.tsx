@@ -57,7 +57,7 @@ const SetNick = () => {
 						onChange={onChange}
 						onKeyDown={onKeyDown}
 						value={text}
-						maxLength={12}/>
+						maxLength={8}/>
 					<button className='set-nick-button'onClick={onClick}>닉네임설정</button>
 				</div>
 			</div>
