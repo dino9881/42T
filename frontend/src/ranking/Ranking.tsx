@@ -16,13 +16,6 @@ interface RankData{
 	  nickName: string,
 	  avatar: string,
 	  rank: number,
-	  // winCnt: number,
-	  // loseCnt: number,
-	  // currentRefreshToken: string,
-	  // currentRefreshTokenExp: string,
-	  // isFriend: boolean,
-	  // isBan: boolean,
-	  // code: number,
   }
 
 const RankingComponent = () => {

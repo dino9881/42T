@@ -7,13 +7,7 @@ interface RankData{
     nickName: string,
     avatar: string,
     rank: number,
-    // winCnt: number,
-    // loseCnt: number,
-    // currentRefreshToken: string,
-    // currentRefreshTokenExp: string,
-    // isFriend: boolean,
-    // isBan: boolean,
-    // code: number,
+
 }
 
 function RankList(props: { ranking: RankData[] }) {
@@ -21,8 +15,8 @@ function RankList(props: { ranking: RankData[] }) {
   
   const extendedRanking = [...ranking, ...Array.from({ length: 7 - ranking.length }, () => null)];
 
-  let currentRank = 1; // 현재 순위
-  let prevScore: number | null = null; // 이전 점수
+  let currentRank = 1; 
+  let prevScore: number | null = null; 
   let addRankText= "";
 
 
@@ -38,7 +32,7 @@ function RankList(props: { ranking: RankData[] }) {
             return <div key={index} className="ranking-etc_emptyrank"></div>;
           }
 
-          let rankText = ""; // 등수를 표시할 문자열
+          let rankText = ""; 
 
           if (prevScore !== null && rank.rank !== prevScore) {
             currentRank = index + 1;
