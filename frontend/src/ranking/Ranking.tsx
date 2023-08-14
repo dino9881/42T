@@ -16,13 +16,6 @@ interface RankData{
 	  nickName: string,
 	  avatar: string,
 	  rank: number,
-	  // winCnt: number,
-	  // loseCnt: number,
-	  // currentRefreshToken: string,
-	  // currentRefreshTokenExp: string,
-	  // isFriend: boolean,
-	  // isBan: boolean,
-	  // code: number,
   }
 
 const RankingComponent = () => {
@@ -67,14 +60,21 @@ const RankingComponent = () => {
 							<div className="ranking-1rk_box">1 위</div>
 							</>)}
 						</div>
-						<div className="ranking-3rk">
-							{ranking.length > 2 && ranking[2]?.rank > 100 && ( <>
-							<img src={ranking[2].avatar} alt="3위 사진"/>
-							<div className="ranking-3rk_namerankbox">
-								{ranking[2].nickName}
-							</div>
-							<div className="ranking-3rk_box">3 위</div>
+						<div className = "ranking-3rk">
+							{ranking.length > 2 && ranking[2]?.rank > 100 ? ( 
+							<>
+								<img src={ranking[2].avatar} alt="3위 사진"/>
+								<div className="ranking-3rk_namerankbox">
+									{ranking[2].nickName}
+								</div>
+							</>
+							)
+							: (
+							<>
+								<div className="ranking-3rk_emptyimg"/>
+								<div className="ranking-3rk_emptyrank"/>
 							</>)}
+							<div className="ranking-3rk_box">3 위</div>
 						</div>
 					</div>
 				</div>

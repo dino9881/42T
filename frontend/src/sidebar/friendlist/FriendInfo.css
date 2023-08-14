@@ -107,13 +107,7 @@
 	height: 17px;
 }
 
-/* .rank {
-	font-style: normal; 
-} */
-
 .friend-info-full {
-	/* width: 289px;
-	height: 300px; */
 	width: 100%;
 	height: 235px;
 	display: flex;
@@ -180,7 +174,6 @@
 .friend-ban-list {
 	display: flex;
 	align-items: center;
-	/* justify-content: space-between; */
 }
 
 .friend-info-avatar-ban {
@@ -209,7 +202,6 @@
 	margin-left: 22px;
 	border: 1px solid black;
 	background-color:transparent;
-	/* margin-right: 30px; */
 	width: 76px;
 	height: 26px;
 }

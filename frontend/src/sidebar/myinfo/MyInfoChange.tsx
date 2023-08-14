@@ -2,8 +2,14 @@ import React, { useState, ChangeEvent, KeyboardEvent } from "react";
 import instance from "../../refreshToken";
 import './MyInfo.css';
 
+interface MyData {
+	intraId: string;
+	avatar: string;
+	nickName: string;
+  }
+
 interface MyInfoChangeProps {
-	myData: any;
+	myData: MyData;
 	onClose: () => void;
 }
 
@@ -88,7 +94,6 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 				"avatar": changeData.avatar
 			})
 			.then(function (response) {
-				// console.log(response);
 			})
 			.catch(function (error) {
 				console.log(error);
@@ -151,7 +156,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 					onChange={onChange}
 					onKeyPress={onKeyPress}
 					value={text}
-					maxLength={12}
+					maxLength={8}
 				/>
 				<button className="my-info-change-nick-submit" onClick={onReset}>확인</button>
 				</div>

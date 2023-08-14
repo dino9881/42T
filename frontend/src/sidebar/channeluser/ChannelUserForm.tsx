@@ -4,12 +4,11 @@ import FriendInfo from "../friendlist/FriendInfo";
 import BanList from "../friendlist/BanList";
 
 interface ChannelUserFormProps {
-	// intraId: string;
 	nickName: string;
 }
 
 const ChannelUserForm: React.FC<ChannelUserFormProps> = ({ nickName }) => {
-	const [userState, setUserState] = useState(0);		// friend = 1, ban = 2, other = 0, me = 3
+	const [userState, setUserState] = useState(0);
 	const [userData, setUserData] = useState<any>(null);
 
 	useEffect(() => {

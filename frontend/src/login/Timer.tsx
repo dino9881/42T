@@ -47,7 +47,6 @@ const handleVerificationCodeSubmit = () => {
 	console.log("제출 할 수 없음");
 	} else {
 	console.log("인증 코드 제출:", verificationCode);
-	// 여기에서 인증 코드 처리 로직을 추가하세요.
 	}
 };
 
