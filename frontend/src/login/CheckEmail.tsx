@@ -3,7 +3,6 @@ import instance from '../refreshToken';
 import './CheckEmail.css'
 
 interface EmailProps {
-	// intraId: string;
 	myData:any;
 	onClose: () => void;
 	onEmail: () => void;
@@ -43,7 +42,6 @@ const CheckEmail: React.FC<EmailProps> = ({ myData, onClose, onEmail }) => {
 
 	useEffect(() => {
 		instance.get("http://localhost:5001/member/mail/send").then(() => {
-			// console.log(response);
 		})
 	}, []);
 
@@ -52,7 +50,6 @@ const CheckEmail: React.FC<EmailProps> = ({ myData, onClose, onEmail }) => {
 		setIsTimerEnded(false);
 		setIsTimerRunning(true);
 		instance.get("http://localhost:5001/member/mail/send").then(() => {
-			// console.log(response);
 		})
 	};
 	
@@ -64,7 +61,6 @@ const CheckEmail: React.FC<EmailProps> = ({ myData, onClose, onEmail }) => {
 		if (isTimerEnded) {
 		console.log("제출 할 수 없음");
 		} else {
-		// console.log("인증 코드 제출:", verificationCode);
 			instance.post("http://localhost:5001/member/mail/verify",
 			{ 
 				"code": verificationCode

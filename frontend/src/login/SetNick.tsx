@@ -30,11 +30,9 @@ const SetNick = () => {
 		myData.nickName = text
 		axios.post('http://localhost:5001/member/create', myData)
 		.then(function (response) {
-			// console.log(response);
 			axios.post("http://localhost:5001/auth/login", { intraId: myData.intraId })
 				.then((res) => {
 					const token = res.data.access_token;
-					// console.log(token);
 					localStorage.setItem("jwtToken", token);
 					setAuthorizationToken(token);
 					navigate("/main");

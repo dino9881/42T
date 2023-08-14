@@ -13,7 +13,6 @@ const AddFriend = () => {
 	};
 
 	const onReset = () => {
-		// console.log(text);
 		if (text === "admin"){
 			alert("검색 가능한 닉네임이 아닙니다.")
 			return ;

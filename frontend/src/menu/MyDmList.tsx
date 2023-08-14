@@ -4,10 +4,7 @@ import { useNavigate } from "react-router-dom";
 interface DmProps {
 	chIdx: number;
     chName: string;
-    // chPwd: number | null;
     chUserCnt: number;
-    // isDM: boolean;
-    // operatorId: string;
 	setShowDropDownBox:any;
 }
 
@@ -23,7 +20,6 @@ const MyDmList: React.FC<DmProps> = ({chIdx, chName, setShowDropDownBox}) => {
 	return (
 		<button className="menu-drop-down-channel-box" onClick={handleIntoChannel}>
 			<span className="menu-drop-down-channel-text">{chName}</span>
-			{/* <span className="menu-drop-down-channel-text-usercnt">{chUserCnt}/5</span> */}
 		</button>
 	)
 };
