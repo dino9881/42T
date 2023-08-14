@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router";
 import instance from "../../refreshToken";
 import ChannelUserForm from "./ChannelUserForm";
-import { error } from "console";
 
 interface User {
 	intraId: string;

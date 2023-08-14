@@ -26,7 +26,6 @@ const FriendList = () => {
 	function getFriend() {
 		instance.get("http://localhost:5001/member/friend/list")
 			.then((response) => {
-				// console.log(response.data);
 				setFriends(response.data);
 			})
 			.catch((error) => {
@@ -37,7 +36,6 @@ const FriendList = () => {
 	function getBan() {
 		instance.get("http://localhost:5001/member/ban/list")
 			.then((response) => {
-				// console.log(response.data);
 				setBans(response.data);
 			})
 			.catch((error) => {

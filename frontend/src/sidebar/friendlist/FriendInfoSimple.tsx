@@ -29,11 +29,9 @@ const FriendInfoSimple: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, 
 		})
 		.then((response) => {
 			console.log(`dm respose = ${response.data}`)
-			//   .post(`http://localhost:5001/dm/enter/${chIdx}`)
 			navigate("/dm", { state: { chIdx:response.data.chIdx } });
 		})
 		.catch((error) => {
-			// 요청이 실패하면 에러 처리
 			console.error("API 요청 실패:", error);
 			//   403 밴 유저
 			//   404 없는 채널 번호
