@@ -61,10 +61,6 @@ const Custom: React.FC<CustomProps> = ({ nickName, onClose }) => {
 							normal
 							<input type="checkbox" value="checkbox2" checked={selectedCheckbox === "checkbox2"} onChange={handleCheckboxChange} />
 						</label>
-						<label className={`custom-checkbox-size ${selectedCheckbox === "checkbox3" ? "selected" : ""}`}>
-							hard(ghost)
-							<input type="checkbox" value="checkbox3" checked={selectedCheckbox === "checkbox3"} onChange={handleCheckboxChange}/>
-						</label>
 						</div>
 						<button className="custom-submit-button" onClick={handleSubmit}>
 							신청하기
