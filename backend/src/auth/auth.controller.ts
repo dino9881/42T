@@ -7,6 +7,7 @@ import {
   Res,
   UnauthorizedException,
   Get,
+  Inject,
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
@@ -27,6 +28,8 @@ import {
 import { GetMember } from 'src/util/decorator/getMember.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { Member } from '@prisma/client';
+import appConfig from 'src/config/app.config';
+import { ConfigType } from '@nestjs/config';
 
 @ApiTags('Auth')
 @ApiResponse({
@@ -38,7 +41,10 @@ export class AuthController {
   constructor(
     private authService: AuthService,
     private memberService: MemberService,
+    @Inject(appConfig.KEY)
+    private app: ConfigType<typeof appConfig>,
   ) {}
+
 
   @ApiOperation({ summary: '42intra인증 코드 전송' })
   @Post('code')
@@ -55,6 +61,13 @@ export class AuthController {
   })
   recieveCode(@Body('code') code: string) {
     return this.authService.getIntraAccessToken(code);
+  }
+
+  @ApiOperation({ summary: 'redirect uri 가져오기' })
+  @ApiOkResponse({ description: 'url 가져오기 성공' })
+  @Get('url')
+  getURL() {
+    return this.app.redirectUrl;
   }
 
   @ApiOperation({ summary: '로그인시 access & refresh token 발급' })
@@ -155,4 +168,5 @@ export class AuthController {
   getMyInfo(@GetMember() member: Member) {
     return member;
   }
+
 }
