@@ -83,7 +83,7 @@ function ChannelNew() {
 
         if(isPchecked){
         instance
-            .post("http://localhost:5001/channel/create", {chName:title, isPrivate:true})
+            .post(`${process.env.REACT_APP_BACK_URL}/channel/create`, {chName:title, isPrivate:true})
             .then((response) => {
                 closeNewMake();
                 navigate("/chat", { state: { chIdx:response.data.chIdx }});

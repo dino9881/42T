@@ -79,12 +79,12 @@ function Game() {
 
     useEffect(() => {
       instance
-      .get(`http://localhost:5001/member/search/${player1}`)
+      .get(`${process.env.REACT_APP_BACK_URL}/member/search/${player1}`)
       .then((response) => {
           const player1Avatar = response.data.avatar;
           setPlayer1Avatar(player1Avatar);
           instance
-          .get(`http://localhost:5001/member/search/${player2}`)
+          .get(`${process.env.REACT_APP_BACK_URL}/member/search/${player2}`)
           .then((response) => {
               const player2Avatar = response.data.avatar;
               setPlayer2Avatar(player2Avatar);
@@ -140,7 +140,7 @@ function Game() {
 
 
         instance
-            .get("http://localhost:5001/auth/me")
+            .get(`${process.env.REACT_APP_BACK_URL}/auth/me`)
             .then((response) => {
                 setCurrentPlayer(
                     player1 === response.data.nickName ? "player1" : "player2"

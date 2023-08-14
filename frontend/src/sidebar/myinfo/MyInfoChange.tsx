@@ -45,7 +45,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 			return
 		}
 		else {
-			instance.get(`http://localhost:5001/member/search/${text}`)
+			instance.get(`${process.env.REACT_APP_BACK_URL}/member/search/${text}`)
 			.then((res) => {
 				alert("사용할 수 없는 닉네임 입니다.")
 			})
@@ -70,13 +70,13 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 		console.log(changeData);
 
 		if (myData.nickName !== changeData.nickName){
-			instance.patch("http://localhost:5001/member/update/nick/", 
+			instance.patch(`${process.env.REACT_APP_BACK_URL}/member/update/nick/`, 
 			{
 				"intraId": changeData.intraId,
 				"nickName": changeData.nickName
 			})
 			.then(function (response) {
-				instance.patch("http://localhost:5001/channel/update/nick/")
+				instance.patch(`${process.env.REACT_APP_BACK_URL}/channel/update/nick/`)
 				.then((res) => {
 					console.log(res);
 				})
@@ -88,7 +88,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 		}
 		console.log(changeData)
 		if (myData.avatar !== changeData.avatar){
-			instance.patch("http://localhost:5001/member/update/avatar/",
+			instance.patch(`${process.env.REACT_APP_BACK_URL}/member/update/avatar/`,
 			{
 				"intraId": changeData.intraId,
 				"avatar": changeData.avatar
@@ -100,7 +100,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 			});
 		}
 
-		instance.get('http://localhost:5001/auth/me').then((response => {
+		instance.get(`${process.env.REACT_APP_BACK_URL}/auth/me`).then((response => {
 			myData = response.data; 
 		}))
 		onClose();

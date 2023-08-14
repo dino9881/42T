@@ -22,7 +22,7 @@ const FriendInfoSimple: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, 
 	
 	const handleButtonClick = () => {
 		instance
-		.post('http://localhost:5001/channel/enter/dm/chan',{
+		.post(`${process.env.REACT_APP_BACK_URL}/channel/enter/dm/chan`,{
 			"intraId": intraId,
 			"nickName": nickName,
 			"avatar": avatar

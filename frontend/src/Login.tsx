@@ -3,7 +3,7 @@ import axios from "axios";
 
 function Login() {
     var url = "";
-    axios.get("http://localhost:5001/auth/url")
+    axios.get(`${process.env.REACT_APP_BACK_URL}/auth/url`)
 		.then(function (response) {
             console.log(response.data);
 			url =response.data

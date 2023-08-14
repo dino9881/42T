@@ -12,7 +12,7 @@ const ChannelUserForm: React.FC<ChannelUserFormProps> = ({ nickName }) => {
 	const [userData, setUserData] = useState<any>(null);
 
 	useEffect(() => {
-		instance.get(`http://localhost:5001/member/search/${nickName}`)
+		instance.get(`${process.env.REACT_APP_BACK_URL}/member/search/${nickName}`)
 		.then((response) => {
 			console.log(response.data)
 			if (response.data.isFriend === true) {

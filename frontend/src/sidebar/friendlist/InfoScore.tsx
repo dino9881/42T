@@ -20,7 +20,7 @@ const InfoScore: React.FC<InfoScoreProps> = ({ intraId, nickName, rank, state })
   const [history, setHistory] = useState<History[]>([]);
 
   useEffect(() => {
-    instance.get(`http://localhost:5001/game/history/${intraId}`)
+    instance.get(`${process.env.REACT_APP_BACK_URL}/game/history/${intraId}`)
       .then((res) => {
         setHistory(res.data);
       })
@@ -30,19 +30,19 @@ const InfoScore: React.FC<InfoScoreProps> = ({ intraId, nickName, rank, state })
   }, []);
 
   const handleDelete = () => {
-    instance.delete(`http://localhost:5001/member/friend/delete/${nickName}`).then(()=>{
+    instance.delete(`${process.env.REACT_APP_BACK_URL}/member/friend/delete/${nickName}`).then(()=>{
 		window.location.reload();
     })
   };
 
   const handleBan = () => {
-    instance.post(`http://localhost:5001/member/ban/add/${nickName}`).then(()=>{
+    instance.post(`${process.env.REACT_APP_BACK_URL}/member/ban/add/${nickName}`).then(()=>{
 		window.location.reload();
     })
   };
 
   const handleAdd = () => {
-    instance.post(`http://localhost:5001/member/friend/add/${nickName}`)
+    instance.post(`${process.env.REACT_APP_BACK_URL}/member/friend/add/${nickName}`)
 		.then(() => {
 			window.location.reload();
 		})
