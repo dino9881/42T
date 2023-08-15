@@ -22,6 +22,9 @@ down:
 clean:
 	$(DOCKER_COMPOSE) -f $(COMPOSE_DIR)/$(COMPOSE_SRC) down --rmi all --remove-orphans -v
 
-re:	clean up
+fclean: clean
+	rm -rf ./data
 
-.PHONY:	up down clean
+re:	fclean up
+
+.PHONY:	up down clean fclean re
