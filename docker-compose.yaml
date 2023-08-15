@@ -15,6 +15,7 @@ services:
         # tty: true
         networks:
             - docker-network
+
     frontend:
         # depends_on: backend
         container_name: frontend
@@ -26,6 +27,7 @@ services:
             - "3000:3000"
         volumes:
             - /app/node_modules
+    
     backend:
         depends_on:
             - db
