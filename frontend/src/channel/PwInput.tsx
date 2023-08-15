@@ -32,7 +32,6 @@ function PwInput({ chIdx, chPwd = "", chUserCnt } : PwInputProps) {
                 isChanUser = response.data;
             })
             .catch((error) => {
-                console.error("API 요청 실패:", error);
                 if(error.response.status === 400)
                 {
                     alert("비밀번호를 확인해주세요1");
@@ -48,7 +47,6 @@ function PwInput({ chIdx, chPwd = "", chUserCnt } : PwInputProps) {
         }
         // 입력값이 4자리인지 확인
         if(!inputValue || inputValue.length === 4){   
-        console.log(inputValue);
         instance
             // .post("${process.env.REACT_APP_BACK_URL}/channel/create", {chName:title, isPrivate:true})
             .post(`${process.env.REACT_APP_BACK_URL}/channel/enter/${chIdx}`, {chPwd:inputValue})
@@ -58,8 +56,6 @@ function PwInput({ chIdx, chPwd = "", chUserCnt } : PwInputProps) {
                 navigate("/chat", { state: { chIdx } });
             })
             .catch((error) => {
-                // 요청이 실패하면 에러 처리
-                console.error("API 요청 실패:", error);
                 if(error.response.status === 400)
                 {
                     alert("비밀번호를 확인해주세요2");
@@ -71,9 +67,6 @@ function PwInput({ chIdx, chPwd = "", chUserCnt } : PwInputProps) {
 					alert("없는 채널번호...;;");    
 				else if(error.response.status === 500)
 					alert("서버에러 (뺵 잘못)");
-                //   403 밴 유저
-                //   404 없는 채널 번호
-                //   500 서버 에러
             });
             return;
         }
@@ -84,37 +77,6 @@ function PwInput({ chIdx, chPwd = "", chUserCnt } : PwInputProps) {
             return;
         }
     };
-    //     if (inputValue.length === 4) {
-    //         pwCorrect().then((data: boolean) => {
-    //             if (data) {
-    //             instance
-    //                 .post(`${process.env.REACT_APP_BACK_URL}/channel/enter/${chIdx}`, {chPwd})
-    //                 .then((response) => {
-    //                     if (!isChanUser)
-    //                         socket.emit("first-enter", {channelName: response.data.chName} );
-    //                     navigate("/chat", { state: { chIdx } });
-    //                 })
-    //                 .catch((error) => {
-    //                     // 요청이 실패하면 에러 처리
-    //                     console.error("API 요청 실패:", error);
-    //                     if (error.response.status === 403)
-    //                         alert("당신은 벤 유저 입니다 ^^ (못들어감).");
-    //                     else if(error.response.status === 404)
-    //                         alert("없는 채널번호...;;");    
-    //                     else if(error.response.status === 500)
-    //                         alert("서버에러 (뺵 잘못)");
-    //                     //   403 밴 유저
-    //                     //   404 없는 채널 번호
-    //                     //   500 서버 에러
-    //                 });
-    //             }else {
-    //                 alert("비밀번호를 확인해주세요. ^^");
-    //             }
-    //         });
-    //     } else {
-    //         alert("비밀번호를 확인해주세요. ^^");
-    //     }
-    // };
 
     return (
         <div className="chan-pw_inputbox">

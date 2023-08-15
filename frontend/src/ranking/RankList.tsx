@@ -50,8 +50,6 @@ function RankList(props: { ranking: RankData[] }) {
           else
             addRankText = "";
 
-            console.log(`ranking-etc_ranktext${addRankText}`);
-
           return (
             <div key={index} className="ranking-etc_rank">
               <div className={`ranking-etc_ranktext${addRankText}`}>{rankText}</div>

@@ -58,8 +58,6 @@ function ChannelNew() {
     };
 
     const makeNewChannel = ()  => {
-        // console.log("chIdx : " + chIdx);
-        // console.log("chPwd : " + inputValue);
         const title = (document.getElementsByName("title_inputbox")[0] as HTMLInputElement).value.trim();
         const password = (document.getElementsByName("password_input")[0] as HTMLInputElement).value;
         
