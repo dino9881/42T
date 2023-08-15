@@ -15,6 +15,7 @@ interface MessageItem {
     nickName: string;
     message: string;
     avatar: string;
+    channel: string;
 }
 
 interface ChatItemProps {
@@ -39,10 +40,8 @@ function Chat({channelInit}:ChatProps) {
     const [msgList, setMsgList] = useState<MessageItem[]>(() => initialData());
     const [isDM, setIsDM]  = useState(true);
 
-
     const navigate = useNavigate();
-	
-    
+	    
     function initialData(): MessageItem[]  {
         return [];
     }
@@ -103,9 +102,11 @@ function Chat({channelInit}:ChatProps) {
         });
 
         socket.on("send-message", (payload:MessageItem) => {
-            const {nickName, message, avatar}=payload;
-            const newMessage = {nickName: nickName, message: message};
-            addMessage(newMessage, avatar);
+            const { nickName, message, avatar, channel } = payload;
+            if (channelName === channel){
+                const newMessage = {nickName: nickName, message: message};
+                addMessage(newMessage, avatar);                
+            }
         });
 
         socket.on("delete", () => {
