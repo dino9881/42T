@@ -61,7 +61,7 @@ const RankingComponent = () => {
 							</>)}
 						</div>
 						<div className = "ranking-3rk">
-							{ranking.length > 2 && ranking[0]?.rank > 100 ? ( 
+							{ranking.length > 2 && ranking[2]?.rank > 100 ? ( 
 							<>
 								<img src={ranking[2].avatar} alt="3위 사진"/>
 								<div className="ranking-3rk_namerankbox">
@@ -74,7 +74,7 @@ const RankingComponent = () => {
 								<div className="ranking-3rk_emptyimg"/>
 								<div className="ranking-3rk_emptyrank"/>
 							</>)}
-							{ranking.length > 1  && ranking[2]?.rank > 100 && ( 
+							{ranking.length > 1  && ranking[0]?.rank > 100 && ( 
 							<>
 								<div className="ranking-3rk_box">3 위</div>
 							</>)}
