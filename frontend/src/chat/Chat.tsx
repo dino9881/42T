@@ -49,14 +49,12 @@ function Chat({channelInit}:ChatProps) {
     
     useEffect(() => {
         instance.get(`${process.env.REACT_APP_BACK_URL}/auth/me`).then((response) => {
-            // console.log(response);
             setNickname(response.data.nickName);
             setAvatar(response.data.avatar);
             socket.emit("enter-channel", {channelName: channelName,nickName: response.data.nickName});
         });
             
         const state = location.state as { chIdx : number };
-        // console.log(state)
         if (state && state.chIdx) {
             instance
             .get(`${process.env.REACT_APP_BACK_URL}/channel/${state.chIdx}`)
@@ -68,34 +66,27 @@ function Chat({channelInit}:ChatProps) {
                 setChannelName(response.data.chName);
                 setIsDM(response.data.isDM);
             })
-            .catch((error) => {
+            .catch(() => {
                 navigate('/main');
                 alert("비정상 접근")
-                console.error("API 요청 실패:", error);
             });
 
             instance
             .get(`${process.env.REACT_APP_BACK_URL}/channel/message/${state.chIdx}`)
             .then((response) => {
                 // 요청이 성공하면 데이터를 상태로 설정
-                // console.log(response.data)
                 setMsgList(response.data);
             })
-            .catch((error) => {
-                // 요청이 실패하면 에러 처리
-                console.error("API 요청 실패:", error);
+            .catch(() => {
             });
             
             instance
             .get(`${process.env.REACT_APP_BACK_URL}/channel/message/${state.chIdx}`)
             .then((response) => {
                 // 요청이 성공하면 데이터를 상태로 설정
-                // console.log(response.data);
 
             })
-            .catch((error) => {
-                // 요청이 실패하면 에러 처리
-                console.error("API 요청 실패:", error);
+            .catch(() => {
             });
         } else {
             channelInit("error", 0);
@@ -107,7 +98,6 @@ function Chat({channelInit}:ChatProps) {
         });
 
         socket.on("leave-channel", (nickName, avatar) => {
-            console.log(avatar);
             const newMessage = {nickName: "System", message: `${nickName} 님이 채널을 나갔습니다.` , avatar: avatar};
             addMessage(newMessage, avatar);
         });
@@ -211,7 +201,6 @@ function ChatInput({ addMyMessage, nickName, channelName, avatar }: { addMyMessa
         const newMessage = {nickName: "나", message: message };
         addMyMessage(newMessage);
         socket.emit("message",{channelName, nickName, message : message, avatar});
-        console.log("emit message");
         setMessage("");
     };
     return (

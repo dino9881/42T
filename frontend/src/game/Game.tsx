@@ -100,12 +100,10 @@ function Game() {
                 navigate("/result", { state: { player1, player2, player1Avatar, player2Avatar, p1Score:payload.p1Score, p2Score:payload.p2Score} })
                 });
           })
-          .catch((error) => {
-              console.log(error);
+          .catch(() => {
           });
       })
-      .catch((error) => {
-          console.log(error);
+      .catch(() => {
       });
    
 
