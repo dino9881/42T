@@ -193,3 +193,9 @@
 	top: 10px;
 	left: 8px;
 }
+
+.twofactor-button {
+	position: absolute;
+	bottom: 22px;
+	right: 30px;
+}

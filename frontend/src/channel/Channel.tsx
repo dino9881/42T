@@ -33,7 +33,6 @@ function Channel({channelName, channelInit} : ChannelProps) {
         setChannelData(response.data);
       })
       .catch((error) => {
-        console.error("API 요청 실패:", error);
         if (error.response.status === 401)
 			      alert("Accesstoken 인증 실패.");
         else if(error.response.status === 404)

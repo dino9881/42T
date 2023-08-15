@@ -175,17 +175,12 @@ function Game() {
             }
         }
     };
-    const getMode = () => {
-        if (mode === 2)
-        return "ghost-canvas";
-        else 
-        return "game-canvas"
-    }
+    
     return (
         <div className="game">
             <GameHeader player1={player1} p1Score={p1Score} player2={player2} p2Score={p2Score} player1Avatar={player1Avatar} player2Avatar={player2Avatar} exitGame={exitGame}/>
             <canvas
-                className={getMode()}
+                className="game-canvas"
                 ref={canvasRef}
                 onKeyDown={move}
                 tabIndex={0}
