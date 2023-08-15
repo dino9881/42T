@@ -37,7 +37,7 @@ function ChannelRoom({ channelData }: ChannelRoomProps) {
     // memberData 업데이트 
     useEffect(() => { // API 요청
     instance
-      .get(`http://localhost:5001/member/${ownerId}`)
+      .get(`${process.env.REACT_APP_BACK_URL}/member/${ownerId}`)
       .then((response) => {
         // 요청이 성공하면 데이터를 상태로 설정
         setMemberData(response.data);

@@ -22,7 +22,7 @@ const MyInfo = () => {
 	const [isEmail, setEmail] = useState(false);
 
 	useEffect(() => {
-		instance.get('http://localhost:5001/auth/me').then((response) => {
+		instance.get(`${process.env.REACT_APP_BACK_URL}/auth/me`).then((response) => {
 			if (myData !== response.data){
 				setMyData(response.data); 
 			}

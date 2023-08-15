@@ -114,7 +114,7 @@ export class AuthController {
     res.cookie('refresh_token', refresh_token, {
       httpOnly: true,
       path: '/',
-      domain: 'localhost',
+      domain: this.app.host,
       maxAge: 60 * 60 * 24 * 7 * 1000, // week
       signed: true,
     });

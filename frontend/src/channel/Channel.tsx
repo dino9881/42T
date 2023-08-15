@@ -28,7 +28,7 @@ function Channel({channelName, channelInit} : ChannelProps) {
     localStorage.setItem('chIdx', "0");
 
     instance
-      .get("http://localhost:5001/channel/all")
+      .get(`${process.env.REACT_APP_BACK_URL}/channel/all`)
       .then((response) => {
         setChannelData(response.data);
       })

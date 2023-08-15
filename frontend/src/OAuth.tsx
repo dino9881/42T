@@ -15,11 +15,11 @@ const OAuth: React.FC = () => {
 	const code = query.code;
 	// console.log(code);
 
-	axios.post("http://localhost:5001/auth/code", { code: code })
+	axios.post(`${process.env.REACT_APP_BACK_URL}/auth/code`, { code: code })
 		.then(function (response) {
 			// console.log(response);
 			const intraId: string = response.data;
-			axios.post("http://localhost:5001/auth/login", { intraId: response.data, })
+			axios.post(`${process.env.REACT_APP_BACK_URL}/auth/login`, { intraId: response.data, })
 				.then((res) => {
 					// console.log(res);
 					const token = res.data.access_token;

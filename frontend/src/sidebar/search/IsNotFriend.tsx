@@ -28,7 +28,7 @@ const IsNotFriend: React.FC<FriendInfoProps & SearchFriendProps> = ({ nickName, 
 	const [myData, setMyData] = useState<MyData | null>(null);
 
 	useEffect(() => {
-		instance.get('http://localhost:5001/auth/me').then((response) => {
+		instance.get(`${process.env.REACT_APP_BACK_URL}/auth/me`).then((response) => {
 			if (myData !== response.data){
 				setMyData(response.data); 
 			}
@@ -40,7 +40,7 @@ const IsNotFriend: React.FC<FriendInfoProps & SearchFriendProps> = ({ nickName, 
 			alert("Error!!!")
 			return;
 		}
-		instance.post(`http://localhost:5001/member/friend/add/${nickName}`)
+		instance.post(`${process.env.REACT_APP_BACK_URL}/member/friend/add/${nickName}`)
 		.then(() => {
 			onClose();
 			window.location.reload();
@@ -55,7 +55,7 @@ const IsNotFriend: React.FC<FriendInfoProps & SearchFriendProps> = ({ nickName, 
 			alert("Error!!!")
 			return;
 		}
-		instance.post(`http://localhost:5001/member/ban/add/${nickName}`).then(()=>{
+		instance.post(`${process.env.REACT_APP_BACK_URL}/member/ban/add/${nickName}`).then(()=>{
 			window.location.reload();
 		})
 	};
