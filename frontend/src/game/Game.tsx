@@ -89,14 +89,10 @@ function Game() {
               const player2Avatar = response.data.avatar;
               setPlayer2Avatar(player2Avatar);
               socket.on("game-end", (payload:ScoreProps) => {
-                console.log("end : ");
-                console.log(payload);
                 navigate("/result", { state: { player1, player2, player1Avatar, player2Avatar, p1Score:payload.p1Score, p2Score:payload.p2Score} })
                 });
                 
                 socket.on("game-sudden-end", (payload:ScoreProps) => {
-                console.log("sudden-end");
-                console.log(payload);
                 navigate("/result", { state: { player1, player2, player1Avatar, player2Avatar, p1Score:payload.p1Score, p2Score:payload.p2Score} })
                 });
           })
@@ -130,8 +126,6 @@ function Game() {
     })
     
     socket.on("game-score", (payload:ScoreProps) => {
-        console.log("game-score");
-        console.log(payload);
         setP1Score(payload.p1Score);
         setP2Score(payload.p2Score);
     });
@@ -153,11 +147,8 @@ function Game() {
                     roomName,
                     mode,
                 });
-                // console.log(roomName);
-                //game-start할때 mode를 보내주기
             })
-            .catch((error) => {
-                console.log(error);
+            .catch(() => {
             });
             return(() => {
             socket.off("game-score");
