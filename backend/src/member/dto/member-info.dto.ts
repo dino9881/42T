@@ -94,4 +94,12 @@ export class MemberInfoDto {
   })
   @IsNumber()
   status: number;
+
+  @ApiProperty({
+    type: 'Bool',
+    description: '2차인증 활성화 여부',
+    example: true,
+  })
+  @IsBoolean()
+  twoFactor?: boolean;
 }

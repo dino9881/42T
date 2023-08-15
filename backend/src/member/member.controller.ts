@@ -90,6 +90,15 @@ export class MemberController {
     return this.memberService.verifyTFACode(req, code);
   }
 
+  @ApiTags('Two-Factor-Autentication')
+  @ApiOperation({summary: '2차인증 활성화 변경'})
+  @ApiOkResponse({ description: '성공' })
+  @ApiBody({ type: UpdateMemberDto })
+  @Patch('mail/toggle')
+  toggleTwoFactor(@GetMember() member: MemberInfoDto, @Body() updateDto: UpdateMemberDto,){
+    return this.memberService.toggleTwoFactor(member, updateDto);
+  }
+
   @ApiTags('Member')
   @ApiOperation({ summary: '새로운 멤버 생성' })
   @ApiCreatedResponse({
@@ -316,4 +325,5 @@ export class MemberController {
   ) {
     return this.memberService.unbanMember(member, nickName);
   }
+
 }

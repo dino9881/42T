@@ -359,4 +359,12 @@ export class MemberService {
     console.log(ranks);
     return { length: ranks.length, data: ranks };
   }
+
+  async toggleTwoFactor(member: MemberInfoDto, updateDto: UpdateMemberDto){
+    await this.prisma.member.update({
+      where: { intraId: member.intraId },
+      data: updateDto,
+    });
+    return;  
+  }
 }
