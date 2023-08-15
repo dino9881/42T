@@ -22,9 +22,11 @@ const MyInfo = () => {
 	const [myData, setMyData] = useState<MyData | null>(null);
 	const [isEmail, setEmail] = useState(false);
 
+
 	useEffect(() => {
 		instance.get(`${process.env.REACT_APP_BACK_URL}/auth/me`).then((response) => {
 			if (myData !== response.data){
+				console.log(response.data);
 				setMyData(response.data); 
 			}
 		})
@@ -74,8 +76,8 @@ const MyInfo = () => {
 				</div>
 				</div>
 			</div>
-			{showChangeForm && myData && !myData.twoFactor && <CheckEmail myData={myData} onClose={handleCloseForm} onEmail={handleEmail}/>}
-			{isEmail && myData && <MyInfoChange myData={myData} onClose={handleEmail} />}
+			{showChangeForm && myData && myData.twoFactor && <CheckEmail myData={myData} onClose={handleCloseForm} onEmail={handleEmail}/>}
+			{(isEmail || (showChangeForm && myData?.twoFactor === false)) && myData && <MyInfoChange myData={myData} onClose={handleEmail} />}
 		</div>
 	);
 };
