@@ -14,7 +14,6 @@
 	background-color: #A19F9F;
 	bottom: 0;
 	left: 4%;
-	font-size: 200%;
 	color: white;
 	display: flex;
 	justify-content: center;
@@ -88,10 +87,6 @@
 	width: 100%;
 	display: flex;
 	align-items: center;
-}
-
-.drop-box-small-text {
-	font-size: 130%;
 }
 
 .menu-drop-down-channel-list::-webkit-scrollbar {

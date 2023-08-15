@@ -266,7 +266,7 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 
 	return (
 		<div className="menu-box">
-			<div className="menu-channel-drop-box">
+			<div className="menu-channel-drop-box" style={{ fontSize: chName.length >= 13 ? '130%' : '200%' }}>
 				{showBackButton ? chName : "Home"}
 				<img
 					src={toggleImgSrc}
