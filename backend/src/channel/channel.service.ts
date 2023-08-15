@@ -18,7 +18,7 @@ import { channelConstants } from 'src/util/constants';
 export class ChannelService {
 
   private channelUsers: Record<number, { intraId: string, avatar: string, nickName: string }[]>;
-  private messageList: Record<number, { nickName: string, message: string, avatar:string }[]>;
+  private messageList: Record<number, { intraId: string, nickName: string, message: string, avatar:string }[]>;
   private administrators: Record<number, { intraId: string }[]>;
   private banUsers: Record<number, { intraId: string }[]>;
   private mutedUsers: Record<
@@ -306,6 +306,11 @@ export class ChannelService {
     );
   }
 
+  async getChannelUsersByName(channelName: string) {
+    const channel = await this.findOneByName(channelName);
+    return this.channelUsers[channel.chIdx];
+  }
+
   async getChannelUsers(idx: number, member: MemberInfoDto) {
     await this.findOneById(idx);
     const chanUsers = this.channelUsers[idx].filter( 
@@ -381,14 +386,20 @@ export class ChannelService {
 
   // message
 
-  async sendMessage(chanName: string, nickName: string, message: string, avatar: string) {
+  async sendMessage(chanName: string, intraId: string, nickName: string, message: string, avatar: string) {
     const channel = await this.findOneByName(chanName);
-    this.messageList[channel.chIdx].push({ nickName, message, avatar });
+    this.messageList[channel.chIdx].push({ intraId, nickName, message, avatar });
   }
 
   async getMessageList(idx: number, member: MemberInfoDto) {
     await this.findOneById(idx);
-    return this.messageList[idx];
+    var allMessage: { intraId: string, nickName: string, message: string, avatar:string }[] = [];
+    for (const info of this.messageList[idx]) {
+      if (!await this.memberService.isBanByintraId(member.intraId, info.intraId)){
+        allMessage.push({ intraId: info.intraId, nickName: info.nickName, message: info.message, avatar: info.avatar});
+      }
+    }
+    return allMessage;
   }
 
   // mute

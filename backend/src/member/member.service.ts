@@ -298,6 +298,19 @@ export class MemberService {
     else return false;
   }
 
+  async isBanByintraId(intraId: string, banIntraId: string) {
+    const isBan = await this.prisma.member
+      .findUnique({
+        where: { intraId: intraId },
+      })
+      .banned({
+        where: { intraId: banIntraId },
+        select: { intraId: true },
+      });
+    if (isBan.length) return true;
+    else return false;
+  }
+  
   async isDMBan(member: string, banMember: string) {
     const isBan = await this.prisma.member.findMany({
       where: { intraId: member },
