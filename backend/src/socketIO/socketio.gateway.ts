@@ -254,15 +254,6 @@ export class SocketIOGateway
     this.gameService.playerExit(client, roomName);
   }
 
-  async sendChannelMessage(client: Socket, payload: Payload) {
-    const { channelName, nickName, message, avatar } = payload;
-    const channelUsers = await this.channelService.getChannelUsersByName(channelName);
-    for (const user of channelUsers) {
-      if (user.intraId !== client['intraId'] && !await this.memberService.isBanByintraId(user.intraId, client['intraId']))
-        this.getSocketByintraId(user.intraId)?.emit('send-message', { nickName, message, avatar });
-    }
-  }
-
   // 채널관련 메세지
   @SubscribeMessage('message')
   async handleMessage(client: Socket, payload: Payload): Promise<string> {
@@ -282,7 +273,7 @@ export class SocketIOGateway
     );
     if (user !== '')
       this.getSocketByintraId(user)?.emit('send-dm', client['intraId']);
-    await this.sendChannelMessage(client, payload);
+    client.to(channelName).emit('send-message', { nickName, message, avatar });
     this.channelService.sendMessage(channelName, client['intraId'], nickName, message, avatar);
     return 'Message received!';
   }
