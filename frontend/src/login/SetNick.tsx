@@ -15,14 +15,9 @@ const SetNick = () => {
 	const [text, setText] = useState<string>("");
 
 	const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-		setText(e.target.value);
-	};
-
-	const onKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
-		// 한글 입력을 방지하기 위해 유니코드 범위를 확인
-		if (/[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(e.key)) {
-		  e.preventDefault();
-		}
+		// 한글을 제외한 다른 문자만 필터링하여 입력값으로 사용
+		const filteredText = e.target.value.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, '');
+		setText(filteredText);
 	  };
 
 	const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -70,7 +65,6 @@ const SetNick = () => {
 						placeholder='닉네임'
 						onChange={onChange}
 						onKeyDown={onKeyDown}
-						onKeyPress={onKeyPress} // 한글 입력 방지를 위한 이벤트 핸들러 추가
 						value={text}
 						maxLength={8}/>
 					<button className='set-nick-button'onClick={onClick}>닉네임설정</button>
