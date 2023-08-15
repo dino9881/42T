@@ -114,6 +114,7 @@ export class MemberService {
         currentRefreshTokenExp: undefined,
         currentRefreshToken: undefined,
         status: statusConstants.ONLINE,
+        twoFactor: true,
       },
     });
     return;
@@ -164,17 +165,6 @@ export class MemberService {
     await this.prisma.member.update({
       where: { intraId: id },
       data: { status: status },
-    });
-    return;
-  }
-
-  async delete(id: string) {
-    const member = await this.getOne(id);
-    if (member == null) {
-      throw new NotFoundException('Member Not Found');
-    }
-    await this.prisma.member.delete({
-      where: { intraId: id },
     });
     return;
   }
