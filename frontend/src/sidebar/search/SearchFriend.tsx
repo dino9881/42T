@@ -12,8 +12,18 @@ friendStatus: number;
 onClose: () => void;
 }
 
+interface UserData  {
+	avatar: string;
+	intraId: string;
+	nickName: string;
+	rank: number;
+	winCnt: number;
+	loseCnt: number;
+	state: number;
+  };
+
 const SearchFriend: React.FC<SearchFriendProps> = ({ intraId, friendStatus, onClose, }) => {
-	const [userData, setUserData] = useState<any>(null);
+	const [userData, setUserData] = useState<UserData | null>(null);
 
 	useEffect(() => {
 		instance.get(`http://localhost:5001/member/${intraId}`).then((response) => {

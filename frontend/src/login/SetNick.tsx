@@ -5,6 +5,12 @@ import axios from 'axios';
 import setAuthorizationToken from '../setAuthorizationToken';
 import './SetNick.css';
 
+interface MyData  {
+	avatar: string;
+	intraId: string;
+	nickName: string;
+  };
+
 const SetNick = () => {
 	const [text, setText] = useState<string>("");
 
@@ -21,9 +27,10 @@ const SetNick = () => {
 	const location = useLocation();
 	const navigate = useNavigate();
 
-	const myData:any = {
+	const myData:MyData = {
 		"intraId": location.state.intraId,
 		"avatar": "avatar/avatar.jpeg",
+		"nickName": ""
 	}
 
 	const onClick = () => {

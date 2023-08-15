@@ -5,11 +5,20 @@ import instance from "../../refreshToken";
 import CheckEmail from "../../login/CheckEmail";
 import './MyInfo.css';
 
+interface MyData  {
+	avatar: string;
+	intraId: string;
+	nickName: string;
+	rank: number;
+	winCnt: number;
+	loseCnt: number;
+  };
+
 const MyInfo = () => {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [showChangeForm, setShowChangeForm] = useState(false);
 	const toggleImgSrc = isExpanded ? "toggle_up.svg" : "toggle_down.svg";
-	const [myData, setMyData] = useState<any>(null);
+	const [myData, setMyData] = useState<MyData | null>(null);
 	const [isEmail, setEmail] = useState(false);
 
 	useEffect(() => {
@@ -64,8 +73,8 @@ const MyInfo = () => {
 				</div>
 				</div>
 			</div>
-			{showChangeForm && <CheckEmail myData={myData} onClose={handleCloseForm} onEmail={handleEmail}/>}
-			{isEmail && <MyInfoChange myData={myData} onClose={handleEmail} />}
+			{showChangeForm && myData && <CheckEmail myData={myData} onClose={handleCloseForm} onEmail={handleEmail}/>}
+			{isEmail && myData && <MyInfoChange myData={myData} onClose={handleEmail} />}
 		</div>
 	);
 };

@@ -5,7 +5,7 @@ interface ChannelProps {
 	chIdx: number;
     chName: string;
     chUserCnt: number;
-	setShowDropDownBox:any;
+	setShowDropDownBox: React.Dispatch<React.SetStateAction<boolean>>;
 	isPrivate: boolean;
 }
 

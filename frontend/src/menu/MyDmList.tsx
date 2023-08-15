@@ -5,7 +5,7 @@ interface DmProps {
 	chIdx: number;
     chName: string;
     chUserCnt: number;
-	setShowDropDownBox:any;
+	setShowDropDownBox: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const MyDmList: React.FC<DmProps> = ({chIdx, chName, setShowDropDownBox}) => {

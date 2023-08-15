@@ -15,8 +15,17 @@ interface FriendInfoProps {
   loseCnt: number;
 }
 
+interface MyData  {
+	avatar: string;
+	intraId: string;
+	nickName: string;
+	rank: number;
+	winCnt: number;
+	loseCnt: number;
+  };
+
 const IsNotFriend: React.FC<FriendInfoProps & SearchFriendProps> = ({ nickName, rank, avatar, winCnt, loseCnt, onClose }) => {
-	const [myData, setMyData] = useState<any>(null);
+	const [myData, setMyData] = useState<MyData | null>(null);
 
 	useEffect(() => {
 		instance.get('http://localhost:5001/auth/me').then((response) => {
@@ -27,7 +36,7 @@ const IsNotFriend: React.FC<FriendInfoProps & SearchFriendProps> = ({ nickName, 
 	}, []);
 
 	const handleAdd = () => {
-		if (myData.nickName === nickName){
+		if (myData && myData.nickName === nickName){
 			alert("Error!!!")
 			return;
 		}
@@ -42,7 +51,7 @@ const IsNotFriend: React.FC<FriendInfoProps & SearchFriendProps> = ({ nickName, 
 	};
 
 	const handleBan = () => {
-		if (myData.nickName === nickName){
+		if (myData && myData.nickName === nickName){
 			alert("Error!!!")
 			return;
 		}

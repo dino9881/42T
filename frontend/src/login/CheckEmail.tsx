@@ -2,8 +2,17 @@ import React, { useState, useEffect } from 'react';
 import instance from '../refreshToken';
 import './CheckEmail.css'
 
+interface MyData  {
+	avatar: string;
+	intraId: string;
+	nickName: string;
+	rank: number;
+	winCnt: number;
+	loseCnt: number;
+  };
+
 interface EmailProps {
-	myData:any;
+	myData:MyData;
 	onClose: () => void;
 	onEmail: () => void;
 }

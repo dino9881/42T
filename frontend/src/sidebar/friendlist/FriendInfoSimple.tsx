@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import instance from "../../refreshToken";
-import Custom from "../../custom/Custom";
 import './FriendInfo.css';
 import '../myinfo/MyInfo.css';
 
@@ -14,7 +13,7 @@ interface FriendInfoProps {
 	winCnt: number;
 	currstate: number;
 	state: number;
-	setIsCustomOpen: any;
+	setIsCustomOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const FriendInfoSimple: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, avatar, winCnt, loseCnt, currstate, state, setIsCustomOpen }) => {
