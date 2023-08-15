@@ -27,7 +27,6 @@ const RankingComponent = () => {
 				setRanking(response.data.data);
 			})
 			.catch((error) => {
-				console.log(error.response.status);
 				if(error.response.status === 409)
 					alert("같은 제목의 방이 이미 있습니다.");
 				else if (error.response.status === 400)
