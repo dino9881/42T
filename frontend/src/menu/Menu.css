@@ -88,7 +88,10 @@
 	width: 100%;
 	display: flex;
 	align-items: center;
-	/* overflow: scroll; */
+}
+
+.drop-box-small-text {
+	font-size: 130%;
 }
 
 .menu-drop-down-channel-list::-webkit-scrollbar {
