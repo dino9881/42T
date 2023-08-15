@@ -88,10 +88,10 @@
 	width: 100%;
 	display: flex;
 	align-items: center;
-	overflow: scroll;
+	/* overflow: scroll; */
 }
 
-.menu-drop-down-channel::-webkit-scrollbar {
+.menu-drop-down-channel-list::-webkit-scrollbar {
     display: none;
 }
 
