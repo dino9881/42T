@@ -30,6 +30,13 @@ function ChannelNew() {
         }
     };
 
+    const socket_off = () => {
+        socket.off("max-channel");
+        socket.off("new-channel");
+        socket.off("duplicate-chanName");
+        socket.off("server-error");
+    }
+
     const closeNewMake = () => {
         setCloseNewMake(false);
         setInputValue("");
@@ -106,33 +113,35 @@ function ChannelNew() {
                 channelName: title,
                 password: password,
             });
+
+            socket.on("new-channel", (payload: ChannelData) => {
+                closeNewMake();
+                socket_off();
+                return navigate("/chat", { state: { chIdx:payload.chIdx } });
+            });
+            
+            socket.on("duplicate-chanName", () => {
+                alert("같은 제목의 방이 이미 있습니다.");
+                socket_off();
+            });
+            
+            socket.on("max-channel", () => {
+                alert("만들 수 있는 방의 수를 초과했습니다.");
+                socket_off();
+            });
+            
+            socket.on("server-error", () => {
+                alert("server error");
+                socket_off();
+            });
         }
-        socket.on("new-channel", (payload: ChannelData) => {
-            closeNewMake();
-            return navigate("/chat", { state: { chIdx:payload.chIdx } });
-        });
-        
-        socket.on("duplicate-chanName", () => {
-            alert("같은 제목의 방이 이미 있습니다.");
-            return;
-        });
-        
-        socket.on("max-channel", () => {
-            alert("만들 수 있는 방의 수를 초과했습니다.");
-        });
-        
-        socket.on("server-error", () => {
-            alert("server error");
-        });
         
         return () => {
             socket.off("max-channel");
             socket.off("new-channel");
             socket.off("duplicate-chanName");
             socket.off("server-error");
-            socket.off("duplicate-chanName");
         };
-            
     };
 
 return (

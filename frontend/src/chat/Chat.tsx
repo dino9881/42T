@@ -15,7 +15,7 @@ interface MessageItem {
     nickName: string;
     message: string;
     avatar: string;
-    channel: string;
+    channel?: string;
 }
 
 interface ChatItemProps {
@@ -112,7 +112,6 @@ function Chat({channelInit}:ChatProps) {
         socket.on("delete", () => {
             navigate('/main');
             alert("방 폭파됨");
-            
         });
 
         socket.on("kick", () => {

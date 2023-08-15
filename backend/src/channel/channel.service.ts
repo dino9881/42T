@@ -392,8 +392,13 @@ export class ChannelService {
   }
 
   async getMessageList(idx: number, member: MemberInfoDto) {
-    await this.findOneById(idx);
-    return this.messageList[idx];
+    var allMessage: { intraId: string, nickName: string, message: string, avatar:string }[] = [];
+    for (const info of this.messageList[idx]) {
+      if (!await this.memberService.isBanByintraId(member.intraId, info.intraId)){
+        allMessage.push({ intraId: info.intraId, nickName: info.nickName, message: info.message, avatar: info.avatar});
+      }
+    }
+    return allMessage;
   }
 
   // mute
