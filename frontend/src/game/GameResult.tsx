@@ -19,7 +19,7 @@ declare global {
     }
   }
 
-const RankingResult = ({ }) => {
+const GameResult = ({ }) => {
     
     const location = useLocation();
 
@@ -56,8 +56,8 @@ const RankingResult = ({ }) => {
       };
 
     return(
-        <div className="Ranking-Result">
-            <div className="Ranking-Result_VS">VS</div>
+        <div className="Game-Result">
+            <div className="Game-Result_VS">VS</div>
             <canvas id="canvas"></canvas>
             <style>
                 {`
@@ -71,29 +71,29 @@ const RankingResult = ({ }) => {
                 `}
             </style>
             <Fireworks></Fireworks>
-            <div className="Ranking-Result_upper">
-                <div className="Ranking-Result_leftbox">
+            <div className="Game-Result_upper">
+                <div className="Game-Result_leftbox">
                     <img src={gameResult.player1Avatar} alt ="leftbox 아바타"></img>
-                    <div className="Ranking-Result_Name">{gameResult.player1}</div>
+                    <div className="Game-Result_Name">{gameResult.player1}</div>
                 </div>
-                <div className="Ranking-Result_rightbox">
+                <div className="Game-Result_rightbox">
                     <img src={gameResult.player2Avatar} alt ="rightbox 아바타"></img>
-                    <div className="Ranking-Result_Name">{gameResult.player2}</div>
+                    <div className="Game-Result_Name">{gameResult.player2}</div>
                 </div>
             </div>
-            <div className="Ranking-Result_middle_resultbox"> 
-                    <div className="Ranking-Result_scorebox">
-                        <div className={`Ranking-Result_score_left${winnerLeftBox}`}>{gameResult.p1Score}</div>
-                        <div className={`Ranking-Result_score_right${winnerRightBox}`}>{gameResult.p2Score}</div>
+            <div className="Game-Result_middle_resultbox"> 
+                    <div className="Game-Result_scorebox">
+                        <div className={`Game-Result_score_left${winnerLeftBox}`}>{gameResult.p1Score}</div>
+                        <div className={`Game-Result_score_right${winnerRightBox}`}>{gameResult.p2Score}</div>
                     </div>
-                    <div className="Ranking-Result_text" > {resultWinner} 님 승리 !</div>
+                    <div className="Game-Result_text" > {resultWinner} 님 승리 !</div>
                 </div>
-            <div className="Ranking-Result_under">
-                <button className="Ranking-Result_under_gotoMain" onClick={gotoMain}>메인가기</button>
-                <button className="Ranking-Result_under_gotoRanking" onClick={gotoRanking}>랭킹페이지 가기</button>
+            <div className="Game-Result_under">
+                <button className="Game-Result_under_gotoMain" onClick={gotoMain}>메인가기</button>
+                <button className="Game-Result_under_gotoRanking" onClick={gotoRanking}>랭킹페이지 가기</button>
             </div>
         </div>
     );
 };
 
-export default RankingResult;
+export default GameResult;
