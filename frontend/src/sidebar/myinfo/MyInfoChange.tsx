@@ -6,6 +6,7 @@ interface MyData {
 	intraId: string;
 	avatar: string;
 	nickName: string;
+	twoFactor: boolean;
   }
 
 interface MyInfoChangeProps {
@@ -20,8 +21,11 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 	const [changeData, setChangeData] = useState({
 		avatar: myData.avatar,
 		intraId: myData.intraId,
-		nickName: myData.nickName
+		nickName: myData.nickName,
+		twoFactor: myData.twoFactor
 	});
+
+	const [twoFactor, seTwoFactor] = useState(myData.twoFactor)
 
 	const handleAvatarButtonClick = (newAvatarUrl: string) => {
 		setAvatarUrl(newAvatarUrl);
@@ -67,7 +71,6 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 	};
 
 	const handleModifyClick = () => {
-		console.log(changeData);
 
 		if (myData.nickName !== changeData.nickName){
 			instance.patch(`${process.env.REACT_APP_BACK_URL}/member/update/nick/`, 
@@ -78,15 +81,11 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 			.then(function (response) {
 				instance.patch(`${process.env.REACT_APP_BACK_URL}/channel/update/nick/`)
 				.then((res) => {
-					console.log(res);
 				})
-				console.log(response);
 			})
 			.catch(function (error) {
-				console.log(error);
 			});
 		}
-		console.log(changeData)
 		if (myData.avatar !== changeData.avatar){
 			instance.patch(`${process.env.REACT_APP_BACK_URL}/member/update/avatar/`,
 			{
@@ -96,13 +95,24 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 			.then(function (response) {
 			})
 			.catch(function (error) {
-				console.log(error);
 			});
 		}
+
+		if (myData.twoFactor !== changeData.twoFactor) {
+			instance.patch(`${process.env.REACT_APP_BACK_URL}/mail/toggle`, 
+			{
+				"twoFactor": changeData.twoFactor
+			})
+			.then(function (response) {
+			})
+			.catch(function (error) {
+			})
+		};
 
 		instance.get(`${process.env.REACT_APP_BACK_URL}/auth/me`).then((response => {
 			myData = response.data; 
 		}))
+
 		onClose();
 		window.location.reload();
 	};
@@ -160,6 +170,14 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 				/>
 				<button className="my-info-change-nick-submit" onClick={onReset}>확인</button>
 				</div>
+
+				<label className="twofactor-button">
+					2차인증 활성화
+					<input
+					type="checkbox"
+					checked={twoFactor} // 이 부분은 changeData에 해당 정보가 있다고 가정하고 수정해주세요.
+					/>
+				</label>
 			<button className="my-info-change-set-button" onClick={handleModifyClick}>수정</button>
 		</div>
 	)

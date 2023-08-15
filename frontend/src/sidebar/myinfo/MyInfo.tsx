@@ -12,6 +12,7 @@ interface MyData  {
 	rank: number;
 	winCnt: number;
 	loseCnt: number;
+	twoFactor: boolean;
   };
 
 const MyInfo = () => {
@@ -73,7 +74,7 @@ const MyInfo = () => {
 				</div>
 				</div>
 			</div>
-			{showChangeForm && myData && <CheckEmail myData={myData} onClose={handleCloseForm} onEmail={handleEmail}/>}
+			{showChangeForm && myData && !myData.twoFactor && <CheckEmail myData={myData} onClose={handleCloseForm} onEmail={handleEmail}/>}
 			{isEmail && myData && <MyInfoChange myData={myData} onClose={handleEmail} />}
 		</div>
 	);

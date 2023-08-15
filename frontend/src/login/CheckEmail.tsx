@@ -68,7 +68,6 @@ const CheckEmail: React.FC<EmailProps> = ({ myData, onClose, onEmail }) => {
 	
 	const handleVerificationCodeSubmit = () => {
 		if (isTimerEnded) {
-		console.log("제출 할 수 없음");
 		} else {
 			instance.post(`${process.env.REACT_APP_BACK_URL}/member/mail/verify`,
 			{ 
