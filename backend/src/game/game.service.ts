@@ -48,8 +48,8 @@ export class GameService {
 
   async joinQueue(member: Socket) {
     console.log('join-queue');
-    const mem = this.queue.find((mem) => mem['intraId'] == member['intraId']);
-    if (mem == undefined) {
+    const mem = this.queue.find((mem) => mem['intraId'] === member['intraId']);
+    if (mem === undefined) {
       this.queue.push(member);
       await this.checkQueue();
     }
@@ -68,7 +68,7 @@ export class GameService {
   async makeGame(p1: Socket, p2: Socket, mode: number) {
     console.log('makeGame');
     console.log('mode ' + mode);
-    const roomName = 'G#' + p1['intraId'] + p2['intraId'];
+    const roomName = 'G#' + p1['intraId'] + "$" + p2['intraId'];
     console.log('roomName ' + roomName);
     const payload = {
       player1: p1['nickName'],
@@ -83,9 +83,12 @@ export class GameService {
   }
 
   async enterGame(players: Socket[], roomName: string, mode: number) {
+    console.log(players[0])
+    console.log(roomName.substring(2,roomName.indexOf("$")));
+    console.log(players[0]["intraId"]);
     this.gameRooms[roomName] = {
-      player1: players[0],
-      player2: players[1],
+      player1 : (players[0]["intraId"] === roomName.substring(2,roomName.indexOf("$"))? players[0] : players[1]),
+      player2:  (players[0]["intraId"] === roomName.substring(2,roomName.indexOf("$"))? players[1] : players[0]),
       gameProps: {
         ...gameConstants.GAMEPROPS,
         p1Score: 0,
@@ -97,6 +100,9 @@ export class GameService {
     };
     console.log('startGame');
     console.log('mode ' + mode);
+    //게임에 들어가는 순간 게임 큐에서 두명의 이름 삭제
+    this.exitQueue(players[0]);
+    this.exitQueue(players[1]);
   }
 
   async emitBothPlayer(gameRoom: GameRoom, message: string, payload: any) {
@@ -105,7 +111,7 @@ export class GameService {
   }
 
   makeGameHistory(gameRoom: GameRoom) {
-    if (gameRoom.gameProps.p1Score == 5) {
+    if (gameRoom.gameProps.p1Score === 5) {
       return {
         winnerId: gameRoom.player1['intraId'],
         winnerScore: gameRoom.gameProps.p1Score,
@@ -122,9 +128,9 @@ export class GameService {
   }
 
   async checkGameEnd(gameRoom: GameRoom, roomName: string) {
-    if (this.gameRooms[roomName] == undefined || gameRoom.finish == true)
+    if (this.gameRooms[roomName] === undefined || gameRoom.finish === true)
       return;
-    if (gameRoom.gameProps.p1Score == 5 || gameRoom.gameProps.p2Score == 5) {
+    if (gameRoom.gameProps.p1Score === 5 || gameRoom.gameProps.p2Score === 5) {
       gameRoom.finish = true;
       this.emitBothPlayer(gameRoom, 'game-end', {
         p1Score: gameRoom.gameProps.p1Score,
@@ -141,13 +147,13 @@ export class GameService {
   async playerExit(player: Socket, roomName: string) {
     console.log('playerExit');
     if (
-      this.gameRooms[roomName] == undefined ||
-      this.gameRooms[roomName].finish == true
+      this.gameRooms[roomName] === undefined ||
+      this.gameRooms[roomName].finish === true
     )
       return;
     const gameRoom = this.gameRooms[roomName];
     gameRoom.finish = true;
-    if (gameRoom.player1['intraId'] == player['intraId']) {
+    if (gameRoom.player1['intraId'] === player['intraId']) {
       gameRoom.gameProps.p1Score = 0;
       gameRoom.gameProps.p2Score = 5;
     } else {
@@ -173,31 +179,31 @@ export class GameService {
     const ballY = gameRoom.gameProps.ball.y + dy;
     // ball의 다음위치가 위아래 벽에 맞았는지 확인
     if (ballY < 5 || ballY > 600 - 5) gameRoom.gameProps.ball.dy = -dy;
-    if (ballX < 15 || ballX > 1280 - 15) {
+    if (ballX < 5 || ballX > 1280 - 5) {
       // ball의 다음위치가 paddle에 맞았는지 확인
       if (
-        ballX < 15 &&
+        ballX < 5 &&
         ballY > gameRoom.gameProps.y1 - 100 &&
         ballY < gameRoom.gameProps.y1 + 100
       ) {
-        if (gameRoom.mode == modeConstants.NORMAL) {
+        if (gameRoom.mode === modeConstants.NORMAL) {
           gameRoom.gameProps.ball.dx = -dx * 1.2;
-        } else if (gameRoom.mode == modeConstants.EASY) {
+        } else if (gameRoom.mode === modeConstants.EASY) {
           gameRoom.gameProps.ball.dx = -dx;
         }
-        gameRoom.gameProps.ball.x = 15;
+        gameRoom.gameProps.ball.x = 5;
       } else if (
-        ballX > 1280 - 15 &&
+        ballX > 1280 - 5 &&
         ballY > gameRoom.gameProps.y2 - 100 &&
         ballY < gameRoom.gameProps.y2 + 100
       ) {
         // gameRoom.gameProps.speed *= 1.1;
-        if (gameRoom.mode == modeConstants.NORMAL) {
+        if (gameRoom.mode === modeConstants.NORMAL) {
           gameRoom.gameProps.ball.dx = -dx * 1.2;
-        } else if (gameRoom.mode == modeConstants.EASY) {
+        } else if (gameRoom.mode === modeConstants.EASY) {
           gameRoom.gameProps.ball.dx = -dx;
         }
-        gameRoom.gameProps.ball.x = 1280 - 15;
+        gameRoom.gameProps.ball.x = 1280 - 5;
       } else {
         console.log('someone lose');
         gameRoom.gameProps.ball.x = 640;
@@ -205,7 +211,7 @@ export class GameService {
         gameRoom.gameProps.ball.dx = 4;
         gameRoom.gameProps.ball.dy = -4;
         if (ballX > 1200) gameRoom.gameProps.p1Score += 1;
-        else if (ballX < 0) gameRoom.gameProps.p2Score += 1;
+        else gameRoom.gameProps.p2Score += 1;
         // gameRoom Player들에게 점수 emit
         this.emitBothPlayer(gameRoom, 'game-score', {
           p1Score: gameRoom.gameProps.p1Score,
@@ -226,7 +232,7 @@ export class GameService {
         gameRoom.gameProps.ball.x += gameRoom.gameProps.ball.dx;
         gameRoom.gameProps.ball.y += gameRoom.gameProps.ball.dy;
         // update gameRoom gameProps
-        const { ball, ...gameProps }: GameProps = gameRoom.gameProps;
+        const { ball, p1Score, p2Score, speed, ...gameProps }: GameProps = gameRoom.gameProps;
         this.emitBothPlayer(gameRoom, 'game-render', {
           ...gameProps,
           bx: ball.x,
@@ -246,11 +252,15 @@ export class GameService {
   async playerW(player: Socket, roomName: string) {
     console.log('gameservice - playerW');
     //game render
-    if (this.gameRooms[roomName].player1['intraId'] == player['intraId']) {
-      console.log(player['intraId']);
+    console.log("player1");
+    console.log(this.gameRooms[roomName].player1['intraId']);
+    console.log("player2");
+    console.log(this.gameRooms[roomName].player2['intraId']);
+    if (this.gameRooms[roomName].player1['intraId'] === player['intraId']) {
+      console.log(player['intraId'] + "player1");
       this.gameRooms[roomName].gameProps.y1 -= 40;
     } else {
-      console.log(player['intraId']);
+      console.log(player['intraId'] + "player2");
       this.gameRooms[roomName].gameProps.y2 -= 40;
     }
     this.checkLimit(this.gameRooms[roomName].gameProps);
@@ -259,11 +269,11 @@ export class GameService {
   async playerS(player: Socket, roomName: string) {
     console.log('gameservice - playerS');
     //game render
-    if (this.gameRooms[roomName].player1['intraId'] == player['intraId']) {
-      console.log(player['intraId']);
+    if (this.gameRooms[roomName].player1['intraId'] === player['intraId']) {
+      console.log(player['intraId'] + "player1");
       this.gameRooms[roomName].gameProps.y1 += 40;
     } else {
-      console.log(player['intraId']);
+      console.log(player['intraId'] + "player2");
       this.gameRooms[roomName].gameProps.y2 += 40;
     }
     this.checkLimit(this.gameRooms[roomName].gameProps);
@@ -278,8 +288,8 @@ export class GameService {
 
   checkRoomName(roomName: string) {
     if (
-      this.gameRooms[roomName] == undefined ||
-      this.gameRooms[roomName].finish == true
+      this.gameRooms[roomName] === undefined ||
+      this.gameRooms[roomName].finish === true
     )
       return false;
     return true;
