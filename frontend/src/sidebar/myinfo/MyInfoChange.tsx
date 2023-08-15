@@ -25,7 +25,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 		twoFactor: myData.twoFactor
 	});
 
-	const [twoFactor, seTwoFactor] = useState(myData.twoFactor)
+	const [twoFactor, setTwoFactor] = useState<boolean>(myData.twoFactor)
 
 	const handleAvatarButtonClick = (newAvatarUrl: string) => {
 		setAvatarUrl(newAvatarUrl);
@@ -98,10 +98,10 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 			});
 		}
 
-		if (myData.twoFactor !== changeData.twoFactor) {
-			instance.patch(`${process.env.REACT_APP_BACK_URL}/mail/toggle`, 
+		if (myData.twoFactor !== twoFactor) {
+			instance.patch(`${process.env.REACT_APP_BACK_URL}/member/mail/toggle`, 
 			{
-				"twoFactor": changeData.twoFactor
+				"twoFactor": twoFactor
 			})
 			.then(function (response) {
 			})
@@ -169,15 +169,15 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 					maxLength={8}
 				/>
 				<button className="my-info-change-nick-submit" onClick={onReset}>확인</button>
-				</div>
-
-				<label className="twofactor-button">
-					2차인증 활성화
-					<input
-					type="checkbox"
-					checked={twoFactor} // 이 부분은 changeData에 해당 정보가 있다고 가정하고 수정해주세요.
-					/>
-				</label>
+			</div>
+			<label className="twofactor-button">
+				2차인증 활성화{" "}
+				<input
+				type="checkbox"
+				checked={twoFactor}
+				onChange={(e: ChangeEvent<HTMLInputElement>) => setTwoFactor(e.target.checked)}
+				/>
+			</label>
 			<button className="my-info-change-set-button" onClick={handleModifyClick}>수정</button>
 		</div>
 	)

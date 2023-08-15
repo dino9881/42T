@@ -126,25 +126,6 @@ export class MemberController {
   }
 
   @ApiTags('Member')
-  @ApiOperation({ summary: 'intraId로 멤버삭제' })
-  @ApiOkResponse({ description: '삭제 성공' })
-  @ApiNotFoundResponse({ description: '삭제할 멤버를 찾지 못함' })
-  @Public()
-  @Delete('delete')
-  @ApiBody({
-    schema: {
-      properties: {
-        intraId: { example: 'heeskim', type: 'string' },
-      },
-    },
-    required: true,
-    description: '인트라아이디',
-  })
-  delete(@Body('intraId') intraId: string) {
-    return this.memberService.delete(intraId);
-  }
-
-  @ApiTags('Member')
   @ApiOperation({ summary: '전 멤버정보 찾기' })
   @ApiOkResponse({ description: '성공', type: MemberInfoDto, isArray: true })
   @Public()

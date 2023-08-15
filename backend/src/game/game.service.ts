@@ -83,9 +83,6 @@ export class GameService {
   }
 
   async enterGame(players: Socket[], roomName: string, mode: number) {
-    console.log(players[0])
-    console.log(roomName.substring(2,roomName.indexOf("$")));
-    console.log(players[0]["intraId"]);
     this.gameRooms[roomName] = {
       player1 : (players[0]["intraId"] === roomName.substring(2,roomName.indexOf("$"))? players[0] : players[1]),
       player2:  (players[0]["intraId"] === roomName.substring(2,roomName.indexOf("$"))? players[1] : players[0]),
@@ -178,22 +175,22 @@ export class GameService {
     const ballX = gameRoom.gameProps.ball.x + dx;
     const ballY = gameRoom.gameProps.ball.y + dy;
     // ball의 다음위치가 위아래 벽에 맞았는지 확인
-    if (ballY < 5 || ballY > 600 - 5) gameRoom.gameProps.ball.dy = -dy;
-    if (ballX < 5 || ballX > 1280 - 5) {
+    if (ballY < 15 || ballY > 600 - 15) gameRoom.gameProps.ball.dy = -dy;
+    if (ballX < 15 || ballX > 1280 - 15) {
       // ball의 다음위치가 paddle에 맞았는지 확인
       if (
-        ballX < 5 &&
+        ballX < 15 &&
         ballY > gameRoom.gameProps.y1 - 100 &&
-        ballY < gameRoom.gameProps.y1 + 100
+        ballY < gameRoom.gameProps.y1 + 100 
       ) {
         if (gameRoom.mode === modeConstants.NORMAL) {
           gameRoom.gameProps.ball.dx = -dx * 1.2;
         } else if (gameRoom.mode === modeConstants.EASY) {
           gameRoom.gameProps.ball.dx = -dx;
         }
-        gameRoom.gameProps.ball.x = 5;
+        gameRoom.gameProps.ball.x = 15;
       } else if (
-        ballX > 1280 - 5 &&
+        ballX > 1280 - 15 &&
         ballY > gameRoom.gameProps.y2 - 100 &&
         ballY < gameRoom.gameProps.y2 + 100
       ) {
@@ -203,14 +200,14 @@ export class GameService {
         } else if (gameRoom.mode === modeConstants.EASY) {
           gameRoom.gameProps.ball.dx = -dx;
         }
-        gameRoom.gameProps.ball.x = 1280 - 5;
+        gameRoom.gameProps.ball.x = 1280 - 15;
       } else {
         console.log('someone lose');
         gameRoom.gameProps.ball.x = 640;
         gameRoom.gameProps.ball.y = 300;
         gameRoom.gameProps.ball.dx = 4;
         gameRoom.gameProps.ball.dy = -4;
-        if (ballX > 1200) gameRoom.gameProps.p1Score += 1;
+        if (ballX > 1280 - 15) gameRoom.gameProps.p1Score += 1;
         else gameRoom.gameProps.p2Score += 1;
         // gameRoom Player들에게 점수 emit
         this.emitBothPlayer(gameRoom, 'game-score', {
