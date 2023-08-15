@@ -107,7 +107,6 @@
     margin-top: 10px;
     font-size: 32px;
     font-weight: 700;
-    color: #6E6E6E;
 }
 
 .Ranking-Result_rightbox{
@@ -145,6 +144,7 @@
 
 
 .Ranking-Result_score_left{
+    color: #6E6E6E;
     line-height: 1; 
     font-size: 60px;
     padding-right: 195px;
@@ -152,6 +152,7 @@
 }
 
 .Ranking-Result_score_right{
+    color: #6E6E6E;
     line-height: 1; 
     font-size: 60px;
     padding-left: 195px;
@@ -182,6 +183,7 @@
 }
 
 .Ranking-Result_VS{
+    color: gray;
     font-size: 40px;
     padding-bottom: 50px;
     font-weight: 700;
@@ -200,6 +202,7 @@
 }
 
 .Ranking-Result_under_gotoMain{
+    border: solid gray 2px;
     font-size: 20px;
     margin-left: 20px;
     width: 150px;
@@ -207,6 +210,7 @@
 }
 
 .Ranking-Result_under_gotoRanking{
+    border: solid gray 2px;
     font-size: 20px;
     width: 150px;
     height: 50px;
