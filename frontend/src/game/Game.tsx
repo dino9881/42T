@@ -162,13 +162,13 @@ function Game() {
     }, []);
 
     const move = (event: React.KeyboardEvent<HTMLCanvasElement>) => {
-        if (event.key === "w") {
+        if (event.key === "ArrowUp") {
             socket.emit("player-w", { roomName });
             if (context) {
                 context.closePath();
             }
         }
-        if (event.key === "s") {
+        if (event.key === "ArrowDown") {
             socket.emit("player-s", { roomName });
             if (context) {
                 context.closePath();
