@@ -1,7 +1,7 @@
 NAME = 42t
 
 COMPOSE_DIR = .
-DOCKER_COMPOSE = docker-compose
+DOCKER_COMPOSE = docker compose
 COMPOSE_SRC = docker-compose.yaml
 
 up:
@@ -19,6 +19,9 @@ down:
 # stop:
 # 	$(DOCKER_COMPOSE) -f $(COMPOSE_DIR)/$(COMPOSE_SRC) stop
 
+log:
+	$(DOCKER_COMPOSE) -f $(COMPOSE_DIR)/$(COMPOSE_SRC) logs -f
+
 clean:
 	$(DOCKER_COMPOSE) -f $(COMPOSE_DIR)/$(COMPOSE_SRC) down --rmi all --remove-orphans -v
 
@@ -27,4 +30,4 @@ fclean: clean
 
 re:	fclean up
 
-.PHONY:	up down clean fclean re
+.PHONY:	up down clean fclean re log
