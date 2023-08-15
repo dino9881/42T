@@ -15,11 +15,13 @@
   
   .chat-box{
     flex-direction: row;
-    /* background-color: yellow; */
-    /* margin: 10px 0px; */
     padding: 5px 10px;
     width: 100%;
     display: flex;
+  }
+  
+  .chat-scroll::-webkit-scrollbar{
+    display:none;
   }
   
   .chat-box-mine{
