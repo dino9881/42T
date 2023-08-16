@@ -10,15 +10,6 @@ up:
 down:
 	$(DOCKER_COMPOSE) -f $(COMPOSE_DIR)/$(COMPOSE_SRC) down
 
-# dev:
-#   $(DOCKER_COMPOSE) -f $(COMPOSE_DIR)/$(COMPOSE_SRC) up
-
-# build:
-#   $(DOCKER_COMPOSE) -f $(COMPOSE_DIR)/$(COMPOSE_SRC) build --progress=plain
-
-# stop:
-# 	$(DOCKER_COMPOSE) -f $(COMPOSE_DIR)/$(COMPOSE_SRC) stop
-
 log:
 	$(DOCKER_COMPOSE) -f $(COMPOSE_DIR)/$(COMPOSE_SRC) logs -f
 

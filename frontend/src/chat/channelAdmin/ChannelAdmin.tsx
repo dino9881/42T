@@ -320,10 +320,8 @@ function PassSetting({channelIdx, isPass} : PassSettingProps)
                 return;
             }
         }
-
-        else return;
         instance
-        .patch(`${process.env.REACT_APP_BACK_URL}/channel/${channelIdx}`, {chPwd:pass})
+        .patch(`${process.env.REACT_APP_BACK_URL}/channel/${channelIdx}`, {chPwd:newPass})
         .then((response) => {
             if (option === "modify" || option === "create")
                 alert (`${pass} 로 패스워드 ${option} 성공 `)

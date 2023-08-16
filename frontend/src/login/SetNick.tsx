@@ -43,7 +43,14 @@ const SetNick = () => {
 	}
 
 	const onClick = () => {
+		const isAlpha = /^[a-zA-Z]+$/.test(text);
+
+		if (!isAlpha) {
+		alert("닉네임은 영어만 가능합니다.");
+		return;
+		}
 		myData.nickName = text
+		
 		axios.post(`${process.env.REACT_APP_BACK_URL}/member/create`, myData)
 		.then(function (response) {
 			axios.post(`${process.env.REACT_APP_BACK_URL}/auth/login`, { intraId: myData.intraId })

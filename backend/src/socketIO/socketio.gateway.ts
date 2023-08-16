@@ -19,7 +19,7 @@ import {
 import { MemberService } from '../member/member.service';
 import { GameService } from '../game/game.service';
 import { WsGuard } from '../auth/ws.guard';
-import { ConflictExceptionFilter } from './ConflictExceptionFilter';
+import { HttpExceptionFilter } from './HttpExceptionFilter';
 import { modeConstants, statusConstants, memberConstants } from 'src/util/constants';
 
 interface Payload {
@@ -285,7 +285,7 @@ export class SocketIOGateway
     if (user !== '')
       this.getSocketByintraId(user)?.emit('send-dm', client['intraId']);
     await this.sendChannelMessage(client, payload);
-    this.channelService.sendMessage(channelName, client['intraId'], nickName, message, avatar);
+    await this.channelService.sendMessage(channelName, client['intraId'], nickName, message, avatar);
     return 'Message received!';
   }
 
@@ -321,7 +321,7 @@ export class SocketIOGateway
   }
 
   // 일반채널 생성
-  @UseFilters(ConflictExceptionFilter)
+  @UseFilters(HttpExceptionFilter)
   @SubscribeMessage('create-channel')
   async handleChannelCreate(client: Socket, payload: Payload) {
     const { channelName, password } = payload;
@@ -348,14 +348,14 @@ export class SocketIOGateway
   }
 
   // invite
-  @UseFilters(ConflictExceptionFilter)
+  @UseFilters(HttpExceptionFilter)
   @SubscribeMessage('channel-invite')
   async handleChannelInvite(client: Socket, payload: Payload) {
     const { channelName, nickName } = payload;
     try {
       const user = await this.memberService.getOneByNick(nickName);
       const userSocket = this.getSocketByintraId(user.intraId);
-      this.channelService.channelInvite(channelName, {
+      await this.channelService.channelInvite(channelName, {
         intraId: user.intraId,
         avatar: user.avatar,
         nickName: user.nickName,
@@ -370,7 +370,7 @@ export class SocketIOGateway
   }
 
   // 채널 kick, ban, mute, admin
-  @UseFilters(ConflictExceptionFilter)
+  @UseFilters(HttpExceptionFilter)
   @SubscribeMessage('channel-kick')
   async handleChannelKick(client: Socket, payload: Payload) {
     const { chIdx, intraId } = payload;
@@ -388,7 +388,7 @@ export class SocketIOGateway
     }
   }
 
-  @UseFilters(ConflictExceptionFilter)
+  @UseFilters(HttpExceptionFilter)
   @SubscribeMessage('channel-ban')
   async handleChannelBan(client: Socket, payload: Payload) {
     const { chIdx, intraId } = payload;
@@ -406,7 +406,7 @@ export class SocketIOGateway
     }
   }
 
-  @UseFilters(ConflictExceptionFilter)
+  @UseFilters(HttpExceptionFilter)
   @SubscribeMessage('channel-mute')
   async handleChannelMute(client: Socket, payload: Payload) {
     const { chIdx, intraId, nickName } = payload;
@@ -424,7 +424,7 @@ export class SocketIOGateway
     }
   }
 
-  @UseFilters(ConflictExceptionFilter)
+  @UseFilters(HttpExceptionFilter)
   @SubscribeMessage('channel-admin')
   async handleChannelAdmin(client: Socket, payload: Payload) {
     const { chIdx, intraId } = payload;

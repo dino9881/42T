@@ -93,22 +93,13 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 			{
 				"intraId": changeData.intraId,
 				"avatar": changeData.avatar
-			})
-			.then(function (response) {
-			})
-			.catch(function (error) {
 			});
 		}
-
 		if (myData.twoFactor !== twoFactor) {
 			instance.patch(`${process.env.REACT_APP_BACK_URL}/member/mail/toggle`, 
 			{
 				"twoFactor": twoFactor
-			})
-			.then(function (response) {
-			})
-			.catch(function (error) {
-			})
+			});
 		};
 
 		instance.get(`${process.env.REACT_APP_BACK_URL}/auth/me`).then((response => {

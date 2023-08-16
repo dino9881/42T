@@ -8,8 +8,6 @@ services:
             - "5432"
         volumes:
             - ./data:/var/lib/postgresql/data
-            # - postgres-volume:/var/lib/postgresql/data
-        #   - ./pg-init-scripts:/docker-entrypoint-initdb.d
         env_file:
             - .env
         # tty: true
@@ -22,7 +20,6 @@ services:
         build:
             context: ./frontend
             dockerfile: Dockerfile
-        # image: react:42t
         ports:
             - "3000:3000"
         volumes:
@@ -54,7 +51,6 @@ services:
         build:
             context: ./backend
             dockerfile: Dockerfile
-        # image: node:42t
         ports:
             - "5001:5001"
         volumes:
@@ -66,11 +62,4 @@ networks:
     docker-network:
         name: docker-network
         driver: bridge
-# volumes:
-#   postgres-volume:
-#     name: postgres-volume
-#     driver: local
-#     driver-opts:
-#       type: none
-#       device: ./docker/postgres
-#       o: bind
+

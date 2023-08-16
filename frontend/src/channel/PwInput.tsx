@@ -38,7 +38,7 @@ function PwInput({ chIdx, chPwd = "", chUserCnt } : PwInputProps) {
                     window.location.reload();
                 }
                 else if (error.response.status === 403)
-					alert("당신은 벤 유저 입니다 ^^ (못들어감).");
+					alert(error.response.data.message);
 				else if(error.response.status === 404)
 					alert("없는 채널번호...;;");    
 				else if(error.response.status === 500)
@@ -62,7 +62,7 @@ function PwInput({ chIdx, chPwd = "", chUserCnt } : PwInputProps) {
                     window.location.reload();
                 }
 				else if (error.response.status === 403)
-					alert("당신은 벤 유저 입니다 ^^ (못들어감).");
+					alert(error.response.data.message);
 				else if(error.response.status === 404)
 					alert("없는 채널번호...;;");    
 				else if(error.response.status === 500)

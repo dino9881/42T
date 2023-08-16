@@ -62,7 +62,7 @@ function ChannelRoom({ channelData }: ChannelRoomProps) {
             </div>
             <div className="chan-hostinfo">
                 <div className="chan-hostimg">
-                    <img src={avatar} alt="son" />
+                    <img src={avatar} alt="" />
                 </div>
                 <span className="chan-hostname">{nickName}</span>
             </div>
