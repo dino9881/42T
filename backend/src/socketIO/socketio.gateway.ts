@@ -90,6 +90,8 @@ export class SocketIOGateway
   // @UsePipes(new ValidationPipe())
   @SubscribeMessage('member-info')
   handleMemberInfo(client: Socket, payload: Payload) {
+    if (payload === null)
+      return ;
     const { intraId, nickName, avatar } = payload;
     // if (this.socketList.has(intraId)) this.socketList.set(intraId, client);
     client['intraId'] = intraId;
