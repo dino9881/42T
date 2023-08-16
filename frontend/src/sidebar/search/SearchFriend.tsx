@@ -27,7 +27,7 @@ const SearchFriend: React.FC<SearchFriendProps> = ({ intraId, friendStatus, onCl
 
 	useEffect(() => {
 		instance.get(`${process.env.REACT_APP_BACK_URL}/member/${intraId}`).then((response) => {
-		console.log(response);
+		// console.log(response);
 		setUserData(response.data);
 		});
 	}, [intraId]);

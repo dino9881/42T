@@ -43,11 +43,11 @@ const handleVerificationCodeChange = (event: React.ChangeEvent<HTMLInputElement>
 };
 
 const handleVerificationCodeSubmit = () => {
-	if (isTimerEnded) {
-	console.log("제출 할 수 없음");
-	} else {
-	console.log("인증 코드 제출:", verificationCode);
-	}
+	// if (isTimerEnded) {
+	// console.log("제출 할 수 없음");
+	// } else {
+	// console.log("인증 코드 제출:", verificationCode);
+	// }
 };
 
 const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {

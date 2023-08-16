@@ -26,13 +26,20 @@ const SetNick = () => {
 		}
 	};
 	
-	const location = useLocation();
+	const {state} = useLocation();
 	const navigate = useNavigate();
-
+	const {intraId} = state || {
+		intraId: ""
+	};
+	
 	const myData:MyData = {
-		"intraId": location.state.intraId,
+		"intraId": intraId,
 		"avatar": "avatar/avatar.jpeg",
 		"nickName": ""
+	}
+	if (!myData.intraId)
+	{
+		navigate('/')
 	}
 
 	const onClick = () => {
@@ -46,10 +53,11 @@ const SetNick = () => {
 					setAuthorizationToken(token);
 					navigate("/main");
 				})
+				
 		})
 		.catch(function (error) {
 			if (error.response.status === 409) {
-				alert("사용할 수 없는 닉네임입니다.")
+				alert("사용할 수 없는 닉네임이거나 이미 존재하는 사용자입니다.")
 			}
 		});
 	};
@@ -67,7 +75,7 @@ const SetNick = () => {
 						onKeyDown={onKeyDown}
 						value={text}
 						maxLength={8}/>
-					<button className='set-nick-button'onClick={onClick}>닉네임설정</button>
+					<button className='set-nick-button'onClick={()=>onClick}>닉네임설정</button>
 				</div>
 			</div>
 		</div>

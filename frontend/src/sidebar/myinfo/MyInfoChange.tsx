@@ -59,6 +59,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 						...prevData,
 						nickName: text
 					}));
+					alert("사용가능한 닉네임입니다.");
 				}
 			});
 		}

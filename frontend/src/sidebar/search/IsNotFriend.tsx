@@ -45,8 +45,8 @@ const IsNotFriend: React.FC<FriendInfoProps & SearchFriendProps> = ({ nickName, 
 			onClose();
 			window.location.reload();
 		})
-		.catch((error) => {
-			console.log(error);
+		.catch(() => {
+			// console.log(error);
 		});
 	};
 

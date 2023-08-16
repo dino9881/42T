@@ -24,8 +24,8 @@ const InfoScore: React.FC<InfoScoreProps> = ({ intraId, nickName, rank, state })
       .then((res) => {
         setHistory(res.data);
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(() => {
+        // console.log(error);
       });
   }, []);
 
@@ -46,8 +46,8 @@ const InfoScore: React.FC<InfoScoreProps> = ({ intraId, nickName, rank, state })
 		.then(() => {
 			window.location.reload();
 		})
-		.catch((error) => {
-			console.log(error);
+		.catch(() => {
+			// console.log(error);
 		});
   }
 

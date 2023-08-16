@@ -28,8 +28,8 @@ const FriendList = () => {
 			.then((response) => {
 				setFriends(response.data);
 			})
-			.catch((error) => {
-				console.log(error);
+			.catch(() => {
+				// console.log(error);
 			});
 	}
 
@@ -38,8 +38,8 @@ const FriendList = () => {
 			.then((response) => {
 				setBans(response.data);
 			})
-			.catch((error) => {
-				console.log(error);
+			.catch(() => {
+				// console.log(error);
 			});
 	}
 

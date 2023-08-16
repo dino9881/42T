@@ -26,8 +26,8 @@ const ChannelUser = () => {
 				.then((response) => {
 					setUsersList(response.data);
 				})
-				.catch((error) => {
-					console.log(error)
+				.catch(() => {
+					// console.log(error)
 				})
 			}
 		})

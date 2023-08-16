@@ -106,9 +106,9 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 				}
 				setChIdx(state.chIdx);
 			})
-			.catch((error) => {
+			.catch(() => {
 				// 요청이 실패하면 에러 처리
-				console.error("API 요청 실패:", error);
+				// console.error("API 요청 실패:", error);
 			});
 	}
 
@@ -118,8 +118,8 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 			.then((response) => {
 				setChannels(response.data);
 			})
-			.catch((error) => {
-				console.log(error);
+			.catch(() => {
+				// console.log(error);
 			});
 	}
 
@@ -129,8 +129,7 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 			.then((response) => {
 				setPrivateChannels(response.data);
 			})
-			.catch((error) => {
-				console.log(error);
+			.catch(() => {
 			});
 	}
 
@@ -141,7 +140,7 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 				return response;
 			})
 			.catch((error) => {
-				console.log(error);
+				//console.log(error);
 				throw error;
 			});
 	}
@@ -172,7 +171,7 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 
 			return response.data.nickName;
 		} catch (error) {
-			console.log(error);
+			// console.log(error);
 			return "";
 		}
 	};
@@ -194,7 +193,7 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 				);
 				setDms(modifiedDms);
 			} catch (error) {
-				console.log(error);
+				// console.log(error);
 			}
 		}
 		setToggleImgSrc(isExpanded ? "toggle_down.svg" : "toggle_up.svg");
@@ -226,15 +225,15 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 					});
 				}
 			})
-			.catch((error) => {
-				console.error("API 요청 실패:", error);
+			.catch(() => {
+				// console.error("API 요청 실패:", error);
 			});
 	};
 
 	useEffect(() => {
 		socket.on("game-ready", (data) => {
 			const { player1, player2, roomName, mode } = data;
-			console.log(data);
+			// console.log(data);
 			navigate("/game", { state: { player1, player2, roomName, mode } });
 		});
 
@@ -250,8 +249,8 @@ const Menu = ({ showBackButton, channelName, channelIdx }: MenuProps) => {
 				setIntraId(response.data.intraId);
 				setNickName(response.data.nickName);
 			})
-			.catch((error) => {
-				console.log(error);
+			.catch(() => {
+				// console.log(error);
 			});
 		return () => {
 			socket.off("game-apply");

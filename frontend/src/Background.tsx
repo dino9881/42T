@@ -21,7 +21,8 @@ function Footer(){
     return (
         <div className='footer'>
             <h4>
-              <Link to="/main" style={{ textDecoration: "none", color: "inherit" }}>2023 ft_transcendence</Link>
+              2023 ft_transcendence
+              {/* <Link to="/main" style={{ textDecoration: "none", color: "inherit" }}>2023 ft_transcendence</Link> */}
             </h4>
         </div>
 

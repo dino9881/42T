@@ -25,7 +25,6 @@ const Custom: React.FC<CustomProps> = ({ nickName, onClose }) => {
 			mode = 1
 			else if (selectedCheckbox === "checkbox3")
 			mode = 2
-			console.log({intraId : response.data.intraId, nickName : response.data.nickName  , player2: nickName , mode : mode});
             socket.emit("game-apply", {intraId : response.data.intraId, nickName : response.data.nickName  , player2: nickName, mode : mode });
 			setSubmitChecker(1);
 		});

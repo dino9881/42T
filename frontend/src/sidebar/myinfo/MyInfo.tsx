@@ -26,7 +26,7 @@ const MyInfo = () => {
 	useEffect(() => {
 		instance.get(`${process.env.REACT_APP_BACK_URL}/auth/me`).then((response) => {
 			if (myData !== response.data){
-				console.log(response.data);
+				// console.log(response.data);
 				setMyData(response.data); 
 			}
 		})

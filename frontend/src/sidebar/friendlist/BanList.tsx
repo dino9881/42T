@@ -10,7 +10,7 @@ const BanList: React.FC<BanProps> = ({nickName, avatar}) => {
 	function getBanList() {
 		instance.delete(`${process.env.REACT_APP_BACK_URL}/member/ban/delete/${nickName}`).then(() => {
 			window.location.reload();
-			console.log("차단해제")
+			// console.log("차단해제")
 		});
 	}
 

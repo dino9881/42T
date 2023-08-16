@@ -5,7 +5,7 @@ function Login() {
     var url = "";
     axios.get(`${process.env.REACT_APP_BACK_URL}/auth/url`)
 		.then(function (response) {
-            console.log(response.data);
+            // console.log(response.data);
 			url =response.data
 		})
     

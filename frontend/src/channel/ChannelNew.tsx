@@ -31,7 +31,6 @@ function ChannelNew() {
         });
         
         socket.on("duplicate-chanName", () => {
-            console.log("dub error")
             alert("같은 제목의 방이 이미 있습니다.");
         });
         
@@ -44,7 +43,6 @@ function ChannelNew() {
         });
 
         return () => {
-            console.log("여기가 리리턴 in이다~~!!")
             socket.off("max-channel");
             socket.off("new-channel");
             socket.off("duplicate-chanName");
@@ -60,7 +58,6 @@ function ChannelNew() {
     };
 
     const closeNewMake = () => {
-        console.log("클로즈 뉴 메이크");
         setCloseNewMake(false);
         setInputValue("");
     }

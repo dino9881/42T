@@ -16,7 +16,7 @@ interface FriendInfoProps {
 	setIsCustomOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const FriendInfoSimple: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, avatar, winCnt, loseCnt, currstate, state, setIsCustomOpen }) => {
+const FriendInfoSimple: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, avatar, winCnt, loseCnt, currstate, state, setIsCustomOpen } : FriendInfoProps) => {
     const navigate = useNavigate();
 	
 	const handleButtonClick = () => {
@@ -24,14 +24,14 @@ const FriendInfoSimple: React.FC<FriendInfoProps> = ({ intraId, nickName, rank, 
 		.post(`${process.env.REACT_APP_BACK_URL}/channel/enter/dm/chan`,{
 			"intraId": intraId,
 			"nickName": nickName,
-			"avatar": avatar
+			"avatar": avatar,
 		})
 		.then((response) => {
-			console.log(`dm respose = ${response.data}`)
+			// console.log(`dm respose = ${response.data}`)
 			navigate("/dm", { state: { chIdx:response.data.chIdx } });
 		})
-		.catch((error) => {
-			console.error("API 요청 실패:", error);
+		.catch(() => {
+			// console.error("API 요청 실패:", error);
 			//   403 밴 유저
 			//   404 없는 채널 번호
 			//   500 서버 에러
