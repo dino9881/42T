@@ -40,6 +40,7 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 	};
 
 	const onReset = () => {
+		
 		if (changeData.nickName === text) {
 			alert("기존 닉네임 입니다.")
 			return
@@ -120,7 +121,14 @@ const MyInfoChange: React.FC<MyInfoChangeProps> = ({ myData, onClose }) => {
 
 	const handleUpload = (e: ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files && e.target.files[0];
+		
 		if (file) {
+			const isAlphanumeric = /^[a-zA-Z0-9.]+$/.test(file.name);
+
+			if (!isAlphanumeric) {
+			  alert("파일 이름은 영어와 숫자로만 이루어져야 합니다.");
+			  return;
+			}
 			const reader = new FileReader();
 			reader.onload = () => {
 				const base64Image = reader.result as string;
