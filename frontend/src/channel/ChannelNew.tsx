@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, KeyboardEvent } from "react";
+import React, { useEffect, useState, ChangeEvent, KeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import instance from "../refreshToken";
 import { socket } from "../socket";
@@ -23,21 +23,44 @@ function ChannelNew() {
     else 
         publicAndPrivate = "공개방"; 
     
+    useEffect(() => {
+
+        socket.on("new-channel", (payload: ChannelData) => {
+            closeNewMake();
+            navigate("/chat", { state: { chIdx:payload.chIdx } });
+        });
+        
+        socket.on("duplicate-chanName", () => {
+            console.log("dub error")
+            alert("같은 제목의 방이 이미 있습니다.");
+        });
+        
+        socket.on("max-channel", () => {
+            alert("만들 수 있는 방의 수를 초과했습니다.");
+        });
+        
+        socket.on("server-error", () => {
+            alert("server error");
+        });
+
+        return () => {
+            console.log("여기가 리리턴 in이다~~!!")
+            socket.off("max-channel");
+            socket.off("new-channel");
+            socket.off("duplicate-chanName");
+            socket.off("server-error");
+        };
+    }, []); 
+
 
     const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
-        if(event.key === "Enter") {
+        if(event.key === "Enter" && event.nativeEvent.isComposing === false) {
           makeNewChannel();
         }
     };
 
-    const socket_off = () => {
-        socket.off("max-channel");
-        socket.off("new-channel");
-        socket.off("duplicate-chanName");
-        socket.off("server-error");
-    }
-
     const closeNewMake = () => {
+        console.log("클로즈 뉴 메이크");
         setCloseNewMake(false);
         setInputValue("");
     }
@@ -82,9 +105,6 @@ function ChannelNew() {
             alert("비밀번호는 4자리로 입력해주세요.");
             return;
         }
-        // private => channel/create chanName, isPrivate: true
-        // if { api 호출 response => closeNewMake, navaigate => error }
-        // else { emit create-channel }
 
         if(isPchecked){
         instance
@@ -96,7 +116,7 @@ function ChannelNew() {
             .catch((error) => {
                 // 요청이 실패하면 에러 처리
                 if (error.response.status === 401)
-                            alert("Accesstoken 인증 실패.");
+                    alert("Accesstoken 인증 실패.");
                 else if(error.response.status === 400)
                     alert("잘못된 요청입니다.");    
                 else if(error.response.status === 403)
@@ -113,35 +133,7 @@ function ChannelNew() {
                 channelName: title,
                 password: password,
             });
-
-            socket.on("new-channel", (payload: ChannelData) => {
-                closeNewMake();
-                socket_off();
-                return navigate("/chat", { state: { chIdx:payload.chIdx } });
-            });
-            
-            socket.on("duplicate-chanName", () => {
-                alert("같은 제목의 방이 이미 있습니다.");
-                socket_off();
-            });
-            
-            socket.on("max-channel", () => {
-                alert("만들 수 있는 방의 수를 초과했습니다.");
-                socket_off();
-            });
-            
-            socket.on("server-error", () => {
-                alert("server error");
-                socket_off();
-            });
         }
-        
-        return () => {
-            socket.off("max-channel");
-            socket.off("new-channel");
-            socket.off("duplicate-chanName");
-            socket.off("server-error");
-        };
     };
 
 return (
