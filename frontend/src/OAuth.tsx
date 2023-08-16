@@ -21,7 +21,12 @@ const OAuth: React.FC = () => {
 			const intraId: string = response.data;
 			axios.post(`${process.env.REACT_APP_BACK_URL}/auth/login`, { intraId: response.data, })
 				.then((res) => {
-					console.log(res);
+					if (res.status === 202) {
+						navigate("/login/nick", {
+							state: { intraId: intraId },
+						});
+						return ;
+					}
 					const token = res.data.access_token;
 					// console.log(token);
 					localStorage.setItem("jwtToken", token); // 지금은 access token인데 refresh token으로 바껴야함
@@ -34,11 +39,11 @@ const OAuth: React.FC = () => {
 				})
 				.catch((error) => {
 					// console.log(error);
-					if (error.response.status === 404) {
-						navigate("/login/nick", {
-							state: { intraId: intraId },
-						});
-					}
+					// if (error.response.status === 404) {
+					// 	navigate("/login/nick", {
+					// 		state: { intraId: intraId },
+					// 	});
+					// }
 					if (error.response.status === 401) {
 						alert("Intra Login Error!!!")
 						navigate("/")

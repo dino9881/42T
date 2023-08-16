@@ -103,26 +103,31 @@ export class AuthController {
     @Body('intraId') intraId: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const member = await this.memberService.getOne(intraId);
-    const access_token = await this.authService.generateAccessToken(member);
-    const refresh_token = await this.authService.generateRefreshToken(member);
-    await this.memberService.setCurrentRefreshToken(
-      refresh_token,
-      member.intraId,
-    );
-    res.setHeader('Authorization', 'Bearer ' + [access_token]);
-    res.cookie('refresh_token', refresh_token, {
-      httpOnly: true,
-      path: '/',
-      domain: this.app.host,
-      maxAge: 60 * 60 * 24 * 7 * 1000, // week
-      signed: true,
-    });
-    return {
-      message: 'login success',
-      access_token: access_token,
-      refresh_token: refresh_token,
-    };
+    try {
+      const member = await this.memberService.getOne(intraId);
+      const access_token = await this.authService.generateAccessToken(member);
+      const refresh_token = await this.authService.generateRefreshToken(member);
+      await this.memberService.setCurrentRefreshToken(
+        refresh_token,
+        member.intraId,
+      );
+      res.setHeader('Authorization', 'Bearer ' + [access_token]);
+      res.cookie('refresh_token', refresh_token, {
+        httpOnly: true,
+        path: '/',
+        domain: this.app.host,
+        maxAge: 60 * 60 * 24 * 7 * 1000, // week
+        signed: true,
+      });
+      return {
+        message: 'login success',
+        access_token: access_token,
+        refresh_token: refresh_token,
+      };
+    } catch (error) {
+      if (error.status === 404)
+        res.status(202).send('응답은 받았으나 멤버가 아님');
+    }
   }
 
   @ApiOperation({ summary: 'refresh token으로 access token재발급' })
