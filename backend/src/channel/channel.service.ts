@@ -44,7 +44,7 @@ export class ChannelService {
   }
 
   async isDuplicateName(chName: string) {
-    const channels = await this.findChannelAll();
+    const channels = await this.findAllNoDM();
     if (channels && channels.find(chan => chan.chName === chName))
       return true;
     return false;
@@ -69,8 +69,9 @@ export class ChannelService {
       throw new ForbiddenException('Already oper on 3 channel');
     }
     // duplicate name check
-    if (await this.isDuplicateName(chName))
+    if (await this.isDuplicateName(chName)){
       throw new ConflictException('Duplicate chName');
+    }
     const createData = await this.prisma.channel.create({
       data: {
         chName,
@@ -142,6 +143,10 @@ export class ChannelService {
   
   async findChannelAll() {
     return await this.prisma.channel.findMany({ where: { isDM: false, isPrivate: false } });
+  }
+
+  async findAllNoDM() {
+    return await this.prisma.channel.findMany({ where: { isDM: false} });
   }
   
   async findOneById(idx: number) {

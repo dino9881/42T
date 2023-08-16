@@ -324,7 +324,6 @@ export class SocketIOGateway
   async handleChannelCreate(client: Socket, payload: Payload) {
     const { channelName, password } = payload;
     try {
-      console.log("=========socket create channel ===========");
       const channel = await this.channelService.create(
         {
           intraId: client['intraId'],
@@ -334,16 +333,16 @@ export class SocketIOGateway
         { chName: channelName, chPwd: password },
       );
       client.emit('new-channel', { chIdx: channel.chIdx });
+      const members = await this.memberService.getAll();
+      members.map((users) => {
+        if (users.intraId !== 'admin')
+          this.getSocketByintraId(users.intraId)?.emit('reload');
+      });
     } catch (error) {
       if (error.response.statusCode === 409) client.emit('duplicate-chanName');
       else if (error.response.statusCode === 403) client.emit('max-channel');
       else if (error.response.statusCode === 500) client.emit('server-error');
     }
-    const members = await this.memberService.getAll();
-    members.map((users) => {
-      if (users.intraId !== 'admin')
-        this.getSocketByintraId(users.intraId)?.emit('reload');
-    });
   }
 
   // invite
