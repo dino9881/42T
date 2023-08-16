@@ -75,7 +75,7 @@ const SetNick = () => {
 						onKeyDown={onKeyDown}
 						value={text}
 						maxLength={8}/>
-					<button className='set-nick-button'onClick={()=>onClick}>닉네임설정</button>
+					<button className='set-nick-button'onClick={onClick}>닉네임설정</button>
 				</div>
 			</div>
 		</div>

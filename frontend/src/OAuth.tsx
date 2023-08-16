@@ -21,7 +21,7 @@ const OAuth: React.FC = () => {
 			const intraId: string = response.data;
 			axios.post(`${process.env.REACT_APP_BACK_URL}/auth/login`, { intraId: response.data, })
 				.then((res) => {
-					// console.log(res);
+					console.log(res);
 					const token = res.data.access_token;
 					// console.log(token);
 					localStorage.setItem("jwtToken", token); // 지금은 access token인데 refresh token으로 바껴야함
