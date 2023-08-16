@@ -77,7 +77,13 @@ const MyInfo = () => {
 				</div>
 			</div>
 			{showChangeForm && myData && myData.twoFactor && <CheckEmail myData={myData} onClose={handleCloseForm} onEmail={handleEmail}/>}
-			{(isEmail || (showChangeForm && myData?.twoFactor === false)) && myData && <MyInfoChange myData={myData} onClose={handleEmail} />}
+			{
+				myData && (
+					(isEmail || (showChangeForm && !myData.twoFactor))
+					? <MyInfoChange myData={myData} onClose={isEmail ? handleEmail : handleCloseForm} />
+					: null
+				)
+				}
 		</div>
 	);
 };
