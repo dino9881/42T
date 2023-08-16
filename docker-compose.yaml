@@ -22,7 +22,7 @@ services:
         build:
             context: ./frontend
             dockerfile: Dockerfile
-        image: react:42t
+        # image: react:42t
         ports:
             - "3000:3000"
         volumes:
@@ -54,7 +54,7 @@ services:
         build:
             context: ./backend
             dockerfile: Dockerfile
-        image: node:42t
+        # image: node:42t
         ports:
             - "5001:5001"
         volumes:
